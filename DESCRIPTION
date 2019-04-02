@@ -1,0 +1,16 @@
+Package: Wavelength
+Title: Wavelength
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Aaron",
+           family = "Chafetz",
+           role = c("aut", "cre"),
+           email = "achafetz@usaid.gov")
+Description: USAID OHA Office. Munging of weekly/monthly data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+Imports: 
+    magrittr

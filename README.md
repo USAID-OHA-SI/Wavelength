@@ -1,4 +1,7 @@
 # Wavelength
+
+[![Travis build status](https://travis-ci.org/USAID-OHA-SI/Wavelength.svg?branch=master)](https://travis-ci.org/USAID-OHA-SI/Wavelength)
+
 OHA High Frequency Reporting Munging
 
 Futher documentation and data can be found on [Google Drive](https://drive.google.com/open?id=14lcqRwZaR7ZhyhF2-NoAwuhF6p4dhVzc).

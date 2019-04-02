@@ -14,3 +14,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 Imports: 
     magrittr
+URL: https://github.com/USAID-OHA-SI/Wavelength
+BugReports: https://github.com/USAID-OHA-SI/Wavelength/issues

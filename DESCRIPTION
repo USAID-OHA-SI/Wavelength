@@ -21,4 +21,6 @@ Imports:
     readxl,
     dplyr,
     tidyr,
-    tibble
+    tibble,
+    stringr,
+    readr

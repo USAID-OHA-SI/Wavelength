@@ -15,7 +15,7 @@
 #'   \item{disaggregate}{components of the indicator that take direction from the MSD}
 #'   \item{sex}{sex, male or female}
 #'   \item{agecoarse}{age, <15/15+}
-#'   \item{resultatus}{HIV status, Positive/Negative}
+#'   \item{resultstatus}{HIV status, Positive/Negative}
 #'   \item{otherdisaggregate}{other components of the indicator not captured elsewhere}
 #' }
 

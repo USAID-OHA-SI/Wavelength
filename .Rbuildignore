@@ -2,3 +2,5 @@
 ^LICENSE\.md$
 ^Wavelength\.Rproj$
 ^\.Rproj\.user$
+
+^ou_submissions$

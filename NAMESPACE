@@ -2,5 +2,6 @@
 
 export("%>%")
 export(apply_agebands)
+export(structure_cod)
 export(structure_tza)
 importFrom(magrittr,"%>%")

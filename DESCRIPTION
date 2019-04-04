@@ -23,4 +23,5 @@ Imports:
     tidyr,
     tibble,
     stringr,
-    readr
+    readr,
+    purrr

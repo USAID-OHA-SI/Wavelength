@@ -1,5 +1,6 @@
 # Wavelength 0.0.0.9000
 
+* Added function to import Uganda system output, `structure_tza()`
 * Add function for exporting as a .txt, `export_hfd()`, including adding in an ISO code mapping table for naming `data(iso_map)`
 * Added function to name operatingunits, `add_ou()` since this code was replicated in each dataset
 * Added an indicator mapping for Uganda, `data(ind_map_uga)`, with full list of collected indicators and ones that we are currently collecting for OHA, breaking out disaggs.

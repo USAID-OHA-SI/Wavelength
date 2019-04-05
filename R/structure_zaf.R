@@ -30,10 +30,10 @@ structure_zaf <- function(filepath, folderpath_output = NULL){
   #TODO add assert check to make sure structure stays the same
 
   #reshape long
+    meta <- dplyr::select(df, FundingAgency:Facility) %>% names()
     df <- df %>%
-      tidyr::gather(date, val, -FundingAgency:-Facility, na.rm = TRUE) %>%
-      dplyr::mutate(val = as.double(val)) %>%
-      dplyr::filter(val != 0)
+      reshape_long(meta) %>%
+      dplyr::rename(date = ind)
 
   #fix issues with IM and excel date that end with decimal
     df <- dplyr::mutate_at(df, dplyr::vars(MechanismID, date), ~ as.integer(.) %>% as.character())

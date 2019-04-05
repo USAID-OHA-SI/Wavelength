@@ -42,9 +42,10 @@ structure_cod <- function(filepath, folderpath_output = NULL){
       dplyr::select(-`Site/Age Group`)
 
   #reshape long & convert to numeric
+    meta <- dplyr::select(df, indicator:Site) %>% names()
     df <- df %>%
-      tidyr::gather(disagg, val, -indicator:-Site, na.rm = TRUE) %>%
-      dplyr::mutate(val = as.double(val))
+      reshape_long(meta) %>%
+      dplyr::rename(disagg = ind)
 
   #tidy age/sex/resulstatus
     df <- df %>%

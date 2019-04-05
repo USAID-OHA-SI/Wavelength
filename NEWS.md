@@ -1,5 +1,6 @@
 # Wavelength 0.0.0.9000
 
+* Add function for reshaping long, `reshape_long()`
 * Add function for importing Haiti that pulls in and combines multiple header rows, `identify_headers_hti()`
 * Added function to import Uganda system output, `structure_tza()`
 * Add function for exporting as a .txt, `export_hfd()`, including adding in an ISO code mapping table for naming `data(iso_map)`

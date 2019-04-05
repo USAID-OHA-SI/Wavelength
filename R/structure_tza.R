@@ -30,12 +30,14 @@ structure_tza <- function(filepath, folderpath_output = NULL){
   #identify variables to keep
     sel_ind <- dplyr::pull(ind_map_tza, ind)
 
-  #filter to select indicators, reshape long, and make all vars lower
+  #filter to select indicators
     df <- df %>%
       dplyr::select(Partner:Month, dplyr::one_of(sel_ind)) %>%
-      tidyr::gather(ind, result, -Partner:-Month, na.rm = TRUE) %>%
-      dplyr::filter(result != 0) %>%
       dplyr::rename_all(~ tolower(.))
+
+  #reshape long and convert val to numeric
+    meta <- dplyr::select(df, partner:month) %>% names()
+    df <- reshape_long(df, meta)
 
   #geo hierarchy alignment
     df <- df %>%
@@ -61,7 +63,7 @@ structure_tza <- function(filepath, folderpath_output = NULL){
    #map to standardized indicators
     df <- df %>%
       dplyr::left_join(ind_map_tza, by = "ind") %>%
-      dplyr::select(-result, dplyr::everything())
+      dplyr::select(-val, dplyr::everything())
 
    #adjust Index testing (comm where there is no site)
     df <- dplyr::mutate(df, indicator =

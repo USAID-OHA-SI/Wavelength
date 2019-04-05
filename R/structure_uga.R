@@ -36,10 +36,7 @@ structure_uga <- function(filepath, folderpath_output = NULL){
     df <- dplyr::select(df, -dplyr::starts_with("drop"))
 
   #reshape long, dropping all zeros
-    df <- df %>%
-      dplyr::mutate_all(~ dplyr::na_if(., 0)) %>%
-      tidyr::gather(ind, val, -meta, na.rm = TRUE) %>%
-      dplyr::mutate(val = as.numeric(val))
+    df <- reshape_long(df, meta)
 
   #add operatingunit
     df <- add_ou(df, "Uganda")

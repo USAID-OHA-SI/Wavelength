@@ -49,7 +49,7 @@ structure_uga <- function(filepath, folderpath_output = NULL){
     df <- tibble::add_column(df, reporting_freq = "Weekly",
                              .after = "partner")
 
-  #break out repording pd & add month and FY
+  #break out reporting pd & add month and FY
     df <- df %>%
       tidyr::separate(reporting_pd, c("week", NA), sep = "/") %>%
       dplyr::mutate(week = lubridate::as_date(week),
@@ -57,6 +57,13 @@ structure_uga <- function(filepath, folderpath_output = NULL){
                     fy = lubridate::quarter(week, with_year = TRUE, fiscal_start = 10) %>%
                       stringr::str_sub(., 1, 4)) %>%
       dplyr::select(-val, dplyr::everything())
+
+  #breakout indicator and disaggs
+    components <- c("indicator", "disaggregate", "agecoarse", "agesemifine", "sex", "modality")
+    df <- df %>%
+      tidyr::separate(ind, components, sep = "\\.", fill = "right") %>%
+      dplyr::mutate_at(dplyr::vars(dplyr::one_of(components)), ~ dplyr::na_if(., "NA")) %>%
+      dplyr::mutate(sex = ifelse(sex == "Peds", NA, sex))
 
   #TODO arrange variable order
 

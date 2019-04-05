@@ -21,8 +21,6 @@ data(iso_map)
 Table that cross references the ISO Country codes to the
 PEPFAR Operating Units and Countries. This table is used
 during the export process for file naming. ISO codes were
-originall pulled from Wikipedia \url
-{https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes}
-and adapted for regional programs.
+originall pulled from Wikipedia and adapted for regional programs.
 }
 \keyword{datasets}

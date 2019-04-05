@@ -56,6 +56,10 @@ structure_hti <- function(filepath, folderpath_output = NULL){
       dplyr::mutate(month = month_full) %>%
       dplyr::select(-month_full)
 
+  #add fy (manual)
+    df <- tibble::add_column(df, fy = "2019",
+                             .after = "month")
+
   #clean up indicators and disaggs
     df <- df %>%
       dplyr::mutate(indicator = stringr::str_replace(indicator, "Index HTS_TST", "HTS_INDEX"),

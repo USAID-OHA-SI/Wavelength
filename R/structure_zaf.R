@@ -15,9 +15,9 @@
 #' \dontrun{
 #' #structure output for ZAF
 #'   path <- "~/WeeklyData/Raw/ZAF_partner_x.xlsx"
-#'   structure_cod(path)
+#'   structure_zaf(path)
 #' #structure output for ZAF & export to txt file
-#'   structure_cod(path, "~/WeeklyData/Output") }
+#'   structure_zaf(path, "~/WeeklyData/Output") }
 
 structure_zaf <- function(filepath, folderpath_output = NULL){
 

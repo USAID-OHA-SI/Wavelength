@@ -2,7 +2,7 @@
 % Please edit documentation in R/structure_uga.R
 \name{structure_uga}
 \alias{structure_uga}
-\title{Import and Structure South Africa}
+\title{Import and Structure Uganda}
 \usage{
 structure_uga(filepath, folderpath_output = NULL)
 }

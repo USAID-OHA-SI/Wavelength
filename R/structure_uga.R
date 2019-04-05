@@ -1,4 +1,4 @@
-#' Import and Structure South Africa
+#' Import and Structure Uganda
 #'
 #' @description This function will be used to take the weekly Uganda
 #' dataset and structure in a uniform way to be tidy and align with other

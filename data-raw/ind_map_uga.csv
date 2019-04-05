@@ -7,7 +7,7 @@ indicator_orig,disaggregate_orig,indicator,disaggregate,agecoarse,agesemifine,se
 "HTS_TST (Weekly,In Patient,Result/Coarse Age/Sex) : Number of Individuals","HIV Positive 1st Test, 15+ Yrs, Male",HTS_TST_POS,Age/Sex/Result/Modality,15+,NA,Male,Inpat
 "HTS_TST (Weekly,In Patient,Result/Coarse Age/Sex) : Number of Individuals","HIV Positive repeat Test, <15 Yrs, Total, Total",HTS_TST_POS_RPT,Age/Sex/Result/Modality,<15,NA,Peds,Inpat
 "HTS_TST (Weekly,In Patient,Result/Coarse Age/Sex) : Number of Individuals","HIV Positive repeat Test, 15+ Yrs, Female",HTS_TST_POS_RPT,Age/Sex/Result/Modality,15+,NA,Female,Inpat
-"HTS_TST (Weekly,In Patient,Result/Coarse Age/Sex) : Number of Individuals","HIV Positive repeat Test, 15+ Yrs, Male",HTS_TST_POS_RPT,Age/Sex/Result/Modality,15+,NA,Male,Index
+"HTS_TST (Weekly,In Patient,Result/Coarse Age/Sex) : Number of Individuals","HIV Positive repeat Test, 15+ Yrs, Male",HTS_TST_POS_RPT,Age/Sex/Result/Modality,15+,NA,Male,Inpat
 "HTS_TST (Weekly,Index Case Testing,Result/Coarse Age/Sex) : Number of Individuals","HIV Negative, <15 Yrs, Total, Total",HTS_TST_NEG,Age/Sex/Result/Modality,<15,NA,Peds,Index
 "HTS_TST (Weekly,Index Case Testing,Result/Coarse Age/Sex) : Number of Individuals","HIV Negative, 15+ Yrs, Female",HTS_TST_NEG,Age/Sex/Result/Modality,15+,NA,Female,Index
 "HTS_TST (Weekly,Index Case Testing,Result/Coarse Age/Sex) : Number of Individuals","HIV Negative, 15+ Yrs, Male",HTS_TST_NEG,Age/Sex/Result/Modality,15+,NA,Male,Index

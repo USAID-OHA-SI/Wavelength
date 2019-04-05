@@ -21,17 +21,16 @@
 
 structure_uga <- function(filepath, folderpath_output = NULL){
 
-  #import dataset (without names)
-    df <- suppressMessages(
-      readxl::read_excel(filepath, skip = 3, col_names = FALSE, col_types = "text"))
-
-  #check structure
-    #TODO add assert check to make sure structure stays the same
-
   #apply manually created var names
     meta <- c("reporting_pd", "snu1", "psnu", "community", "facility", "orgunituid", "partner")
     varnames <- dplyr::pull(ind_map_uga, header)
-    names(df) <- c(meta, varnames)
+
+  #import dataset (without names)
+    df <- readxl::read_excel(filepath, skip = 3, col_types = "text",
+                             col_names = c(meta, varnames))
+
+  #check structure
+    #TODO add assert check to make sure structure stays the same
 
   #remove columns for data OHA is not collecting
     df <- dplyr::select(df, -dplyr::starts_with("drop"))

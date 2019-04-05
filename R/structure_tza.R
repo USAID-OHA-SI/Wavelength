@@ -52,9 +52,7 @@ structure_tza <- function(filepath, folderpath_output = NULL){
                     fundingagency = agency)
 
    #add operatingunit
-    df <- df %>%
-      dplyr::mutate(operatingunit = "Tanzania") %>%
-      dplyr::select(operatingunit, dplyr::everything())
+    df <- add_ou(df, "Tanzania")
 
    #add reporting frequency
     df <- tibble::add_column(df, reporting_freq = "Monthly",
@@ -71,8 +69,7 @@ structure_tza <- function(filepath, folderpath_output = NULL){
                                          indicator == "HTS_INDEX"  ~ stringr::str_replace(indicator, "INDEX", "INDEX_FAC"),
                                          TRUE ~ indicator))
   #export
-    if(!is.null(folderpath_output))
-      readr::write_tsv(df, file.path(folderpath_output, paste0("TZA_HFD_", format(Sys.Date(),"%Y%m%d"), ".txt")), na = "")
+    export_hfd(df, folderpath_output)
 
     return(df)
 

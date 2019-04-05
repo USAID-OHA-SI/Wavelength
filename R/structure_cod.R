@@ -83,9 +83,7 @@ structure_cod <- function(filepath, folderpath_output = NULL){
                     facility = Site)
 
   #add operatingunit
-    df <- df %>%
-      dplyr::mutate(operatingunit = "Democratic Republic of the Congo") %>%
-      dplyr::select(operatingunit, dplyr::everything())
+    df <- add_ou(df, "Democratic Republic of the Congo")
 
     #add reporting frequency
     df <- tibble::add_column(df, reporting_freq = "Monthly",
@@ -94,8 +92,7 @@ structure_cod <- function(filepath, folderpath_output = NULL){
   #TODO arrange variable order
 
   #export
-    if(!is.null(folderpath_output))
-      readr::write_tsv(df, file.path(folderpath_output, paste0("COD_HFD_", format(Sys.Date(),"%Y%m%d"), ".txt")), na = "")
+    export_hfd(df, folderpath_output)
 
     return(df)
 }

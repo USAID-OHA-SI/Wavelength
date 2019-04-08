@@ -4,12 +4,12 @@
 \alias{identify_headers_hti}
 \title{Create un-umerged, unique header row}
 \usage{
-identify_headers_hti(filepath, sheet)
+identify_headers_hti(filepath, sheetname)
 }
 \arguments{
 \item{filepath}{full filepath to the country file}
 
-\item{sheet}{tab name}
+\item{sheetname}{tab name}
 }
 \description{
 Create un-umerged, unique header row

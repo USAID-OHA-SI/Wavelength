@@ -1,7 +1,7 @@
 #' Create un-umerged, unique header row
 #'
 #' @param filepath full filepath to the country file
-#' @param sheet tab name
+#' @param sheetname tab name
 #'
 #' @export
 #'
@@ -13,13 +13,13 @@
 #' #apply new headers to the import
 #'  df_hti <- readxl::read_excel(path, sheet = "ALL", skip = 4, col_names = headers) }
 
-identify_headers_hti <- function(filepath, sheet){
+identify_headers_hti <- function(filepath, sheetname){
 
   #first row of headers
-    r1 <- readxl::read_excel(filepath, sheet = "ALL", skip = 3, .name_repair = "minimal") %>%
+    r1 <- readxl::read_excel(filepath, sheet = sheetname, skip = 3, .name_repair = "minimal") %>%
       names()
   #second row of headers
-    r2 <- readxl::read_excel(filepath, sheet = "ALL", skip = 4, .name_repair = "minimal") %>%
+    r2 <- readxl::read_excel(filepath, sheet = sheetname, skip = 4, .name_repair = "minimal") %>%
       names()
 
   #align vector lengths to combine

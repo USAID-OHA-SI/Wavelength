@@ -16,13 +16,14 @@
 identify_headers_cmr <- function(filepath, sheetname){
 
   #first row of headers
-  r1 <- extact_headers(filepath, sheetname, 1)
-
+  r1 <- readxl::read_excel(filepath, sheet = sheetname, skip = 3, .name_repair = "minimal") %>%
+    names()
   #second row of headers
-  r2 <-  extact_headers(filepath, sheetname, 2)
-
+  r2 <- readxl::read_excel(filepath, sheet = sheetname, skip = 4, .name_repair = "minimal") %>%
+    names()
   #third row of headers
-  r3 <-  extact_headers(filepath, sheetname, 3)
+  r3 <- readxl::read_excel(filepath, sheet = sheetname, skip = 3, .name_repair = "minimal") %>%
+    names()
 
   #align vector lengths to combine
   n <- max(length(r1), length(r2), length(r3))

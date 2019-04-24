@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-#' #' \dontrun{
+#' \dontrun{
 #' #get new header row
 #'   path <- "~/WeeklyData/Cameroon_data.xlsx"
 #'   headers <- extract_headers(path, "TX_NEW", 1) }

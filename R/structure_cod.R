@@ -32,7 +32,7 @@ structure_cod <- function(filepath, folderpath_output = NULL){
 
   #clean var names and values
     df <- df %>%
-      dplyr::select(-dplyr::contains("Total"), -dplyr::contains("dif"), -pos, -`testé`) %>%
+      dplyr::select(-dplyr::contains("Total"), -dplyr::contains("dif"), -pos, -dplyr::start_with("test")) %>%
       dplyr::rename_all(~stringr::str_replace_all(.,"\\r|\\n", " ") %>% stringr::str_squish()) %>%
       dplyr::mutate_all(~ dplyr::na_if(., 0))
 

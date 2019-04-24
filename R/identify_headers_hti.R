@@ -16,11 +16,10 @@
 identify_headers_hti <- function(filepath, sheetname){
 
   #first row of headers
-    r1 <- readxl::read_excel(filepath, sheet = sheetname, skip = 3, .name_repair = "minimal") %>%
-      names()
+    r1 <- extact_headers(filepath, sheetname, 3)
+
   #second row of headers
-    r2 <- readxl::read_excel(filepath, sheet = sheetname, skip = 4, .name_repair = "minimal") %>%
-      names()
+    r2 <- extact_headers(filepath, sheetname, 4)
 
   #align vector lengths to combine
     n <- max(length(r1), length(r2))

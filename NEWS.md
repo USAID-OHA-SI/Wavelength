@@ -1,5 +1,6 @@
 # Wavelength 0.0.0.9000
 
+* Added function to pull out header row names, `extract_headers()`
 * Added function to import Hait dataset, `structure_hti()`
 * Added function for reshaping long, `reshape_long()`
 * Added function for importing Haiti that pulls in and combines multiple header rows, `identify_headers_hti()`

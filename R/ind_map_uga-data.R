@@ -10,7 +10,8 @@
 #'
 #' @format A data frame including all relevant indicators
 #' \describe{
-#'   \item{header}{concatenated header used for import}
+#'   \item{indicator_orig}{indicator name used by UGA}
+#'   \item{disaggregate_orig}{disaggregate name used by UGA}
 #'   \item{indicator}{standardized indicator to work across partners and OUs}
 #'   \item{disaggregate}{components of the indicator that take direction from the MER}
 #'   \item{agecoarse}{age, <15/15+}

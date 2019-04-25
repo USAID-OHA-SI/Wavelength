@@ -20,10 +20,5 @@ library(usethis)
   #import indicator mapping
     ind_map_uga <- read_csv("data-raw/ind_map_uga.csv")
 
-  #drop unnecessary date (just saved for original mapping) & create import header
-    ind_map_uga <- ind_map_uga %>%
-      select(-ends_with("orig")) %>%
-      unite(header, sep = ".", remove = FALSE)
-
   #save to data
     use_data(ind_map_uga, overwrite = TRUE)

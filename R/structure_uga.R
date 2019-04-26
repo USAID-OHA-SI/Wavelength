@@ -54,7 +54,6 @@ structure_uga <- function(filepath, folderpath_output = NULL){
     df <- df %>%
       tidyr::separate(reporting_pd, c("week", NA), sep = "/") %>%
       dplyr::mutate(week = lubridate::as_date(week),
-                    month = lubridate::month(week, label = TRUE, abbr = FALSE),
                     fy = lubridate::quarter(week, with_year = TRUE, fiscal_start = 10) %>%
                       stringr::str_sub(., 1, 4)) %>%
       dplyr::select(-val, dplyr::everything())

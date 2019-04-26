@@ -22,3 +22,11 @@ library(usethis)
 
   #save to data
     use_data(ind_map_uga, overwrite = TRUE)
+
+# BURUNDI -----------------------------------------------------------------
+
+  #import indicator mapping
+    ind_map_bdi <- readr::read_csv("data-raw/ind_map_bdi.csv")
+
+  #save to data
+    use_data(ind_map_bdi, overwrite = TRUE)

@@ -49,7 +49,6 @@ structure_zaf <- function(filepath, folderpath_output = NULL){
   #adjust from Excel date format
     df <- df %>%
       dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30"),
-                    month = lubridate::month(date, label = TRUE, abbr = FALSE),
                     fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>% stringr::str_sub(., 1, 4)) %>%
       dplyr::select(-val, dplyr::everything())
 

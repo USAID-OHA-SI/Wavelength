@@ -22,7 +22,7 @@
 structure_uga <- function(filepath, folderpath_output = NULL){
 
   #import dataset
-    df <- readr::read_csv("ou_submissions/Data Dump Results - Weekly16.csv")
+    df <- readr::read_csv(filepath, progress = FALSE)
 
   #check structure
     #TODO add assert check to make sure structure stays the same

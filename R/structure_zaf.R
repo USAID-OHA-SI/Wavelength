@@ -41,7 +41,7 @@ structure_zaf <- function(filepath, folderpath_output = NULL){
   #rename geography for uniformity & rename lower
     df <- df %>%
       dplyr::rename(snu1 = Province,
-                    pnsu = District,
+                    psnu = District,
                     community = `Sub-district`) %>%
       dplyr::select(-`Siyenza Sites`, -TIER) %>%
       dplyr::rename_all(~tolower(.))
@@ -62,10 +62,10 @@ structure_zaf <- function(filepath, folderpath_output = NULL){
 
   #add reporting frequency
     df <- tibble::add_column(df, reporting_freq = as.character(NA),
-                             after = "facility") %>%
-      dplyr::mutate(reporting_freq = dplyr::case_when(indicator %in% c("HTS_TST_POS", "TX_NEW", "TX_NEW_SAMEDAY") ~ "Daily",
-                                                      indicator %in% c("cLTFU", "uLTFU") ~ "Weekly",
-                                                      indicator %in% c("TX_CURR_28") ~ "Bi-Weekly"))
+                             .after = "facility") %>%
+      dplyr::mutate(reporting_freq = dplyr::case_when(indicator %in% c("HTS_TST_POS", "TX_NEW", "TX_NEW_SAMEDAY") ~ "daily",
+                                                      indicator %in% c("cLTFU", "uLTFU") ~ "weekly",
+                                                      indicator %in% c("TX_CURR_28") ~ "biweekly"))
     #TODO arrange variable order
 
   #export

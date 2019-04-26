@@ -22,7 +22,8 @@
 structure_uga <- function(filepath, folderpath_output = NULL){
 
   #import dataset
-    df <- readr::read_csv(filepath, progress = FALSE)
+    df <- readr::read_csv(filepath, col_types = readr::cols(.default = "c"), progress = FALSE) %>%
+      dplyr::mutate(value = as.numeric(value))
 
   #check structure
     #TODO add assert check to make sure structure stays the same

@@ -42,8 +42,7 @@ structure_hti <- function(filepath, folderpath_output = NULL){
                     community = Arrondissement,
                     partner = `Clinical Partner`,
                     facility = Facility) %>%
-      dplyr::select(-`Sante Regional Office`, -`MSPP Facility Code`) %>%
-      dplyr::glimpse()
+      dplyr::select(-`Sante Regional Office`, -`MSPP Facility Code`)
 
   #breakout indicator and month 7 clean up month
     df <- tidyr::separate(df, ind, c("indicator", "month"), sep = "\\.")

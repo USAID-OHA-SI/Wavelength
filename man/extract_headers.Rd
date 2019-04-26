@@ -4,7 +4,7 @@
 \alias{extract_headers}
 \title{Extract Headers}
 \usage{
-extract_headers(filepath, sheetname, skip_lines)
+extract_headers(filepath, sheetname = NULL, skip_lines)
 }
 \arguments{
 \item{filepath}{full filepath to the country file}

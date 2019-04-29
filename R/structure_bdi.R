@@ -55,7 +55,8 @@ structure_bdi <- function(filepath, folderpath_output = NULL){
       tibble::add_column(date = report_date, fy = NA,.after = "facility") %>%
       dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>% stringr::str_sub(., 1, 4))
 
-  #TODO arrange variable order
+  #standardize variable order
+    df <- order_vars(df)
 
   #export
     export_hfd(df, folderpath_output)

@@ -127,6 +127,9 @@ structure_tza <- function(filepath, type = "weekly", folderpath_output = NULL){
   #add operatingunit
     df <- add_ou(df, "Tanzania")
 
+  #standardize variable order
+    df <- order_vars(df)
+
   #export
     export_hfd(df, folderpath_output)
 

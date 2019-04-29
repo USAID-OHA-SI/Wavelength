@@ -64,7 +64,8 @@ structure_uga <- function(filepath, folderpath_output = NULL){
       dplyr::mutate_at(dplyr::vars(dplyr::one_of(components)), ~ dplyr::na_if(., "NA")) %>%
       dplyr::mutate(sex = ifelse(sex == "Peds", NA, sex))
 
-  #TODO arrange variable order
+  #standardize variable order
+    df <- order_vars(df)
 
   #export
     export_hfd(df, folderpath_output)

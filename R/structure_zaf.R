@@ -65,7 +65,8 @@ structure_zaf <- function(filepath, folderpath_output = NULL){
       dplyr::mutate(reporting_freq = dplyr::case_when(indicator %in% c("HTS_TST_POS", "TX_NEW", "TX_NEW_SAMEDAY") ~ "daily",
                                                       indicator %in% c("cLTFU", "uLTFU") ~ "weekly",
                                                       indicator %in% c("TX_CURR_28") ~ "biweekly"))
-    #TODO arrange variable order
+  #standardize variable order
+    df <- order_vars(df)
 
   #export
     export_hfd(df, folderpath_output)

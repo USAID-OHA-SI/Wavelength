@@ -90,7 +90,8 @@ structure_cod <- function(filepath, folderpath_output = NULL){
     df <- tibble::add_column(df, reporting_freq = "Monthly",
                              after = "month")
 
-  #TODO arrange variable order
+  #standardize variable order
+    df <- order_vars(df)
 
   #export
     export_hfd(df, folderpath_output)

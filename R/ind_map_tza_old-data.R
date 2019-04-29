@@ -1,17 +1,16 @@
 #' Tanzania Indicator Mapping Table
 #'
 #' Table that cross references between partner data
-#' collected/reported to the mission weekly/monthly
-#' and the PEPFAR MER indicators from worksheets/portal.
+#' collected/reported to the mission monthly
+#' and the PEPFAR MER indicators from the old portal.
 #'
 #' @docType data
 #'
-#' @usage data(ind_map_tza)
+#' @usage data(ind_map_tza_old)
 #'
 #' @format A data frame including all relevant indicators
 #' \describe{
 #'   \item{ind}{indicator reported by IM}
-#'   \item{ind_label}{indicator label/header}
 #'   \item{indicator}{standardized indicator to work across partners and OUs}
 #'   \item{disaggregate}{components of the indicator that take direction from the MSD}
 #'   \item{sex}{sex, male or female}
@@ -20,4 +19,4 @@
 #'   \item{otherdisaggregate}{other components of the indicator not captured elsewhere}
 #' }
 
-"ind_map_tza"
+"ind_map_tza_old"

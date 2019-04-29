@@ -26,6 +26,7 @@ order_vars <- function(df) {
                   "sex",
                   "modality",
                   "otherdisaggregate",
+                  "resultstatus",
                   "val")
 
   #identify missing variables to add

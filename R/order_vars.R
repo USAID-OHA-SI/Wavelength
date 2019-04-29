@@ -38,9 +38,9 @@ order_vars <- function(df) {
   #arrange variables
    df_clean <- dplyr::select_at(df, sel_vars)
 
-   dropped_vars <- paste(setdiff(names(df), names(df_clean)), collapse = ", ")
+   dropped_vars <- setdiff(names(df), names(df_clean))
    if(length(dropped_vars)>0)
-     print(paste0("WARNING: The following variables were dropped: ", dropped_vars))
+     print(paste0("WARNING: The following variables were dropped: ", paste(dropped_vars, collapse = ", ")))
 
   invisible(df_clean)
 }

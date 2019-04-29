@@ -22,7 +22,53 @@
 
 structure_tza <- function(filepath, type = "weekly", folderpath_output = NULL){
 
-  if(type == "monthly"){
+  if(type == "weekly") {
+
+    #identify variables to keep
+      sel_ind <- dplyr::pull(ind_map_tza, ind_label)
+
+    #unwanted tabs (don't have site data)
+      remove <- c("Guide-Facility", "Guide-Comm", "Facility Data", "Community Data")
+
+    #import all site sheets
+      df <- filepath %>%
+        readxl::excel_sheets() %>%
+        setdiff(remove) %>%
+        purrr::set_names() %>%
+        purrr::map_dfr(~readxl::read_excel(filepath, sheet = .x, skip = 3, col_types = "text"))
+
+    #filter to select indicators
+      df <- df %>%
+        dplyr::select(`Start date`:`Site ID (from DATIM)`, dplyr::one_of(sel_ind), -`End date`)
+
+    #munge and reshape long
+      df <- df %>%
+        # dplyr::select(-dplyr::matches("\\...")) %>% #get rid of extra blank columns at end
+        dplyr::select(`Start date`:`Site ID (from DATIM)`, dplyr::one_of(sel_ind)) %>%
+        dplyr::mutate_at(dplyr::vars(`Start date`),
+                         ~ as.double(.) %>% as.Date(origin = "1899-12-30")) #convert date
+      meta <- dplyr::select(df, `Start date`:`Site ID (from DATIM)`) %>% names()
+      df <- reshape_long(df, meta)
+
+    #clean names
+      df <- df %>%
+        dplyr::rename(date = `Start date`,
+                      site = `Site Name`,
+                      orgunituid = `Site ID (from DATIM)`) %>%
+        dplyr::rename_all(tolower) %>%
+        dplyr::mutate(site = stringr::str_remove_all(site, " -.*$| \\."))
+
+    #map indicator name on & filter to just OHA select values
+      df <- df %>%
+        dplyr::left_join(ind_map_tza, by =  c("ind" = "ind_label")) %>%
+        dplyr::select(-ind, -ind.y) %>%
+        dplyr::select(-val, dplyr::everything())
+
+    #add reporting pd
+      df <- tibble::add_column(df, reporting_freq = "Weekly",
+                               .before = "indicator")
+
+  } else if(type == "monthly"){
 
   #import
     df <- readxl::read_excel(filepath, sheet = "Exported Data")
@@ -31,49 +77,52 @@ structure_tza <- function(filepath, type = "weekly", folderpath_output = NULL){
     #TODO add assert check to make sure structure stays the same
 
   #identify variables to keep
-    sel_ind <- dplyr::pull(ind_map_tza, ind)
+    sel_ind <- dplyr::pull(ind_map_tza_old, ind)
 
   #filter to select indicators
     df <- df %>%
       dplyr::select(Partner:Month, dplyr::one_of(sel_ind)) %>%
-      dplyr::rename_all(~ tolower(.))
+      dplyr::rename_all(~ tolower(.)) %>%
+      dplyr::rename(orgunituid = `datim id`)
 
   #reshape long and convert val to numeric
     meta <- dplyr::select(df, partner:month) %>% names()
     df <- reshape_long(df, meta)
 
+   #add reporting frequency
+    df <- tibble::add_column(df, reporting_freq = "Monthly",
+                             .before = "ind")
+
+   #map to standardized indicators
+    df <- df %>%
+      dplyr::left_join(ind_map_tza_old, by = "ind") %>%
+      dplyr::select(-ind) %>%
+      dplyr::select(-val, dplyr::everything())
+
+  #convert month into date
+    df <- df %>%
+      dplyr::mutate(date = stringr::str_replace(month, " ", " 1,") %>% lubridate::mdy()) %>%
+      dplyr::select(date, dplyr::everything()) %>%
+      dplyr::select(-month)
+
+  }
+
   #geo hierarchy alignment
     df <- df %>%
-      dplyr::rename(orgunituid = `datim id`,
-                    snu1 = region,
+      dplyr::rename(snu1 = region,
                     psnu = council,
                     community = ward,
                     facility = site) %>%
       dplyr::select(-district)
 
-   #change var names -> date and agency
+  #add FY
     df <- df %>%
-      dplyr::rename(dateasentered = month,
-                    fundingagency = agency)
+      dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
+                      stringr::str_sub(., 1, 4)) %>%
+      dplyr::select(date, fy, dplyr::everything())
 
-   #add operatingunit
+  #add operatingunit
     df <- add_ou(df, "Tanzania")
-
-   #add reporting frequency
-    df <- tibble::add_column(df, reporting_freq = "Monthly",
-                             .before = "dateasentered")
-
-   #map to standardized indicators
-    df <- df %>%
-      dplyr::left_join(ind_map_tza, by = "ind") %>%
-      dplyr::select(-val, dplyr::everything())
-
-   #adjust Index testing (comm where there is no site)
-    df <- dplyr::mutate(df, indicator =
-                        dplyr::case_when(indicator == "HTS_INDEX" & is.na(facility) ~ stringr::str_replace(indicator, "INDEX", "INDEX_COM"),
-                                         indicator == "HTS_INDEX"  ~ stringr::str_replace(indicator, "INDEX", "INDEX_FAC"),
-                                         TRUE ~ indicator))
-  }
 
   #export
     export_hfd(df, folderpath_output)

@@ -4,10 +4,12 @@
 \alias{structure_tza}
 \title{Import and Structure Tanzania}
 \usage{
-structure_tza(filepath, folderpath_output = NULL)
+structure_tza(filepath, type = "weekly", folderpath_output = NULL)
 }
 \arguments{
 \item{filepath}{filepath to the output file}
+
+\item{type}{is the dataset a weekly or monthly file, "weekly", "monthly"}
 
 \item{folderpath_output}{if a txt output is desired, provide the full path to the folder}
 }

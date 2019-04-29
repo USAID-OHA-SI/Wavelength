@@ -8,6 +8,7 @@
 #'
 #' @param filepath filepath to the output file
 #' @param folderpath_output if a txt output is desired, provide the full path to the folder
+#' @param type is the dataset a weekly or monthly file, "weekly", "monthly"
 #'
 #' @export
 #'
@@ -19,7 +20,9 @@
 #' #structure output for Tanzania & export to txt file
 #'   structure_tza(path, "~/WeeklyData/Output") }
 
-structure_tza <- function(filepath, folderpath_output = NULL){
+structure_tza <- function(filepath, type = "weekly", folderpath_output = NULL){
+
+  if(type == "monthly"){
 
   #import
     df <- readxl::read_excel(filepath, sheet = "Exported Data")
@@ -70,6 +73,8 @@ structure_tza <- function(filepath, folderpath_output = NULL){
                         dplyr::case_when(indicator == "HTS_INDEX" & is.na(facility) ~ stringr::str_replace(indicator, "INDEX", "INDEX_COM"),
                                          indicator == "HTS_INDEX"  ~ stringr::str_replace(indicator, "INDEX", "INDEX_FAC"),
                                          TRUE ~ indicator))
+  }
+
   #export
     export_hfd(df, folderpath_output)
 

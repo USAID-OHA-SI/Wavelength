@@ -1,5 +1,6 @@
 # Wavelength 0.0.0.9000
 
+* Added function to run `structure_*()` based on ISO code, `unify_hfr()`
 * Added function to arrange variables in select order for unified output, `order_vars()`
 * Added function to import Burundi data, `structure_bdi()`
 * Added function to pull out header row names, `extract_headers()`

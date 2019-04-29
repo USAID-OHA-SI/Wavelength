@@ -54,7 +54,8 @@ structure_tza <- function(filepath, type = "weekly", folderpath_output = NULL){
       df <- df %>%
         dplyr::rename(date = `Start date`,
                       site = `Site Name`,
-                      orgunituid = `Site ID (from DATIM)`) %>%
+                      orgunituid = `Site ID (from DATIM)`,
+                      fundingagency = Agency) %>%
         dplyr::rename_all(tolower) %>%
         dplyr::mutate(site = stringr::str_remove_all(site, " -.*$| \\."))
 

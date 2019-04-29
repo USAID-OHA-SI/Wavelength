@@ -1,5 +1,6 @@
 # Wavelength 0.0.0.9000
 
+* Added function to arrange variables in select order for unified output, `order_vars()`
 * Added function to import Burundi data, `structure_bdi()`
 * Added function to pull out header row names, `extract_headers()`
 * Added function to import Haiti dataset, `structure_hti()`
@@ -11,6 +12,6 @@
 * Added an indicator mapping for Uganda, `data(ind_map_uga)`, with full list of collected indicators and ones that we are currently collecting for OHA, breaking out disaggs.
 * Added function to import Democratic Republic of the Congo partner files, `structure_cod()`
 * Added age mapping for age bands, `data(age_map)` and `apply_agebands()`
-* Added function to import Tanzania system output, `structure_tza()`
+* Added function to import Tanzania system output and weekly partner files, `structure_tza()`
 * Added an indicator mapping for Tanznaia, `data(ind_map_tza)`, with full list of collected indicators and ones that we are currently collecting for OHA, breaking out disaggs.
 * Added a `NEWS.md` file to track changes to the package.

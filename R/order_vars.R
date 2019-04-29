@@ -35,6 +35,11 @@ order_vars <- function(df) {
   #add missing variables
     if(length(add)!=0) df[add] <- NA
 
+  #revert logical to characters
+    df <- df %>%
+      dplyr::mutate_all(as.character) %>%
+      dplyr::mutate_at(dplyr::vars(val), as.numeric)
+
   #arrange variables
    df_clean <- dplyr::select_at(df, sel_vars)
 

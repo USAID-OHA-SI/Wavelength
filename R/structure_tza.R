@@ -105,6 +105,9 @@ structure_tza <- function(filepath, type = "weekly", folderpath_output = NULL){
       dplyr::select(date, dplyr::everything()) %>%
       dplyr::select(-month)
 
+  #rename agency to match others
+    df <- dplyr::rename(df, fundingagency = agency)
+
   }
 
   #geo hierarchy alignment

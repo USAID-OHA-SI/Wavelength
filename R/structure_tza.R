@@ -28,7 +28,7 @@ structure_tza <- function(filepath, type = "weekly", folderpath_output = NULL){
       sel_ind <- dplyr::pull(ind_map_tza, ind_label)
 
     #unwanted tabs (don't have site data)
-      remove <- c("Guide-Facility", "Guide-Comm", "Facility Data", "Community Data")
+      remove <- c("Guide-Facility", "Guide-Comm", "Facility Data", "Community Data", "flat file")
 
     #import all site sheets
       df <- filepath %>%

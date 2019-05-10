@@ -41,3 +41,13 @@ library(usethis)
 
   #save to data
     use_data(ind_map_bdi, overwrite = TRUE)
+
+# LESOTHO -----------------------------------------------------------------
+
+  #import indicator mapping
+  ind_map_lso <- readr::read_csv("data-raw/ind_map_lso.csv",
+                                 col_types = readr::cols(.default = "c"))
+
+  #save to data
+  usethis::use_data(ind_map_lso, overwrite = TRUE)
+

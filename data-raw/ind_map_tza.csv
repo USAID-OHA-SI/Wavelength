@@ -10,17 +10,17 @@ SCREEN_HTS_A,"Screened-eligible Adults tested at site, 15+ years old",,,,,,
 SCREEN_HTS_POS_A,"Screened-eligible Adults tested POS at site, 15+ years old",,,,,,
 LCM_A,"Total POS Adults consented to Linkage Case Management during reporting period, 15+ years old",,,,,,
 REFILL,TX_NEW clients from prior month who have had at least one ART refill after initial fill,,,,,,
-SDI_0_7,Clients initiated on ART during reporting month and within 7 days of confirmatory POS test,,,,,,
-SDI_8_14,Clients initiated on ART during reporting month and 8-14 days after confirmatory POS test,,,,,,
-SDI_15,Clients initiated on ART during reporting month and 15 or more days after confirmatory POS test,,,,,,
+SDI_0_7,Clients initiated on ART during reporting month and within 7 days of confirmatory POS test,TX_SDI,Period,,,,< 7 days
+SDI_8_14,Clients initiated on ART during reporting month and 8-14 days after confirmatory POS test,TX_SDI,Period,,,,8-14 days
+SDI_15,Clients initiated on ART during reporting month and 15 or more days after confirmatory POS test,TX_SDI,Period,,,,15+ days
 TX_PREV,Total on treatment at Facility at the start of reporting month,,,,,,
 TX_CURR,Total on treatment at Facility at end of reporting month,TX_CURR,Total Numerator,,,,
 XFER_IN,Clients already on treatment and transferred into facility this month,,,,,,
 XFER_OUT,Clients in this facility TX_CURR at beginning of month and confirmed to transfer out of this facility and into other facility this month,,,,,,
 XFER_DEATH,Clients recorded in TX_CURR at beginning of month and recorded this month as dead,,,,,,
-MMS_1,Clients given 1-31 days' supply of ART during reporting month (1 month or less),,,,,,
-MMS_2,Clients given 32-62 days' supply of ART during reporting month (1-2 months),,,,,,
-MMS_3,Clients given 63 or more days' supply of ART during reporting month (more than 2 months),,,,,,
+MMS_1,Clients given 1-31 days' supply of ART during reporting month (1 month or less),TX_MMD,Period,,,,1 month or less
+MMS_2,Clients given 32-62 days' supply of ART during reporting month (1-2 months),TX_MMD,Period,,,,1-2 months
+MMS_3,Clients given 63 or more days' supply of ART during reporting month (more than 2 months),TX_MMD,Period,,,,more than 2 months
 TB_PREV_D,ART clients who began IPT six months prior to reporting period,,,,,,
 TB_PREV_N,ART clients who completed six months of IPT during reporting period,,,,,,
 TB_PREV_NEW,ART clients who began IPT during reporting period (will be denominator in six months),,,,,,

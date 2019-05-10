@@ -39,13 +39,13 @@ Children (<15) with contacts elicited during the three latest months,,,,,,
 "Persons elicited as Child of an HTS_POS, TX_NEW or TX_CURR Biological Mother",,,,,,
 "Persons elicited as Biological Mother of an HTS_POS, TX_NEW or TX_CURR client",,,,,,
 Testing of elicited contacts (elicited during three latest months) - Tested sexual partners,HTS_INDEX,Contact,,,,Sexual partner
-Testing of elicited contacts (elicited during three latest months) - Tested PWID partners,HTS_INDEX,Contact,,,,PWID
-Testing of elicited contacts (elicited during three latest months) - Tested biological children (of index mothers),HTS_INDEX,Contact,,,,Biological children
-Testing of elicited contacts (elicited during three latest months) - Tested biological mothers (of index children),HTS_INDEX,Contact,,,,Biological mothers
+Testing of elicited contacts (elicited during three latest months) - Tested PWID partners,,,,,,
+Testing of elicited contacts (elicited during three latest months) - Tested biological children (of index mothers),,,,,,
+Testing of elicited contacts (elicited during three latest months) - Tested biological mothers (of index children),,,,,,
 Testing of elicited contacts (elicited during three latest months) - POS sexual partners,HTS_INDEX_POS,Contact,,,Positive,Sexual partner
-Testing of elicited contacts (elicited during three latest months) - POS PWID partners,HTS_INDEX_POS,Contact,,,Positive,PWID
-Testing of elicited contacts (elicited during three latest months) - POS biological children,HTS_INDEX_POS,Contact,,,Positive,Biological children
-Testing of elicited contacts (elicited during three latest months) - biological mothers,HTS_INDEX_POS,Contact,,,Positive,Biological mothers
+Testing of elicited contacts (elicited during three latest months) - POS PWID partners,,,,,,
+Testing of elicited contacts (elicited during three latest months) - POS biological children,,,,,,
+Testing of elicited contacts (elicited during three latest months) - biological mothers,,,,,,
 Linkage of elicited contacts (elicited during three latest months) - POS sexual partners who are given CTC# and enrolled in CTC,,,,,,
 Linkage of elicited contacts (elicited during three latest months) - POW PWID partners who are given CTC# and enrolled in CTC,,,,,,
 Linkage of elicited contacts (elicited during three latest months) - POS biological children who are given CTC# and enrolled,,,,,,
@@ -68,14 +68,14 @@ Clients recorded in CTC2 as DIED,,,,,,
 Clients recorded in CTC2 as STOPPED ART,,,,,,
 6-Month Retention Denominator,,,,,,
 6-Month Retention Numerator,,,,,,
-Clients given 1-31 days' supply of ART during reporting month (1 month or less)',,,,,,
-Clients given 32-62 days' supply of ART during reporting month (1-2 months)',,,,,,
-Clients given 63 or more days' supply of ART during reporting month (more than 2 months)',,,,,,
+Clients given 1-31 days' supply of ART during reporting month (1 month or less)',TX_MMD,Period,,,,1 month or less
+Clients given 32-62 days' supply of ART during reporting month (1-2 months)',TX_MMD,Period,,,,1-2 months
+Clients given 63 or more days' supply of ART during reporting month (more than 2 months)',TX_MMD,Period,,,,more than 2 months
 Clients initiated on ART on same day (day 0) of confirmatory POS test,,,,,,
-Clients initiated on ART during reporting month and 1-3 days after confirmatory POS test,,,,,,
-Clients initiated on ART during reporting month and 4-14 days after confirmatory POS test,,,,,,
-Clients initiated on ART during reporting month and 1-14 days after confirmatory POS test,,,,,,
-Clients initiated on ART during reporting month and 15 or more days after confirmatory POS test,,,,,,
+Clients initiated on ART during reporting month and 1-3 days after confirmatory POS test,TX_SDI,Period,,,,< 3 days
+Clients initiated on ART during reporting month and 4-14 days after confirmatory POS test,TX_SDI,Period,,,,4-14 days
+Clients initiated on ART during reporting month and 1-14 days after confirmatory POS test,TX_SDI,Period,,,,1-14 days
+Clients initiated on ART during reporting month and 15 or more days after confirmatory POS test,TX_SDI,Period,,,,15+ days
 Clients eligible for Viral Load Testing,,,,,,
 Clients with documented viral load result,TX_PVLS_D,Total Denominator,,,,
 Clients with suppressed viral load results returned,TX_PVLS,Total Numerator,,,,

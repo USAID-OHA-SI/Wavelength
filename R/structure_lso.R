@@ -21,7 +21,7 @@
 structure_lso <- function(filepath, folderpath_output = NULL){
 
   #import
-    df <- readxl::read_excel(path)
+    df <- readxl::read_excel(filepath)
 
   #identify variables to keep
     meta <- c("FACILITY", "DISTRICT", "CWEEKDATE")

@@ -26,3 +26,8 @@ Imports:
     readr,
     purrr,
     lubridate
+Suggests: 
+    httr,
+    jsonlite,
+    keyringr,
+    plyr

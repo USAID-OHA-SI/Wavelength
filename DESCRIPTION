@@ -27,6 +27,7 @@ Imports:
     purrr,
     lubridate
 Suggests: 
+    curl,
     httr,
     jsonlite,
     keyringr,

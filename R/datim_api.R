@@ -333,8 +333,8 @@
                               baseurl = "https://final.datim.org/"){
 
     #ensure that either ou_name or mechanism_id is entered
-      if(is.null(mechanism_id))
-        stopifnot(!is.null(ou_name))
+      # if(is.null(mechanism_id))
+      #   stopifnot(!is.null(ou_name))
 
     #identify OU and UID from mechanim info
       if(!is.null(mechanism_id)){

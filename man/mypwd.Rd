@@ -6,6 +6,9 @@
 \usage{
 mypwd(username)
 }
+\arguments{
+\item{username}{DATIM username}
+}
 \description{
 Proper credentials from secure file
 }

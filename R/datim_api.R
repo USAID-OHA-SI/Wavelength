@@ -311,6 +311,7 @@
 #' Extract Targets (DATIM API Call)
 #'
 #' @param mechanism_id DATIM mechanism ID
+#' @param ou_name Operating Unit name, if mechanism is not specified
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
 #' @param baseurl API base url, default = https://final.datim.org/
@@ -319,20 +320,30 @@
 #'
 #' @examples
 #' \dontrun{
+#'  #mechanism targets
 #'  myuser <- "UserX"
-#'  mech_x_targets <- extract_targets(00001, myuser, mypwd(myuser))}
+#'  mech_x_targets <- extract_targets(mechanism_id = 00001, username = myuser, password = mypwd(myuser))
+#'  #ou targets
+#'  mech_x_targets <- extract_targets(ou_name = "Namibia", username = myuser, password = mypwd(myuser))
+#'  }
 
-  extract_targets <- function(mechanism_id,
+  extract_targets <- function(mechanism_id = NULL,
+                              ou_name = NULL,
                               username, password,
                               baseurl = "https://final.datim.org/"){
 
-    #identify OU and UID
-      mech_info <- identify_mechs(mechid = mechanism_id)
-      mech_ou <- mech_info$ou
-      mech_uid <- mech_info$uid
+    #ensure that either ou_name or mechanism_id is entered
+      stopifnot(is.null(mechanism_id) && is.null(ou_name))
+
+    #identify OU and UID from mechanim info
+      if(!is.null(mechanism_id)){
+          mech_info <- identify_mechs(mechid = mechanism_id)
+          mech_uid <- mech_info$uid
+          ou_name <- mech_info$ou
+      }
 
     #identify reporting levels
-      ou_info <- identify_levels(mech_ou, username = username, password = password) %>%
+      ou_info <- identify_levels(ou_name, username = username, password = password) %>%
         dplyr::left_join(identify_ouuids(username = username, password = password), by = c("name3" = "displayName"))
       ou_fac <- ou_info$facility
       ou_comm <- ou_info$community

@@ -389,23 +389,25 @@
       df_combo <- dplyr::bind_rows(df_nonhts, df_combo_hts)
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility
-      non_org_vars <- dplyr::select(df_combo, -dplyr::contains("org")) %>% names()
-      org_vars <- paste0("orglvl_", c(3, 4, ou_comm, ou_psnu))
-
       df_combo <- df_combo %>%
-        dplyr::select(`Organisation unit`, orgunituid, org_vars, non_org_vars) %>%
         dplyr::rename(facility = `Organisation unit`,
                       operatingunit = orglvl_3,
-                      snu1 = orglvl_4,
-                      psnu = !!paste0("orglvl_", ou_psnu))
+                      snu1 = orglvl_4)
 
-      if(ou_psnu == ou_comm){
+      if(!!paste0("orglvl_", ou_psnu) %in% names(df_combo))
+        df_combo <- dplyr::rename(df_combo, psnu = !!paste0("orglvl_", ou_psnu))
+
+      if(ou_psnu == ou_comm && !!paste0("orglvl_", ou_comm) %in% names(df_combo)){
         df_combo <- df_combo %>%
           tibble::add_column(community = as.character(NA), .after = "psnu") %>%
           dplyr::mutate(community = psnu)
-      } else {
+      } else if (!!paste0("orglvl_", ou_comm) %in% names(df_combo)){
         df_combo <- dplyr::rename(df_combo, community = !!paste0("orglvl_", ou_comm))
       }
+
+      df_combo <- df_combo %>%
+        dplyr::select(facility, orgunituid, dplyr::everything()) %>%
+        dplyr::select(-dplyr::starts_with("orglvl_"))
 
     #clean variables and variable names
       df_combo <- df_combo %>%

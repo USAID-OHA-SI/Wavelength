@@ -366,6 +366,11 @@
         gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = TRUE) %>%
         get_datim_targets(username, password)
 
+    #ensure data exists before continuing
+      data_exists <- (max(nrow(df_hts_comm), nrow(df_hts_fac), nrow(df_nonhts), 1, na.rm = TRUE) - 1) > 0
+
+    if(data_exists){
+
     #combine HTS data
       df_combo_hts <- dplyr::bind_rows(df_hts_fac, df_hts_comm)
 
@@ -424,6 +429,10 @@
         tidyr::spread(type, Value, fill = 0)
 
     return(df_combo)
+
+    } else {
+      return(NULL)
+    }
   }
 
 

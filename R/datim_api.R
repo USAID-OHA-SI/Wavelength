@@ -397,8 +397,15 @@
         dplyr::rename(facility = `Organisation unit`,
                       operatingunit = orglvl_3,
                       snu1 = orglvl_4,
-                      psnu = !!paste0("orglvl_", ou_psnu),
-                      community = !!paste0("orglvl_", ou_comm))
+                      psnu = !!paste0("orglvl_", ou_psnu))
+
+      if(ou_psnu == ou_comm){
+        df_combo <- df_combo %>%
+          tibble::add_column(community = as.character(NA), .after = "psnu") %>%
+          dplyr::mutate(community = psnu)
+      } else {
+        df_combo <- dplyr::rename(df_combo, community = !!paste0("orglvl_", ou_comm))
+      }
 
     #clean variables and variable names
       df_combo <- df_combo %>%

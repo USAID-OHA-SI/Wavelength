@@ -274,7 +274,7 @@
              "dimension=ou:LEVEL-", org_lvl, ";", ou_uid, "&", #level and ou
              "dimension=IeMmjHyBUpi&", #Targets / Results -> targets W8imnja2Owd
              #"dimension=SH885jaRe0o:", mech_uid, "&", #Funding Mechanism
-             "dimension=bw8KHXzxd9i&", #Funding Agency
+             "dimension=bw8KHXzxd9i:NLV6dy7BE2O&", #Funding Agency -> USAID
              "dimension=SH885jaRe0o&", #Funding Mechanism
              "dimension=BOyWrF33hiR&", #Implementing Partner
              "dimension=xRo1uG2KJHk&", #Age: <15/15+ (Coarse)

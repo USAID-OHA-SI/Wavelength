@@ -18,6 +18,7 @@ unify_hfr <- function(ou_iso, filepath, folderpath_output = NULL){
          LSO = structure_lso(filepath, folderpath_output),
          TZA = structure_tza(filepath, "weekly", folderpath_output),
          UGA = structure_uga(filepath, folderpath_output),
+         ZMB = structure_zmb(filepath, folderpath_output),
          ZAF = structure_zaf(filepath, folderpath_output)
          )
 }

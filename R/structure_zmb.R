@@ -73,5 +73,4 @@ structure_zmb <- function(filepath, folderpath_output = NULL){
   #export
     export_hfd(df, folderpath_output)
 
-    return(df)
 }

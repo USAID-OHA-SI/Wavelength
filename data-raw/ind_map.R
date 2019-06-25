@@ -51,3 +51,12 @@ library(usethis)
   #save to data
   usethis::use_data(ind_map_lso, overwrite = TRUE)
 
+# ETHIOPIA ----------------------------------------------------------------
+
+  #import indicator mapping
+  ind_map_eth <- readr::read_csv("data-raw/ind_map_eth.csv",
+                                 col_types = readr::cols(.default = "c"))
+
+  #save to data
+  usethis::use_data(ind_map_eth, overwrite = TRUE)
+

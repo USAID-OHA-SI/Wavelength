@@ -165,6 +165,10 @@
       purrr::map_dfr(dplyr::bind_rows) %>%
       dplyr::mutate_if(is.character, ~ dplyr::na_if(., ""))
 
+    #adjust for regional missions
+    df_levels <- df_levels %>%
+      dplyr::mutate(name3 = ifelse(is.na(name4), name3, name4))
+
     if(!is.null(ou))
       df_levels <- dplyr::filter(df_levels, name3 == ou)
 

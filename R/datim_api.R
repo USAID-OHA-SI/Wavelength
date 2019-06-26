@@ -460,8 +460,8 @@ periodize_targets <- function(df, quarters_complete){
 
    df %>%
     dplyr::group_by(fy, orgunituid) %>%
-    dplyr::mutate(weekly_targets = ceiling(mer_targets / 52),
+    dplyr::mutate(weekly_targets = mer_targets / 52,
                   targets_gap = ifelse((mer_targets - mer_results) < 0,0, mer_targets - mer_results),
-                  weekly_targets_gap = ceiling(targets_gap/weeks_remaining)) %>%
+                  weekly_targets_gap = targets_gap/weeks_remaining) %>%
     dplyr::ungroup()
 }

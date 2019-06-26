@@ -54,6 +54,8 @@ structure_hti <- function(filepath, folderpath_output = NULL){
                     community = Arrondissement,
                     partner = `Clinical Partner`,
                     facility = Facility)
+  #add ou
+    df <- add_ou(df, "Haiti")
 
   #add reporting frequency
     df <- tibble::add_column(df, reporting_freq = "Weekly",

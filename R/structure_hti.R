@@ -62,4 +62,6 @@ structure_hti <- function(filepath, folderpath_output = NULL){
   #standardize variable order
     df <- order_vars(df)
 
+  #export
+    export_hfd(df, folderpath_output)
 }

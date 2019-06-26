@@ -12,7 +12,7 @@ structure_hti(filepath, folderpath_output = NULL)
 \item{folderpath_output}{if a txt output is desired, provide the full path to the folder}
 }
 \description{
-This function will be used to take the monthly Haiti
+This function will be used to take the Haiti HFR
 dataset and structure in a uniform way to be tidy and align with other
 OU datasets. Only selected indicators will be imported and transformed
 based on OHA's needs. The data is sourced from Haiti's partner weekly

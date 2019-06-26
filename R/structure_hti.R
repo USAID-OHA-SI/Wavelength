@@ -1,6 +1,6 @@
 #' Import and Structure Haiti
 #'
-#' @description This function will be used to take the monthly Haiti
+#' @description This function will be used to take the Haiti HFR
 #' dataset and structure in a uniform way to be tidy and align with other
 #' OU datasets. Only selected indicators will be imported and transformed
 #' based on OHA's needs. The data is sourced from Haiti's partner weekly
@@ -21,61 +21,45 @@
 
 structure_hti <- function(filepath, folderpath_output = NULL){
 
-  #import; headers are across 2 rows, so we need to identify and create them
-    headers <- identify_headers_hti(filepath, "ALL")
-    df <- readxl::read_excel(filepath, sheet = "ALL", skip = 3, col_names = headers, col_types = "text") %>%
-      dplyr::slice(3:nrow(.)) #remove header rows
+  #import
+    df <- readxl::read_excel(filepath, sheet = "Weekly Data_Entry",
+                             skip = 8, col_types = "text")
 
-  #keep only select variables
+    meta <- c("Facility", "Agency", "Clinical Partner", "Department", "Arrondissement")
+
+  #limit variables and reshape, also removing calculated and unnecessary components
     df <- df %>%
-      dplyr::select(dplyr::ends_with("NA"), dplyr::matches("HTS_TST|TX_"),
-                    -dplyr::contains("Comments"), -`TX_CURR (previous month).Sept`)
+      dplyr::select(meta, dplyr::matches("^(HTS_TST|TX_NEW|TX_CURR|MMD - 6)")) %>%
+      reshape_long(meta) %>%
+      dplyr::filter(stringr::str_detect(ind, "Target|Results|Total|Achievement|Baseline",
+                                        negate = TRUE))
 
-  #reshape long
-    meta <- dplyr::select(df, dplyr::ends_with("NA")) %>% names()
-    df <- reshape_long(df, meta)
+  #limit to just USAID
+    df <- dplyr::filter(df, Agency == "USAID")
 
-  #clean up var names and geography
-    df <-df %>%
-      dplyr::rename_all( ~ stringr::str_remove(., "\\.NA$")) %>%
-      dplyr::rename(psnu = Department,
+  #breakout date from indicator & add FY
+    df <- df %>%
+      tidyr::separate(ind, c("indicator", "date"), sep = "\\r\\n") %>%
+      dplyr::mutate(indicator = ifelse(indicator == "MMD - 6 months", "TX_MMD", indicator),
+                    disaggregate = ifelse(indicator == "MMD", "Period", "Total Numerator"),
+                    otherdisaggregate = dplyr::case_when(indicator == "TX_MMD" ~ "6 months or more"),
+                    date = stringr::str_remove(date, "-.*$") %>%
+                      paste0(., ", 2019") %>% lubridate::mdy(),
+                    fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10))
+
+  #clean up geo and other names
+    df <- df %>%
+      dplyr::rename(fundingagency = Agency,
+                    psnu = Department,
                     community = Arrondissement,
                     partner = `Clinical Partner`,
-                    facility = Facility) %>%
-      dplyr::select(-`Sante Regional Office`, -`MSPP Facility Code`)
-
-  #breakout indicator and month 7 clean up month
-    df <- tidyr::separate(df, ind, c("indicator", "month"), sep = "\\.")
-
-    month_map <- tibble::tibble(month = format(ISOdate(2019,1:12,1),"%b"),
-                                month_full = format(ISOdate(2019,1:12,1),"%B"))
-
-    df <- df %>%
-      dplyr::left_join(month_map, by = "month") %>%
-      dplyr::mutate(month = month_full) %>%
-      dplyr::select(-month_full)
-
-  #add fy (manual)
-    df <- tibble::add_column(df, fy = "2019",
-                             .after = "month")
-
-  #clean up indicators and disaggs
-    df <- df %>%
-      dplyr::mutate(indicator = stringr::str_replace(indicator, "Index HTS_TST", "HTS_INDEX"),
-                    indicator = stringr::str_replace(indicator, "ML ", "ML.")) %>%
-      tidyr::separate(indicator, c("indicator", "otherdisaggregate"), sep = "\\.", fill = "right") %>%
-      dplyr::mutate(disaggregate = ifelse(indicator == "TX_ML", "Outcome", "Total Numerator"))
-
-  #add ou
-    df <- add_ou(df, "Haiti")
+                    facility = Facility)
 
   #add reporting frequency
-    df <- tibble::add_column(df, reporting_freq = "Monthly",
-                             .after = "community")
+    df <- tibble::add_column(df, reporting_freq = "Weekly",
+                             .before = "date")
 
   #standardize variable order
     df <- order_vars(df)
 
-  #export
-    export_hfd(df, folderpath_output)
 }

@@ -3,7 +3,7 @@
 export("%>%")
 export(add_ou)
 export(apply_agebands)
-export(export_hfd)
+export(export_hfr)
 export(extract_headers)
 export(extract_targets)
 export(gen_url)

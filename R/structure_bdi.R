@@ -59,7 +59,7 @@ structure_bdi <- function(filepath, folderpath_output = NULL){
     df <- order_vars(df)
 
   #export
-    export_hfd(df, folderpath_output)
+    export_hfr(df, folderpath_output)
 
   return(df)
 

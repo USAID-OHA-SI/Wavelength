@@ -8,9 +8,9 @@
 #' @examples
 #' \dontrun{
 #'  #write output
-#'    export_hfd(df_tza, "TZA", "~/WeeklyData") }
+#'    export_hfr(df_tza, "TZA", "~/WeeklyData") }
 
-export_hfd <- function(df, folderpath_output = NULL){
+export_hfr <- function(df, folderpath_output = NULL){
 
   if(!is.null(folderpath_output)){
 
@@ -23,7 +23,7 @@ export_hfd <- function(df, folderpath_output = NULL){
       date <- format(Sys.Date(),"%Y%m%d")
 
     #compile file name
-      filename <- paste0("HFD_", iso_ou, "_", date, ".txt")
+      filename <- paste0("HFR_", iso_ou, "_", date, ".txt")
 
     #export data
       readr::write_tsv(df, file.path(folderpath_output, filename), na = "")

@@ -366,6 +366,9 @@
         gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = TRUE) %>%
         get_datim_targets(username, password)
 
+      if(!is.null(df_hts_comm) && ou_psnu == ou_comm)
+        df_hts_comm = dplyr::mutate(df_hts_comm, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
+
     #ensure data exists before continuing
       data_exists <- (max(nrow(df_hts_comm), nrow(df_hts_fac), nrow(df_nonhts), 1, na.rm = TRUE) - 1) > 0
 

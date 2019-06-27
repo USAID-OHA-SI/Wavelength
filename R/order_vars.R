@@ -38,7 +38,8 @@ order_vars <- function(df) {
   #revert logical to characters
     df <- df %>%
       dplyr::mutate_all(as.character) %>%
-      dplyr::mutate_at(dplyr::vars(val), as.numeric)
+      dplyr::mutate_at(dplyr::vars(val, fy), as.numeric) %>%
+      dplyr::mutate(date = lubridate::as_date(date))
 
   #arrange variables
    df_clean <- dplyr::select_at(df, sel_vars)

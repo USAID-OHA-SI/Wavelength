@@ -40,9 +40,22 @@ structure_uga <- function(filepath, folderpath_output = NULL){
                     community = subcounty, facility = Outlet,
                     orgunituid = Outlet.uid, partner = IM,
                     indicator:modality, val = value) %>%
-      dplyr::filter(stringr::str_detect(indicator, "drop", negate = TRUE),
+      dplyr::filter(!is.na(indicator),
                     !val %in% c(0, NA))
 
+  #add HTS
+    df_hts <- df %>%
+      dplyr::filter(indicator %in% c("HTS_TST_NEG", "HTS_TST_POS")) %>%
+      dplyr::mutate(indicator = "HTS_TST") %>%
+      dplyr::group_by_if(is.character) %>%
+      dplyr::summarise_at(dplyr::vars(val), sum, na.rm = TRUE) %>%
+      dplyr::ungroup()
+
+    df <- df %>%
+      dplyr::bind_rows(df_hts) %>%
+      dplyr::filter(indicator != "HTS_TST_NEG")
+
+    rm(df_hts)
   #add operatingunit
     df <- add_ou(df, "Uganda")
 
@@ -62,7 +75,7 @@ structure_uga <- function(filepath, folderpath_output = NULL){
     components <- c("indicator", "disaggregate", "agecoarse", "agesemifine", "sex", "modality")
     df <- df %>%
       dplyr::mutate_at(dplyr::vars(dplyr::one_of(components)), ~ dplyr::na_if(., "NA")) %>%
-      dplyr::mutate(sex = ifelse(sex == "Peds", NA, sex))
+      dplyr::mutate(sex = ifelse(sex == "Peds", "Unknown", sex))
 
   #standardize variable order
     df <- order_vars(df)
@@ -70,5 +83,5 @@ structure_uga <- function(filepath, folderpath_output = NULL){
   #export
     export_hfr(df, folderpath_output)
 
-  return(df)
+  invisible(df)
 }

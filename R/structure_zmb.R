@@ -73,4 +73,5 @@ structure_zmb <- function(filepath, folderpath_output = NULL){
   #export
     export_hfr(df, folderpath_output)
 
+  invisible(df)
 }

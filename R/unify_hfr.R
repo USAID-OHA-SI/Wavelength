@@ -15,6 +15,7 @@
 unify_hfr <- function(ou_iso, filepath, folderpath_output = NULL){
   switch(ou_iso,
          BDI = structure_bdi(filepath, folderpath_output),
+         KEN = structure_ken(filepath, folderpath_output),
          LSO = structure_lso(filepath, folderpath_output),
          TZA = structure_tza(filepath, "weekly", folderpath_output),
          UGA = structure_uga(filepath, folderpath_output),

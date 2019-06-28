@@ -29,10 +29,10 @@ library(usethis)
 # UGANDA ------------------------------------------------------------------
 
   #import indicator mapping
-    ind_map_uga <- read_csv("data-raw/ind_map_uga.csv")
+    ind_map_uga <- readr::read_csv("data-raw/ind_map_uga.csv")
 
   #save to data
-    use_data(ind_map_uga, overwrite = TRUE)
+    usethis::use_data(ind_map_uga, overwrite = TRUE)
 
 # BURUNDI -----------------------------------------------------------------
 

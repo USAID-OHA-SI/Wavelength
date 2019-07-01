@@ -56,6 +56,9 @@ structure_eth <- function(filepath, folderpath_output = NULL){
                       stringr::str_sub(., 1, 4),
                     val = as.double(val))
 
+  #fix date to align with HFR (off by 1 day)
+    df <- dplyr::mutate(df, date = date + 1)
+
   #clean indicators/disaggs
     df <- df %>%
       dplyr::left_join(ind_map_eth, by = "ind") %>%

@@ -1,8 +1,8 @@
 ind,ind_label,indicator,disaggregate,sex,agecoarse,resultstatus,otherdisaggregate
 INDEX_A,Adults with sexual contacts elicited during the three latest months,,,,,,
 INDEX_SEX,"Persons elicited (during three latest months) as sexual partner of an HTS_POS, TX_NEW, or TX_CURR client",,,,,,
-HTS_SEX,Tested sexual partners,HTS_INDEX,Total Numerator,,,,
-POS_SEX,POS sexual partners,HTS_INDEX_POS,Total Numerator,,,Positive,
+HTS_SEX,Tested sexual partners,,,,,,
+POS_SEX,POS sexual partners,,,,,,
 OPD,Number of OPD visits,,,,,,
 SCREEN_A,"Adults screened for testing, 15+ years old",,,,,,
 SCREEN_ELIG_A,"Screened-eligible Adults at site, 15+ years old",,,,,,
@@ -10,9 +10,9 @@ SCREEN_HTS_A,"Screened-eligible Adults tested at site, 15+ years old",,,,,,
 SCREEN_HTS_POS_A,"Screened-eligible Adults tested POS at site, 15+ years old",,,,,,
 LCM_A,"Total POS Adults consented to Linkage Case Management during reporting period, 15+ years old",,,,,,
 REFILL,TX_NEW clients from prior month who have had at least one ART refill after initial fill,,,,,,
-SDI_0_7,Clients initiated on ART during reporting month and within 7 days of confirmatory POS test,TX_SDI,Period,,,,< 7 days
-SDI_8_14,Clients initiated on ART during reporting month and 8-14 days after confirmatory POS test,TX_SDI,Period,,,,8-14 days
-SDI_15,Clients initiated on ART during reporting month and 15 or more days after confirmatory POS test,TX_SDI,Period,,,,15+ days
+SDI_0_7,Clients initiated on ART during reporting month and within 7 days of confirmatory POS test,,,,,,
+SDI_8_14,Clients initiated on ART during reporting month and 8-14 days after confirmatory POS test,,,,,,
+SDI_15,Clients initiated on ART during reporting month and 15 or more days after confirmatory POS test,,,,,,
 TX_PREV,Total on treatment at Facility at the start of reporting month,,,,,,
 TX_CURR,Total on treatment at Facility at end of reporting month,TX_CURR,Total Numerator,,,,
 XFER_IN,Clients already on treatment and transferred into facility this month,,,,,,

@@ -45,7 +45,7 @@ structure_ken <- function(filepath, folderpath_output = NULL){
       df <- df %>%
         reshape_long(meta) %>%
         tidyr::separate(ind, c("indicator", "agecoarse", "sex"), sep = " ") %>%
-        dplyr::mutate(sex = dplyr::recode(sex, m = "Male", f = "Female"))
+        dplyr::mutate(sex = dplyr::recode(sex, M = "Male", F = "Female"))
     }
 
   #reshape long for COGRI
@@ -90,6 +90,10 @@ structure_ken <- function(filepath, folderpath_output = NULL){
       dplyr::mutate(agecoarse = stringr::str_remove_all(agecoarse, "(y|Y)rs") %>%
                           stringr::str_trim(),
                     agecoarse = ifelse(agecoarse == ">15", "15+", agecoarse))
+
+  #remove s at end of sex for some partners
+    df <- df %>%
+      dplyr::mutate(sex = stringr::str_remove(sex, "s$"))
 
   #fix excel date
     df <- fix_dates_ken(df, filepath)

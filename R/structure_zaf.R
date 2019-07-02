@@ -22,54 +22,46 @@
 structure_zaf <- function(filepath, folderpath_output = NULL){
 
   #import
-  sheets <- c("HTS_TST_POS", "TX_NEW", "TX_NEW_SAMEDAY", "cLTFU", "uLTFU", "TX_CURR_28") %>% purrr::set_names()
+    df <- readr::read_csv(filepath, col_types = c(.default = "c"))
 
-  df <- purrr::map_dfr(.x = sheets,
-                       .f = ~ readxl::read_excel(filepath, sheet = .x, col_types = "text"))
-  #check structure
-  #TODO add assert check to make sure structure stays the same
-
-  #reshape long
-    meta <- dplyr::select(df, FundingAgency:Facility) %>% names()
+  #limit columns & conver to lower case
     df <- df %>%
-      reshape_long(meta) %>%
-      dplyr::rename(date = ind)
+      dplyr::select(FundingAgency:`Sub-district`, Facility, date = Week_Start, Indicator, val = Value) %>%
+      dplyr::rename_all(tolower)
 
-  #fix issues with IM and excel date that end with decimal
-    df <- dplyr::mutate_at(df, dplyr::vars(MechanismID, date), ~ as.integer(.) %>% as.character())
-
-  #rename geography for uniformity & rename lower
+  #filter to select indicators
+    ind_sel <- c("HTS_TST","HTS_TST_POS", "TX_NEW", "TX_CURR_28")
     df <- df %>%
-      dplyr::rename(snu1 = Province,
-                    psnu = District,
-                    community = `Sub-district`) %>%
-      dplyr::select(-`Siyenza Sites`, -TIER) %>%
-      dplyr::rename_all(~tolower(.))
+      dplyr::filter(indicator %in% ind_sel) %>%
+      dplyr::mutate(indicator = stringr::str_remove(indicator, "_28"))
 
-  #adjust from Excel date format
+  #align geography
     df <- df %>%
-      dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30"),
-                    fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>% stringr::str_sub(., 1, 4)) %>%
-      dplyr::select(-val, dplyr::everything())
+      dplyr::rename(snu1 = province,
+                    psnu = district,
+                    community = `sub-district`)
 
-  #add disaggregate
-    df <- df %>%
-      tibble::add_column(disaggregate = "Total Numerator", .after = "indicator")
-
-  #add operatingunit
+  #add operating unit
     df <- add_ou(df, "South Africa")
 
+  #format date and value
+    df <- df %>%
+      dplyr::mutate(date = lubridate::mdy(date),
+                    fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
+                      stringr::str_sub(., 1, 4),
+                    val = as.numeric(val))
+
+  #add disaggregate
+    df <- tibble::add_column(df, disaggregate = "Total Numerator", .after = "indicator")
+
   #add reporting frequency
-    df <- tibble::add_column(df, reporting_freq = as.character(NA),
-                             .after = "facility") %>%
-      dplyr::mutate(reporting_freq = dplyr::case_when(indicator %in% c("HTS_TST_POS", "TX_NEW", "TX_NEW_SAMEDAY") ~ "daily",
-                                                      indicator %in% c("cLTFU", "uLTFU") ~ "weekly",
-                                                      indicator %in% c("TX_CURR_28") ~ "biweekly"))
+    df <- dplyr::mutate(df, reporting_freq = ifelse(indicator == "TX_CURR", "Bi-weekly", "Weekly"))
+
   #standardize variable order
     df <- order_vars(df)
 
   #export
     export_hfr(df, folderpath_output)
 
-    return(df)
+  invisible(df)
 }

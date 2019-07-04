@@ -31,8 +31,12 @@ structure_zaf <- function(filepath, folderpath_output = NULL){
       meta <- dplyr::select(df, fundingagency:facility) %>% names()
       df <- reshape_long(df, meta) %>%
         dplyr::rename(date = ind)
+
     #format date
-      df <- dplyr::mutate(df, date = lubridate::as_date(as.integer(date), origin = "1899-12-30"))
+      df <- df %>%
+        dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30") %>%
+                        lubridate::floor_date(unit = "week", week_start = 1)) #date is off, Friday dates
+
   } else {
     #import
       df <- readr::read_csv(filepath, col_types = c(.default = "c"))
@@ -49,7 +53,7 @@ structure_zaf <- function(filepath, folderpath_output = NULL){
         dplyr::mutate(indicator = stringr::str_remove(indicator, "_28"))
 
     #format date
-      df <- dplyr::mutate(df, date = lubridate::mdy(date))
+      df <- dplyr::mutate(df, date = lubridate::mdy(date) + 2 ) #dates start on Saturday
 
   }
 

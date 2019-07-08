@@ -167,10 +167,10 @@
 
     #adjust for regional missions
     df_levels <- df_levels %>%
-      dplyr::mutate(name3 = ifelse(is.na(name4), name3, name4))
+      dplyr::mutate(country_name = ifelse(is.na(name4), name3, name4))
 
     if(!is.null(ou))
-      df_levels <- dplyr::filter(df_levels, name3 == ou)
+      df_levels <- dplyr::filter(df_levels, country_name == ou)
 
     if(!is.null(ou) && !is.null(type))
       df_levels <- dplyr::pull(df_levels, type)

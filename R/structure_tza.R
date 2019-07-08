@@ -28,9 +28,9 @@ structure_tza <- function(filepath, folderpath_output = NULL){
     df <- df %>%
       dplyr::select(`Start date`:`Site ID (from DATIM)`, dplyr::one_of(sel_ind), -`End date`)
 
-  #fix date
+  #fix date (one day off, start on Sundays)
     df <- df %>%
-      dplyr::mutate(date = as.Date(as.double(`Start date`), origin = "1899-12-30")) %>%
+      dplyr::mutate(date = as.Date(as.double(`Start date`), origin = "1899-12-30") + 1) %>%
       dplyr::select(date, dplyr::everything(), -`Start date`)
 
   #munge and reshape long

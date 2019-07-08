@@ -31,7 +31,7 @@ get_em <- function(ou, folderpath_output = "C:/Users/achafetz/Downloads"){
 
 }
 
-get_em("Thailand")
+get_em("Malawi")
 
 purrr::walk(ous, get_em)
 
@@ -93,8 +93,8 @@ combine_sources <- function(path_hfr, path_datim, hfr_pd, output_folder = "C:/Us
 
 
 
-path_datim <- list.files("C:/Users/achafetz/Downloads/", "HFR_DATIM_FY19Q2_Thai", full.names = TRUE)
-path_hfr <- list.files("C:/Users/achafetz/Downloads/", "HF(R|D).*THA_2", full.names = TRUE)
+path_datim <- list.files("C:/Users/achafetz/Downloads/", "HFR_DATIM_FY19Q2_Mal", full.names = TRUE)
+path_hfr <- list.files("C:/Users/achafetz/Downloads/", "HF(R|D).*MWI_2", full.names = TRUE)
 
 x <- combine_sources(path_hfr, path_datim, 9)
 

@@ -24,6 +24,9 @@ structure_ken <- function(filepath, folderpath_output = NULL){
     r_skip <- ifelse(stringr::str_detect(filepath, "COGRI"), 1, 0)
     df <- readxl::read_excel(filepath, skip = r_skip, col_types = "text")
 
+  #drop NA lines with missing indicators
+    if(stringr::str_detect(filepath, "Afya Pwani"))
+      df <- dplyr::filter(df, !is.na(value))
 
   #reshape long for Afya Ziwani
     if(stringr::str_detect(filepath, "Afya Ziwani")){
@@ -95,8 +98,25 @@ structure_ken <- function(filepath, folderpath_output = NULL){
     df <- df %>%
       dplyr::mutate(sex = stringr::str_remove(sex, "s$"))
 
+  #filter and fix variable names
+    df <- df %>%
+      dplyr::mutate(indicator =
+                      dplyr::case_when(indicator == "HTS_POS" ~ "HTS_TST_POS",
+                                       indicator %in% c("PreP_NEW", "PREP_NEW") ~ "PrEP_NEW",
+                                       TRUE ~ indicator)) %>%
+      dplyr::filter(indicator %in% c("HTS_TST", "HTS_TST_POS", "TX_NEW",
+                                     "TX_CURR", "VMMC_CIRC", "PrEP_NEW",
+                                     "TX_MMD"))
+
   #fix excel date
     df <- fix_dates_ken(df, filepath)
+
+  #exta manual fix for dates
+    df <- dplyr::mutate(df, date = ifelse(date %in% c(as.Date("2019-06-07"),
+                                                      as.Date("2019-06-09"),
+                                                      as.Date("2019-06-24")),
+                                          "2019-06-03",
+                                          date) %>% lubridate::as_date())
 
   #add OU if it doesn't exist
     if(!var_exists(df, "operatingunit"))
@@ -136,6 +156,9 @@ clean_vars_ken <- function(df){
   if(var_exists(df, "county"))
     df <- dplyr::rename(df, snu1 = county)
 
+  if(var_exists(df, "snu"))
+    df <- dplyr::rename(df, snu1 = snu)
+
   if(var_exists(df, "ward"))
     df <- dplyr::rename(df, psnu = ward)
 
@@ -163,7 +186,7 @@ clean_vars_ken <- function(df){
   if(var_exists(df, "financial_year"))
     df <- dplyr::rename(df, fy = financial_year)
 
-  df <- dplyr::select(df, -dplyr::matches("mfl|sub_county|subcounty"))
+  df <- dplyr::select(df, -dplyr::matches("mfl|sub_county|subcounty|facilityuid|psnuid|implementingmechanismname"))
 
   return(df)
 }

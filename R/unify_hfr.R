@@ -15,10 +15,11 @@
 unify_hfr <- function(ou_iso, filepath, folderpath_output = NULL){
   switch(ou_iso,
          BDI = structure_bdi(filepath, folderpath_output),
+         ETH = structure_eth(filepath, folderpath_output),
          CIV = structure_civ(filepath, folderpath_output),
          KEN = structure_ken(filepath, folderpath_output),
          LSO = structure_lso(filepath, folderpath_output),
-         TZA = structure_tza(filepath, "weekly", folderpath_output),
+         TZA = structure_tza(filepath, folderpath_output),
          UGA = structure_uga(filepath, folderpath_output),
          ZMB = structure_zmb(filepath, folderpath_output),
          ZAF = structure_zaf(filepath, folderpath_output)

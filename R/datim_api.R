@@ -287,7 +287,7 @@
     if(type_hts == TRUE){
       tech_url <-
         paste0(core_url,
-               "dimension=LxhLO68FcXm:f5IPTM7mieH&", #technical area
+               "dimension=LxhLO68FcXm:f5IPTM7mieH:wdoUps1qb3V;BTIqHnjeG7l;rI3JlpiuwEK;CUblPgOMGaT&", #technical area
                "dimension=Jm6OwL9IqEa&", #HTS Modality (USE ONLY for FY19 Results/FY19 Targets)
                "dimension=bDWsPYyXgWP:awSDzziN3Dn;EvyNJHbQ7ZE;i4Fgst9vzF9;mSBg9AZx1lV;viYXyEy7wKi;GNXy3pvTTM2&") #HIV Test Status (Specific))
     } else {

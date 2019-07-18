@@ -288,7 +288,7 @@
       tech_url <-
         paste0(core_url,
                "dimension=LxhLO68FcXm:f5IPTM7mieH&", #technical area
-               "dimension=CKTkg8dLlr7&", #HTS Modality (USE ONLY for FY18 Results/FY19 Targets)
+               "dimension=Jm6OwL9IqEa&", #HTS Modality (USE ONLY for FY19 Results/FY19 Targets)
                "dimension=bDWsPYyXgWP:awSDzziN3Dn;EvyNJHbQ7ZE;i4Fgst9vzF9;mSBg9AZx1lV;viYXyEy7wKi;GNXy3pvTTM2&") #HIV Test Status (Specific))
     } else {
       tech_url <-

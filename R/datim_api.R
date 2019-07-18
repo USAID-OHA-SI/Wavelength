@@ -343,14 +343,15 @@
 
     #identify OU and UID from mechanim info
       if(!is.null(mechanism_id)){
-          mech_info <- identify_mechs(mechid = mechanism_id)
+          mech_info <- identify_mechs(mechid = mechanism_id, baseurl = baseurl)
           mech_uid <- mech_info$uid
           ou_name <- mech_info$ou
       }
 
     #identify reporting levels
-      ou_info <- identify_levels(ou_name, username = username, password = password) %>%
-        dplyr::left_join(identify_ouuids(username = username, password = password), by = c("name3" = "displayName"))
+      ou_info <- identify_levels(ou_name, username = username, password = password, baseurl = baseurl) %>%
+        dplyr::left_join(identify_ouuids(username = username, password = password, baseurl = baseurl),
+                         by = c("name3" = "displayName"))
       ou_fac <- ou_info$facility
       ou_comm <- ou_info$community
       ou_psnu <- ou_info$prioritization
@@ -358,17 +359,17 @@
 
     #pull non-HTS data (vars only facility)
       df_nonhts <-
-        gen_url(mech_uid, ou_uid, ou_fac, type_hts = FALSE) %>%
+        gen_url(mech_uid, ou_uid, ou_fac, type_hts = FALSE, baseurl = baseurl) %>%
         get_datim_targets(username, password)
 
     #pull HTS data (facility)
       df_hts_fac <-
-        gen_url(mech_uid, ou_uid, ou_fac, type_hts = TRUE) %>%
+        gen_url(mech_uid, ou_uid, ou_fac, type_hts = TRUE, baseurl = baseurl) %>%
         get_datim_targets(username, password)
 
     #pull HTS data (community)
       df_hts_comm <-
-        gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = TRUE) %>%
+        gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = TRUE, baseurl = baseurl) %>%
         get_datim_targets(username, password)
 
       if(!is.null(df_hts_comm) && ou_psnu == ou_comm)
@@ -427,6 +428,7 @@
         dplyr::rename(fy = Period, implementingmechanismname = `Funding Mechanism`, fundingagency = `Funding Agency`,
                       primepartner = `Implementing Partner`, agecoarse = `Age: <15/15+  (Coarse)`,
                       sex = `Cascade sex`, indicator = `Technical Area`, type = `Targets / Results`) %>%
+        dplyr::select(-`Disaggregation Type`) %>%
         tibble::add_column(mechanismid = as.character(NA), .before = "implementingmechanismname") %>%
         dplyr::mutate(fy = stringr::str_sub(fy,-4) %>% as.integer,
                       mechanismid = stringr::str_extract(implementingmechanismname, "^[:alnum:]{5,6}"),

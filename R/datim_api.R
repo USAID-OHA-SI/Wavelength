@@ -293,7 +293,8 @@
     } else {
       tech_url <-
         paste0(core_url,
-               "dimension=LxhLO68FcXm:udCop657yzi;MvszPTQrUhy;gma5vVZgK49;wdoUps1qb3V&") #technical areas
+               "dimension=LxhLO68FcXm:udCop657yzi;MvszPTQrUhy;gma5vVZgK49;wdoUps1qb3V&", #technical areas
+               "dimension=HWPJnUTMjEq:pxz2gGSIQhG&") #Disaggregation Type -> Age/Sex/HIVStatus
     }
 
     if(org_type == "community")

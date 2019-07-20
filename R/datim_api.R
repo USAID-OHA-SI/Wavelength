@@ -294,7 +294,7 @@
       tech_url <-
         paste0(core_url,
                "dimension=IeMmjHyBUpi&", #Targets / Results -> targets W8imnja2Owd
-               "dimension=LxhLO68FcXm:udCop657yzi;MvszPTQrUhy;gma5vVZgK49;wdoUps1qb3V&", #technical areas
+               "dimension=LxhLO68FcXm:", ifelse(org_type == "community", "gma5vVZgK49","udCop657yzi;MvszPTQrUhy;gma5vVZgK49;wdoUps1qb3V"), "&", #technical areas, prep targets at community
                "dimension=HWPJnUTMjEq:Qbz6SrpmJ1y;h0pvSVe1TYf;pxz2gGSIQhG&") #Disaggregation Type -> Age/Sex, Age/Sex/HIVStatus, Age Aggregated/Sex/HIVStatus
     }
 
@@ -366,6 +366,11 @@
       if(!is.null(df_nonhts))
         df_nonhts <- dplyr::mutate(df_nonhts, Value = ifelse(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex/HIVStatus" & `Targets / Results` == "MER Results", NA, Value))
 
+    #pull PrEP targets (some at community)
+      df_prep_comm_targets <-
+        gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", baseurl = baseurl) %>%
+        get_datim_targets(username, password)
+
     #pull HTS data (facility) results
       df_hts_fac_results <-
         gen_url(mech_uid, ou_uid, ou_fac, type_hts = "results", baseurl = baseurl) %>%
@@ -395,7 +400,7 @@
     #ensure data exists before continuing
       data_exists <- (max(nrow(df_hts_comm_results), nrow(df_hts_comm_targets),
                           nrow(df_hts_fac_results), nrow(df_hts_fac_targets),
-                          nrow(df_nonhts), 1, na.rm = TRUE) - 1) > 0
+                          nrow(df_nonhts), nrow(df_prep_comm_targets), 1, na.rm = TRUE) - 1) > 0
 
     if(data_exists){
 
@@ -431,7 +436,7 @@
         dplyr::ungroup()
 
     #combine non HTS and HTS dfs
-      df_combo <- dplyr::bind_rows(df_nonhts, df_combo_hts)
+      df_combo <- dplyr::bind_rows(df_nonhts, df_prep_comm_targets, df_combo_hts)
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility
       df_combo <- df_combo %>%

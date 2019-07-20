@@ -251,7 +251,7 @@
 #' @param ou_uid UID for the country, recommend using `identify_ouuids()`
 #' @param org_lvl org hierarchy level, eg facility is level 7 in country X, recommend using `identify_levels()`
 #' @param org_type organization type, either facility (default) or community
-#' @param type_hts is the API call for HTS indicators, default = TRUE
+#' @param type_hts is the API call for HTS indicators ("results", "targets"), default = NULL
 #' @param curr_fy current fiscal year, default = 2019
 #' @param baseurl API base url, default = https://final.datim.org/
 #'
@@ -266,9 +266,9 @@
 #'  #get facility level
 #'   faclvl <- identify_levels("Ghana", "facility", username = myuser, password = mypwd())
 #'  #gen url
-#'   myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts = FALSE) }
+#'   myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts = NULL) }
 
-  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = FALSE, curr_fy = 2019, baseurl = "https://final.datim.org/"){
+  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = NULL, curr_fy = 2019, baseurl = "https://final.datim.org/"){
 
     fy_pd <- paste0(curr_fy-1, "Oct")
 
@@ -276,7 +276,6 @@
       paste0(baseurl,"api/29/analytics?",
              "dimension=pe:", fy_pd, "&", #period
              "dimension=ou:LEVEL-", org_lvl, ";", ou_uid, "&", #level and ou
-             "dimension=IeMmjHyBUpi&", #Targets / Results -> targets W8imnja2Owd
              #"dimension=SH885jaRe0o:", mech_uid, "&", #Funding Mechanism
              "dimension=bw8KHXzxd9i:NLV6dy7BE2O&", #Funding Agency -> USAID
              "dimension=SH885jaRe0o&", #Funding Mechanism
@@ -284,17 +283,19 @@
              "dimension=xRo1uG2KJHk&", #Age: <15/15+ (Coarse)
              "dimension=jyUTj5YC3OK&") #Cascade sex
 
-    if(type_hts == TRUE){
+    if(!is.null(type_hts)){
       tech_url <-
         paste0(core_url,
-               "dimension=LxhLO68FcXm:f5IPTM7mieH:wdoUps1qb3V;BTIqHnjeG7l;rI3JlpiuwEK;CUblPgOMGaT&", #technical area
-               "dimension=Jm6OwL9IqEa&", #HTS Modality (USE ONLY for FY19 Results/FY19 Targets)
+               "dimension=IeMmjHyBUpi:", ifelse(type_hts == "results", "Jh0jDM5yQ2E", "W8imnja2Owd"), "&", #Targets / Results -> targets = W8imnja2Owd, results = Jh0jDM5yQ2E
+               "dimension=LxhLO68FcXm:f5IPTM7mieH;wdoUps1qb3V;BTIqHnjeG7l;rI3JlpiuwEK;CUblPgOMGaT&", #technical area
+               "dimension=", ifelse(type_hts == "results", "Jm6OwL9IqEa", "CKTkg8dLlr7"), "&", #HTS Modality (USE ONLY for FY19 Results/FY20 Targets) pr HTS Modality (USE ONLY for FY18 Results/FY19 Targets)
                "dimension=bDWsPYyXgWP:awSDzziN3Dn;EvyNJHbQ7ZE;i4Fgst9vzF9;mSBg9AZx1lV;viYXyEy7wKi;GNXy3pvTTM2&") #HIV Test Status (Specific))
     } else {
       tech_url <-
         paste0(core_url,
+               "dimension=IeMmjHyBUpi&", #Targets / Results -> targets W8imnja2Owd
                "dimension=LxhLO68FcXm:udCop657yzi;MvszPTQrUhy;gma5vVZgK49;wdoUps1qb3V&", #technical areas
-               "dimension=HWPJnUTMjEq:pxz2gGSIQhG&") #Disaggregation Type -> Age/Sex/HIVStatus
+               "dimension=HWPJnUTMjEq:Qbz6SrpmJ1y;h0pvSVe1TYf;pxz2gGSIQhG&") #Disaggregation Type -> Age/Sex, Age/Sex/HIVStatus, Age Aggregated/Sex/HIVStatus
     }
 
     if(org_type == "community")
@@ -359,37 +360,66 @@
 
     #pull non-HTS data (vars only facility)
       df_nonhts <-
-        gen_url(mech_uid, ou_uid, ou_fac, type_hts = FALSE, baseurl = baseurl) %>%
+        gen_url(mech_uid, ou_uid, ou_fac, type_hts = NULL, baseurl = baseurl) %>%
+        get_datim_targets(username, password)
+      #remove VMMC_CIRC results w/ Age/Sex/HIVStatus since there is also Age/Sex used for Total Numerator
+      if(!is.null(df_nonhts))
+        df_nonhts <- dplyr::mutate(df_nonhts, Value = ifelse(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex/HIVStatus" & `Targets / Results` == "MER Results", NA, Value))
+
+    #pull HTS data (facility) results
+      df_hts_fac_results <-
+        gen_url(mech_uid, ou_uid, ou_fac, type_hts = "results", baseurl = baseurl) %>%
         get_datim_targets(username, password)
 
-    #pull HTS data (facility)
-      df_hts_fac <-
-        gen_url(mech_uid, ou_uid, ou_fac, type_hts = TRUE, baseurl = baseurl) %>%
+    #pull HTS data (facility) targets
+      df_hts_fac_targets <-
+        gen_url(mech_uid, ou_uid, ou_fac, type_hts = "targets", baseurl = baseurl) %>%
         get_datim_targets(username, password)
 
-    #pull HTS data (community)
-      df_hts_comm <-
-        gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = TRUE, baseurl = baseurl) %>%
+    #pull HTS data (community) results
+      df_hts_comm_results <-
+        gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = "results", baseurl = baseurl) %>%
         get_datim_targets(username, password)
+      #add community level if same as psnu, otherwise will be missing
+      if(!is.null(df_hts_comm_results) && ou_psnu == ou_comm)
+        df_hts_comm_results <- dplyr::mutate(df_hts_comm_results, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
 
-      if(!is.null(df_hts_comm) && ou_psnu == ou_comm)
-        df_hts_comm <- dplyr::mutate(df_hts_comm, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
+    #pull HTS data (community) targets
+      df_hts_comm_targets <-
+        gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = "targets", baseurl = baseurl) %>%
+        get_datim_targets(username, password)
+      #add community level if same as psnu, otherwise will be missing
+      if(!is.null(df_hts_comm_targets) && ou_psnu == ou_comm)
+        df_hts_comm_targets <- dplyr::mutate(df_hts_comm_targets, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
 
     #ensure data exists before continuing
-      data_exists <- (max(nrow(df_hts_comm), nrow(df_hts_fac), nrow(df_nonhts), 1, na.rm = TRUE) - 1) > 0
+      data_exists <- (max(nrow(df_hts_comm_results), nrow(df_hts_comm_targets),
+                          nrow(df_hts_fac_results), nrow(df_hts_fac_targets),
+                          nrow(df_nonhts), 1, na.rm = TRUE) - 1) > 0
 
     if(data_exists){
 
-    #combine HTS data
-      df_combo_hts <- dplyr::bind_rows(df_hts_fac, df_hts_comm)
+    #combine all HTS data
+      df_combo_hts <- dplyr::bind_rows(df_hts_fac_results, df_hts_fac_targets,
+                                       df_hts_comm_results, df_hts_comm_targets)
+
+    #remove extra status (known pos, recent negatives, unknown status) & unify technical area
+      df_combo_hts <- df_combo_hts %>%
+        dplyr::filter(!`HIV Test Status (Specific)` %in%
+                        c("Known at Entry Positive (Specific)",
+                          "Recent Negatives (Specific)",
+                          "HIV Status Unknown (Specific)")) %>%
+        dplyr::mutate(`Technical Area` = "HTS_TST")
 
     #create HTS_TST_POS
       df_hts_pos <- df_combo_hts %>%
-        dplyr::filter(`HIV Test Status (Specific)` == "HIV Positive (Specific)") %>%
+        dplyr::filter(`HIV Test Status (Specific)` %in% c("HIV Positive (Specific)",
+                                                          "Newly Identified Positive (Specific)")) %>%
         dplyr::mutate(`Technical Area` = "HTS_TST_POS")
-
+    #bind and aggregate HTS and HTS_POS
       grp_keep <- names(df_combo_hts) %>%
-        dplyr::setdiff(c("HTS Modality (USE ONLY for FY18 Results/FY19 Targets)",
+        dplyr::setdiff(c("HTS Modality (USE ONLY for FY19 Results/FY20 Targets)",
+                         "HTS Modality (USE ONLY for FY18 Results/FY19 Targets)",
                          "HIV Test Status (Specific)",
                          "Type of organisational unit",
                          "Value"))
@@ -400,6 +430,7 @@
         dplyr::summarise(Value = sum(Value, na.rm = TRUE)) %>%
         dplyr::ungroup()
 
+    #combine non HTS and HTS dfs
       df_combo <- dplyr::bind_rows(df_nonhts, df_combo_hts)
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility

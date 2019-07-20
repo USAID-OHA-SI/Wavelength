@@ -461,12 +461,16 @@
                       sex = `Cascade sex`, indicator = `Technical Area`, type = `Targets / Results`) %>%
         dplyr::select(-`Disaggregation Type`) %>%
         tibble::add_column(mechanismid = as.character(NA), .before = "implementingmechanismname") %>%
-        dplyr::mutate(fy = stringr::str_sub(fy,-4) %>% as.integer,
+        dplyr::mutate(fy = stringr::str_sub(fy,-4), #%>% as.integer,
                       mechanismid = stringr::str_extract(implementingmechanismname, "^[:alnum:]{5,6}"),
                       implementingmechanismname = stringr::str_remove(implementingmechanismname, "^[:alnum:]{5,6} - "),
                       agecoarse = stringr::str_remove(agecoarse, " \\(Inclusive\\)"),
                       sex = stringr::str_remove(sex, "s$"),
                       type = stringr::str_replace(type, " ", "_") %>% tolower) %>%
+        dplyr::group_by_if(is.character) %>%
+        dplyr::summarise(Value = sum(Value, na.rm = TRUE)) %>%
+        dplyr::ungroup() %>%
+        dplyr::mutate(fy = as.integer(fy)) %>%
         tidyr::spread(type, Value, fill = 0)
 
     return(df_combo)

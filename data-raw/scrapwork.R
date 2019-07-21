@@ -11,6 +11,8 @@ ous <- c("Angola", "Botswana", "Burma", "Burundi", "Cameroon",
          "South Africa", "South Sudan", "Tanzania", "Uganda",
          "Ukraine", "Vietnam", "Zambia", "Zimbabwe")
 
+ous <- c("Zambia", "Zimbabwe")
+
 
 
 get_em <- function(ou, folderpath_output = "C:/Users/achafetz/Downloads"){

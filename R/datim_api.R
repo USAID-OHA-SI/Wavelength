@@ -464,7 +464,7 @@
         dplyr::rename(fy = Period, implementingmechanismname = `Funding Mechanism`, fundingagency = `Funding Agency`,
                       primepartner = `Implementing Partner`, agecoarse = `Age: <15/15+  (Coarse)`,
                       sex = `Cascade sex`, indicator = `Technical Area`, type = `Targets / Results`) %>%
-        dplyr::select(-`Disaggregation Type`) %>%
+        dplyr::select(-dplyr::matches("Disaggregation Type")) %>%
         tibble::add_column(mechanismid = as.character(NA), .before = "implementingmechanismname") %>%
         dplyr::mutate(fy = stringr::str_sub(fy,-4), #%>% as.integer,
                       mechanismid = stringr::str_extract(implementingmechanismname, "^[:alnum:]{5,6}"),

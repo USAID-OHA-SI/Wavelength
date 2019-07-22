@@ -125,6 +125,16 @@ structure_moz <- function(filepath, folderpath_output = NULL){
     df <- tibble::add_column(df, reporting_freq = "Weekly",
                            .after = "facility")
 
+  #aggregate
+    group_vars <- setdiff(names(df), "val")
+
+    df <- df %>%
+      dplyr::mutate(date = as.character(date),
+                    fy = as.character(fy)) %>%
+      dplyr::group_by_at(dplyr::vars(group_vars)) %>%
+      dplyr::summarise_at(dplyr::vars(val), sum, na.rm = TRUE) %>%
+      dplyr::ungroup()
+
   #standardize variable order
     df <- order_vars(df)
 

@@ -30,7 +30,7 @@ structure_ukr <- function(filepath, folderpath_output = NULL){
         dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30"),
                       val = as.numeric(val),
                       fy = as.integer(fy),
-                      disaggregate == "Age/Sex") %>%
+                      disaggregate = "Age/Sex") %>%
         tidyr::separate(mechanismid, c("mechanismid", NA), sep = " -")
 
   } else if(stringr::str_detect(filepath, "Serving Life")) {

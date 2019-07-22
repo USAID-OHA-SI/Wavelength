@@ -44,6 +44,19 @@ structure_ukr <- function(filepath, folderpath_output = NULL){
     #remove total
       df <- dplyr::select(df, -dplyr::contains("Month"))
 
+    #adjustment for old dataset, remove modalities and adjust fine age
+      if(var_exists(df, "HTS_Modality"))
+        df <- dplyr::select(df, -HTS_Modality)
+
+      if(var_exists(df, "DisaggregateTST")){
+        df <- df %>%
+          tidyr::separate(DisaggregateTST, c("resultstatus", "age2", "sex2"), sep = " \\/ ") %>%
+          dplyr::mutate(facilityuid = as.character(NA),
+                        Sex = ifelse(!is.na(sex2), sex2, Sex),
+                        Age = ifelse(!is.na(age2), age2, Age),
+                        Age = ifelse(Age %in% c("5-9", "10-14", "<15"), "<15", "15+")) %>%
+          dplyr::select(-age2, -sex2)
+      }
     #reshape long
       meta <- dplyr::select(df, -dplyr::contains("week")) %>% names()
       df <- df %>%
@@ -75,14 +88,21 @@ structure_ukr <- function(filepath, folderpath_output = NULL){
     #add disaggregate
       df <- dplyr::mutate(df, disaggregate = "Age/Sex")
 
-    #standardize variable order
-      df <- order_vars(df)
+    #aggregate
+       group_vars <- setdiff(names(df), "val")
+       df <- df %>%
+         dplyr::group_by_at(dplyr::vars(group_vars)) %>%
+         dplyr::summarise(val = sum(val, na.rm = TRUE)) %>%
+         dplyr::ungroup()
 
   } else {
 
     return(NULL)
 
   }
+
+  #standardize variable order
+    df <- order_vars(df)
 
   #export
     export_hfr(df, folderpath_output)

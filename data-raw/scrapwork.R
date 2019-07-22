@@ -49,7 +49,7 @@ readr::write_tsv(full_set, file.path(folderpath_output, filename), na = "")
 # Testing -----------------------------------------------------------------
 
 
-combine_sources <- function(path_hfr, path_datim, hfr_pd, output_folder = "C:/Users/achafetz/Downloads/HFR_ready"){
+combine_sources <- function(path_hfr, path_datim, start_date, hfr_pd, output_folder = "out/joint"){
 
   #import
   if(tools::file_ext(path_hfr) == "txt"){
@@ -74,7 +74,7 @@ combine_sources <- function(path_hfr, path_datim, hfr_pd, output_folder = "C:/Us
       # dplyr::rename_at(dplyr::vars(vars_rename), ~ paste0(., "_hfr"))
 
   #duplicate targets for each week (DATIM)
-    dates <- lubridate::as_date("2019-05-13") %>% seq(by = 7, length.out = 4) #unique(df_hfr_adj$date)
+    dates <- lubridate::as_date(start_date) %>% seq(by = 7, length.out = 4)
 
     df_mer_rpt <- purrr::map_dfr(.x = dates,
                    .f = ~dplyr::mutate(df_mer, date = .x))
@@ -95,10 +95,21 @@ combine_sources <- function(path_hfr, path_datim, hfr_pd, output_folder = "C:/Us
 
 
 
-path_datim <- list.files("C:/Users/achafetz/Downloads/", "HFR_DATIM_FY19Q2_Mal", full.names = TRUE)
-path_hfr <- list.files("C:/Users/achafetz/Downloads/", "HF(R|D).*MWI_2", full.names = TRUE)
+path_datim <- list.files("out/DATIM", "FY19Q2_Eth", full.names = TRUE) %>% fs::path_abs()
+path_hfr <- list.files("out/processed", "ETH", full.names = TRUE)[1] %>% fs::path_abs()
 
-x <- combine_sources(path_hfr, path_datim, 9)
+x <- combine_sources(path_hfr, path_datim, "2019-06-10", 10)
+
+x2 <- list.files("out/joint", "ETH", full.names = TRUE) %>%
+  purrr::map_dfr(readr::read_tsv, col_type = c(.default = "c"))
+
+x2 %>%
+  dplyr::mutate_at(dplyr::vars(mer_results, mer_targets, weekly_targets,
+                               targets_gap, weekly_targets_gap, val), as.numeric) %>%
+  dplyr::group_by_if(is.character) %>%
+  dplyr::summarise_if(is.numeric, sum, na.rm = TRUE) %>%
+  dplyr::ungroup() %>%
+  readr::write_tsv("C:/Users/achafetz/Documents/GitHub/Wavelength/out/Processed/HFR_JOINT_ETH_FY19P09-10.txt", na = "")
 
 
 all <- list.files("C:/Users/achafetz/Downloads/HFR_ready", "JOINT", full.names = TRUE) %>%

@@ -95,12 +95,13 @@ combine_sources <- function(path_hfr, path_datim, start_date, hfr_pd, output_fol
 
 
 
-path_datim <- list.files("out/DATIM", "FY19Q2_Eth", full.names = TRUE) %>% fs::path_abs()
-path_hfr <- list.files("out/processed", "ETH", full.names = TRUE)[1] %>% fs::path_abs()
+path_datim <- list.files("out/DATIM", "FY19Q2_Ukr", full.names = TRUE) %>% fs::path_abs()
+path_hfr <- list.files("out/processed", "UKR", full.names = TRUE)[1] %>% fs::path_abs()
 
 x <- combine_sources(path_hfr, path_datim, "2019-06-10", 10)
+x <- combine_sources(path_hfr, path_datim, "2019-05-13", 9)
 
-x2 <- list.files("out/joint", "ETH", full.names = TRUE) %>%
+x2 <- list.files("out/joint", "UKR", full.names = TRUE) %>%
   purrr::map_dfr(readr::read_tsv, col_type = c(.default = "c"))
 
 x2 %>%
@@ -109,7 +110,7 @@ x2 %>%
   dplyr::group_by_if(is.character) %>%
   dplyr::summarise_if(is.numeric, sum, na.rm = TRUE) %>%
   dplyr::ungroup() %>%
-  readr::write_tsv("C:/Users/achafetz/Documents/GitHub/Wavelength/out/Processed/HFR_JOINT_ETH_FY19P09-10.txt", na = "")
+  readr::write_tsv("C:/Users/achafetz/Documents/GitHub/Wavelength/out/Processed/HFR_JOINT_UKR_FY19P09-10.txt", na = "")
 
 
 all <- list.files("C:/Users/achafetz/Downloads/HFR_ready", "JOINT", full.names = TRUE) %>%

@@ -15,9 +15,9 @@
 #' \dontrun{
 #' #structure output for UGA
 #'   path <- "~/WeeklyData/Raw/UGA_partner_x.xlsx"
-#'   structure_cod(path)
+#'   structure_uga(path)
 #' #structure output for UGA & export to txt file
-#'   structure_cod(path, "~/WeeklyData/Output") }
+#'   structure_uga(path, "~/WeeklyData/Output") }
 
 structure_uga <- function(filepath, folderpath_output = NULL){
 

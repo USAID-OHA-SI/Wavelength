@@ -314,13 +314,14 @@
 
 # Extract All Targets -----------------------------------------------------
 
-#' Extract Targets (DATIM API Call)
+#' Extract DATIM Results and Targets (DATIM API Call)
 #'
 #' @param mechanism_id DATIM mechanism ID
 #' @param ou_name Operating Unit name, if mechanism is not specified
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
 #' @param baseurl API base url, default = https://final.datim.org/
+#' @param folderpath_output folder path to store DATIM output, default = NULL
 #'
 #' @export
 #'
@@ -328,15 +329,16 @@
 #' \dontrun{
 #'  #mechanism targets
 #'  myuser <- "UserX"
-#'  mech_x_targets <- extract_targets(mechanism_id = 00001, username = myuser, password = mypwd(myuser))
+#'  mech_x_targets <- extract_datim(mechanism_id = 00001, username = myuser, password = mypwd(myuser))
 #'  #ou targets
-#'  mech_x_targets <- extract_targets(ou_name = "Namibia", username = myuser, password = mypwd(myuser))
+#'  mech_x_targets <- extract_datim(ou_name = "Namibia", username = myuser, password = mypwd(myuser))
 #'  }
 
-  extract_targets <- function(mechanism_id = NULL,
-                              ou_name = NULL,
-                              username, password,
-                              baseurl = "https://final.datim.org/"){
+  extract_datim <- function(mechanism_id = NULL,
+                            ou_name = NULL,
+                            username, password,
+                            baseurl = "https://final.datim.org/",
+                            folderpath_output = NULL){
 
     #ensure that either ou_name or mechanism_id is entered
       # if(is.null(mechanism_id))
@@ -478,10 +480,22 @@
         dplyr::mutate(fy = as.integer(fy)) %>%
         tidyr::spread(type, Value, fill = 0)
 
-    return(df_combo)
+    #export
+      if(!is.null(folderpath_output)){
+        df_combo <- periodize_targets(df_combo, 2)
+
+        iso <- dplyr::filter(iso_map, countryname == ou) %>%
+          dplyr::pull(iso)
+
+        filename <- paste0("HFR_DATIM_FY19Q2_", ou, "_", format(Sys.Date(),"%Y%m%d"), ".txt")
+
+        readr::write_tsv(df_combo, file.path(folderpath_output, filename), na = "")
+      }
+
+    invisible(df_combo)
 
     } else {
-      return(NULL)
+      invisible(NULL)
     }
   }
 

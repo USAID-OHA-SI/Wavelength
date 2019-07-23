@@ -21,7 +21,11 @@
 structure_zmb <- function(filepath, folderpath_output = NULL){
 
   #import data
-    df <- readxl::read_excel(filepath, skip = 1, col_types = "text")
+    sheet <- filepath %>%
+      readxl::excel_sheets(.) %>%
+      stringr::str_subset(pattern = "Submission|Week")
+
+    df <- readxl::read_excel(filepath, sheet, skip = 1, col_types = "text")
 
   #remove Total columns
     df <- dplyr::select(df, -dplyr::contains("Total"))
@@ -45,12 +49,18 @@ structure_zmb <- function(filepath, folderpath_output = NULL){
   #separate indicator and disaggs
     df <- df %>%
       dplyr::mutate(ind = stringr::str_replace(ind, "HTS(\\.|_)TST\\.POS", "HTS_TST_POS"),
-                    ind = stringr::str_replace(ind, "S<", "S\\.<"))
+                    ind = stringr::str_replace(ind, "S<", "S\\.<"),
+                    ind = stringr::str_replace(ind, "MMD\\.","TX_MMD\\.\\.\\."))
 
     df <- df %>%
-      tidyr::separate(ind, c("indicator", "agecoarse", "sex"), sep = "\\.") %>%
+      tidyr::separate(ind, c("indicator", "agecoarse", "sex", "otherdisaggregate"), sep = "\\.", fill = "right") %>%
       dplyr::mutate(sex = dplyr::case_when(sex == "M" ~ "Male",
-                                           sex == "F" ~ "Female"))
+                                           sex == "F" ~ "Female"),
+                    agecoarse = dplyr::na_if(agecoarse, ""),
+                    otherdisaggregate = stringr::str_replace(otherdisaggregate, "(months|month)", " \\1"))
+
+  #add disaggregate column
+    df <- dplyr::mutate(df, disaggregate = ifelse(indicator == "TX_MMD", "Period", "Age/Sex"))
 
   #clean up headers
     df <- df %>%

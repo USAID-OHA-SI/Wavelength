@@ -49,7 +49,7 @@ readr::write_tsv(full_set, file.path(folderpath_output, filename), na = "")
 # Testing -----------------------------------------------------------------
 
 
-combine_sources <- function(path_hfr, path_datim, start_date, hfr_pd, output_folder = "out/joint"){
+combine_sources <- function(path_hfr, path_datim, start_date, hfr_pd, weeks = 4, output_folder = "out/joint"){
 
   #import
   if(tools::file_ext(path_hfr) == "txt"){
@@ -74,7 +74,7 @@ combine_sources <- function(path_hfr, path_datim, start_date, hfr_pd, output_fol
       # dplyr::rename_at(dplyr::vars(vars_rename), ~ paste0(., "_hfr"))
 
   #duplicate targets for each week (DATIM)
-    dates <- lubridate::as_date(start_date) %>% seq(by = 7, length.out = 4)
+    dates <- lubridate::as_date(start_date) %>% seq(by = 7, length.out = weeks)
 
     df_mer_rpt <- purrr::map_dfr(.x = dates,
                    .f = ~dplyr::mutate(df_mer, date = .x))
@@ -95,13 +95,14 @@ combine_sources <- function(path_hfr, path_datim, start_date, hfr_pd, output_fol
 
 
 
-path_datim <- list.files("out/DATIM", "FY19Q2_Ukr", full.names = TRUE) %>% fs::path_abs()
-path_hfr <- list.files("out/processed", "UKR", full.names = TRUE)[1] %>% fs::path_abs()
+path_datim <- list.files("out/DATIM", "FY19Q2_Zam", full.names = TRUE) %>% fs::path_abs()
+path_hfr <- list.files("out/processed", "ZMB", full.names = TRUE)[2] %>% fs::path_abs()
 
 x <- combine_sources(path_hfr, path_datim, "2019-06-10", 10)
 x <- combine_sources(path_hfr, path_datim, "2019-05-13", 9)
 
-x2 <- list.files("out/joint", "UKR", full.names = TRUE) %>%
+
+x2 <- list.files("out/joint", "ZMB", full.names = TRUE) %>%
   purrr::map_dfr(readr::read_tsv, col_type = c(.default = "c"))
 
 x2 %>%
@@ -110,7 +111,7 @@ x2 %>%
   dplyr::group_by_if(is.character) %>%
   dplyr::summarise_if(is.numeric, sum, na.rm = TRUE) %>%
   dplyr::ungroup() %>%
-  readr::write_tsv("C:/Users/achafetz/Documents/GitHub/Wavelength/out/Processed/HFR_JOINT_UKR_FY19P09-10.txt", na = "")
+  readr::write_tsv("C:/Users/achafetz/Documents/GitHub/Wavelength/out/Processed/HFR_JOINT_ZMB_FY19P09-10.txt", na = "")
 
 
 all <- list.files("C:/Users/achafetz/Downloads/HFR_ready", "JOINT", full.names = TRUE) %>%

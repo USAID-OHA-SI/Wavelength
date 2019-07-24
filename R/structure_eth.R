@@ -52,12 +52,12 @@ structure_eth <- function(filepath, folderpath_output = NULL){
   #fix types
     df <- df %>%
       dplyr::mutate(date = as.Date(as.double(date), origin = "1899-12-30"),
-                    fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                      stringr::str_sub(., 1, 4),
                     val = as.double(val))
 
   #fix date to align with HFR (off by 1 day)
-    df <- dplyr::mutate(df, date = date + 1)
+    df <- df %>%
+      dplyr::mutate(date = date + 1) %>%
+      assign_pds()
 
   #clean indicators/disaggs
     df <- df %>%

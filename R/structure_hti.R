@@ -44,9 +44,8 @@ structure_hti <- function(filepath, folderpath_output = NULL){
                     disaggregate = ifelse(indicator == "MMD", "Period", "Total Numerator"),
                     otherdisaggregate = dplyr::case_when(indicator == "TX_MMD" ~ "6 months or more"),
                     date = stringr::str_remove(date, "-.*$") %>%
-                      paste0(., ", 2019") %>% lubridate::mdy(),
-                    fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                      stringr::str_sub(., 1, 4))
+                      paste0(., ", 2019") %>% lubridate::mdy()) %>%
+      assign_pds()
 
   #clean up geo and other names
     df <- df %>%

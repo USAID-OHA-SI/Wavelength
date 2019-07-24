@@ -25,10 +25,12 @@ combine_sources <- function(path_hfr, path_datim,
   #import
     if(tools::file_ext(path_hfr) == "txt"){
       df_hfr <- readr::read_tsv(path_hfr, col_types = c(.default = "c")) %>%
-        dplyr::mutate(date = lubridate::ymd(date))
+        dplyr::mutate(date = lubridate::ymd(date)) %>%
+        assign_pds()
     } else {
       df_hfr <- readr::read_csv(path_hfr, col_types = c(.default = "c")) %>%
-        dplyr::mutate(date = lubridate::mdy(date))
+        dplyr::mutate(date = lubridate::mdy(date)) %>%
+        assign_pds()
     }
 
     if("site" %in% names(df_hfr)) df_hfr <- dplyr::rename(df_hfr, facility = site)

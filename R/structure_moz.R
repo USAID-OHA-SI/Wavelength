@@ -113,10 +113,9 @@ structure_moz <- function(filepath, folderpath_output = NULL){
 
   #fix date format
     df <- df %>%
-      dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30"),
-                    fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                      stringr::str_sub(., 1, 4)) %>%
-      dplyr::select(date, fy, dplyr::everything())
+      dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30")) %>%
+      dplyr::select(date, dplyr::everything()) %>%
+      assign_pds()
 
   #add operating unit
     df <- add_ou(df, "Mozambique")

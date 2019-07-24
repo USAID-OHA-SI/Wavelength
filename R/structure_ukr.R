@@ -31,6 +31,7 @@ structure_ukr <- function(filepath, folderpath_output = NULL){
                       val = as.numeric(val),
                       fy = as.integer(fy),
                       disaggregate = "Age/Sex") %>%
+        assign_pds() %>%
         tidyr::separate(mechanismid, c("mechanismid", NA), sep = " -")
 
   } else if(stringr::str_detect(filepath, "Serving Life")) {
@@ -78,9 +79,8 @@ structure_ukr <- function(filepath, folderpath_output = NULL){
     #clean up date
       df <- df %>%
         tidyr::separate(date, c(NA, "date"), sep = "\\(") %>%
-        dplyr::mutate(date = lubridate::as_date(date),
-                      fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                        stringr::str_sub(., 1, 4))
+        dplyr::mutate(date = lubridate::as_date(date)) %>%
+        assign_pds()
 
     #add reporting frequency
       df <- dplyr::mutate(df, reporting_freq = "Weekly")

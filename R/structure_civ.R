@@ -28,7 +28,9 @@ structure_civ <- function(filepath, folderpath_output = NULL){
   df <- dplyr::filter(df, !indicator %in% c("TX_TO_FIND", "TX_FOUND"))
 
 #adjust date
-  df <- dplyr::mutate(df, date = lubridate::as_date(as.integer(date), origin = "1899-12-30"))
+  df <- df %>%
+    dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30")) %>%
+    assign_pds()
 
 #add disagg name
   df <- dplyr::mutate(df, disaggregate = "Age/Sex")

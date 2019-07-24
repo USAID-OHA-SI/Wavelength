@@ -66,10 +66,9 @@ structure_uga <- function(filepath, folderpath_output = NULL){
   #break out reporting pd & add month and FY
     df <- df %>%
       tidyr::separate(reporting_pd, c("date", NA), sep = "/") %>%
-      dplyr::mutate(date = lubridate::as_date(date),
-                    fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                      stringr::str_sub(., 1, 4)) %>%
-      dplyr::select(-val, dplyr::everything())
+      dplyr::mutate(date = lubridate::as_date(date)) %>%
+      dplyr::select(-val, dplyr::everything()) %>%
+      assign_pds()
 
   #cleanup indicator and disaggs
     components <- c("indicator", "disaggregate", "agecoarse", "agesemifine", "sex", "modality")

@@ -53,7 +53,7 @@ structure_bdi <- function(filepath, folderpath_output = NULL){
       lubridate::dmy()
     df <- df %>%
       tibble::add_column(date = report_date, fy = NA,.after = "facility") %>%
-      dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>% stringr::str_sub(., 1, 4))
+      assign_pds()
 
   #standardize variable order
     df <- order_vars(df)

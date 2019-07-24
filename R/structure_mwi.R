@@ -98,10 +98,9 @@ structure_mwi <- function(filepath, folderpath_output = NULL){
       df <- df %>%
         dplyr::filter(!is.na(week)) %>%
         dplyr::mutate(date = paste(month, stringr::str_extract(week, "^[:digit:]{1,2}"), 2019) %>%
-                        lubridate::mdy() + 2,
-                      fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                        stringr::str_sub(., 1, 4)) %>%
-        dplyr::select(-month, -week)
+                        lubridate::mdy() + 2) %>%
+        dplyr::select(-month, -week) %>%
+        assign_pds()
   }
 
   #add OU

@@ -82,6 +82,8 @@ structure_cod <- function(filepath, folderpath_output = NULL){
                     snu1 = `Province`,
                     psnu = `Health Zone`,
                     facility = Site)
+  #add periods
+    df <- assign_pds(df)
 
   #add operatingunit
     df <- add_ou(df, "Democratic Republic of the Congo")

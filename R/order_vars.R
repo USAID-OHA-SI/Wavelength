@@ -11,6 +11,7 @@ order_vars <- function(df) {
                   "fundingagency",
                   "date",
                   "fy",
+                  "hfr_pd",
                   "snu1",
                   "psnu",
                   "community",

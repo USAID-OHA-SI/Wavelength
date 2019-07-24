@@ -117,6 +117,8 @@ structure_ken <- function(filepath, folderpath_output = NULL){
                                                       as.Date("2019-06-24")),
                                           "2019-06-03",
                                           date) %>% lubridate::as_date())
+  #assign period
+    df <- assign_pds(df)
 
   #add OU if it doesn't exist
     if(!var_exists(df, "operatingunit"))

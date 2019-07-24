@@ -62,9 +62,9 @@ structure_tza <- function(filepath, folderpath_output = NULL){
 
   #add FY
     df <- df %>%
-      dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                      stringr::str_sub(., 1, 4)) %>%
-      dplyr::select(date, fy, dplyr::everything())
+      dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10)) %>%
+      dplyr::select(date, dplyr::everything()) %>%
+      assign_pds()
 
   #add operatingunit
     df <- add_ou(df, "Tanzania")

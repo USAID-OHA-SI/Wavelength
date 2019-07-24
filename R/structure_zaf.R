@@ -66,9 +66,8 @@ structure_zaf <- function(filepath, folderpath_output = NULL){
 
   #format date and value
     df <- df %>%
-      dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                      stringr::str_sub(., 1, 4),
-                    val = as.numeric(val))
+      dplyr::mutate(val = as.numeric(val)) %>%
+      assign_pds()
 
   #add disaggregate
     df <- tibble::add_column(df, disaggregate = "Total Numerator", .after = "indicator")

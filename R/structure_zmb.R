@@ -41,10 +41,10 @@ structure_zmb <- function(filepath, folderpath_output = NULL){
   #clean up date & add FY
     df <- df %>%
       dplyr::rename(date = `Reporting Period`) %>%
-      dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30"),
-                    fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                      stringr::str_sub(., 1, 4)) %>%
-      dplyr::select(date, fy, dplyr::everything())
+      dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30")) %>%
+      dplyr::select(date, dplyr::everything()) %>%
+      assign_pds()
+
 
   #separate indicator and disaggs
     df <- df %>%

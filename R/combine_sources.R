@@ -20,7 +20,7 @@
 combine_sources <- function(path_hfr, path_datim,
                             start_date, hfr_pd,
                             weeks = 4,
-                            output_folder = "out/joint"){
+                            output_folder = NULL){
 
   #import
     if(tools::file_ext(path_hfr) == "txt"){
@@ -55,12 +55,16 @@ combine_sources <- function(path_hfr, path_datim,
     df_join <- dplyr::full_join(df_mer_rpt, df_hfr) # , by = c("orgunituid", "fy", "mechanismid", "agecoarse", "sex", "indicator", "date"))
 
   #export
-    ou <- df_join$operatingunit[1]
-    if(stringr::str_detect(ou, "Reg")) ou <- df_join$snu1[1]
-    iso <- dplyr::filter(iso_map, countryname == ou) %>%
-      dplyr::pull(iso)
+    if(!is.null(output_folder)){
+      ou <- df_join$operatingunit[1]
+      if(stringr::str_detect(ou, "Reg")) ou <- df_join$snu1[1]
+      iso <- dplyr::filter(iso_map, countryname == ou) %>%
+        dplyr::pull(iso)
 
-    filename <- paste0("HFR_JOINT_", iso, "_FY19P", hfr_pd, ".txt") %>% file.path(output_folder, .)
-    readr::write_tsv(df_join, filename, na = "")
+      filename <- paste0("HFR_JOINT_", iso, "_FY19P", hfr_pd, ".txt") %>% file.path(output_folder, .)
+      readr::write_tsv(df_join, filename, na = "")
+    }
+
+    invisible(df_join)
 
 }

@@ -49,7 +49,8 @@ combine_sources <- function(path_hfr, path_datim,
   #duplicate targets for each week (DATIM)
     dates <- lubridate::as_date(start_date) %>% seq(by = 7, length.out = weeks)
     df_mer_rpt <- purrr::map_dfr(.x = dates,
-                                 .f = ~dplyr::mutate(df_mer, date = .x))
+                                 .f = ~dplyr::mutate(df_mer, date = .x)) %>%
+      assign_pds()
 
   #join
     df_join <- dplyr::full_join(df_mer_rpt, df_hfr) # , by = c("orgunituid", "fy", "mechanismid", "agecoarse", "sex", "indicator", "date"))

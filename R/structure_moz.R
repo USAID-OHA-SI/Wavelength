@@ -89,16 +89,7 @@ structure_moz <- function(filepath, folderpath_output = NULL){
       df <- dplyr::mutate(df, val = as.double(val))
 
     #add HTS
-      df_hts <- df %>%
-        dplyr::filter(indicator %in% c("HTS_TST_NEG", "HTS_TST_POS")) %>%
-        dplyr::mutate(indicator = "HTS_TST") %>%
-        dplyr::group_by_if(is.character) %>%
-        dplyr::summarise(val = sum(val, na.rm = TRUE)) %>%
-        dplyr::ungroup()
-
-      df <- df %>%
-        dplyr::bind_rows(df_hts) %>%
-        dplyr::filter(indicator != "HTS_TST_NEG")
+      df <- gen_hts_num(df)
 
     #adjust indicators/disaggs
       df <- df %>%

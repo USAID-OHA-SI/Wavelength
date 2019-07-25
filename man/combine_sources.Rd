@@ -5,7 +5,7 @@
 \title{Joing HFR and DATIM Data}
 \usage{
 combine_sources(path_hfr, path_datim, start_date, hfr_pd, weeks = 4,
-  output_folder = "out/joint")
+  output_folder = NULL)
 }
 \arguments{
 \item{path_hfr}{file path to HFR processed data}

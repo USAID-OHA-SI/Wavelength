@@ -43,19 +43,9 @@ structure_uga <- function(filepath, folderpath_output = NULL){
       dplyr::filter(!is.na(indicator),
                     !val %in% c(0, NA))
 
-  #add HTS
-    df_hts <- df %>%
-      dplyr::filter(indicator %in% c("HTS_TST_NEG", "HTS_TST_POS")) %>%
-      dplyr::mutate(indicator = "HTS_TST") %>%
-      dplyr::group_by_if(is.character) %>%
-      dplyr::summarise_at(dplyr::vars(val), sum, na.rm = TRUE) %>%
-      dplyr::ungroup()
+  #add HTS numerator
+    df <- gen_hts_num(df)
 
-    df <- df %>%
-      dplyr::bind_rows(df_hts) %>%
-      dplyr::filter(indicator != "HTS_TST_NEG")
-
-    rm(df_hts)
   #add operatingunit
     df <- add_ou(df, "Uganda")
 

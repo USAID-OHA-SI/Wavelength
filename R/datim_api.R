@@ -121,12 +121,22 @@
     package_check("httr")
     package_check("jsonlite")
 
-    baseurl %>%
+    ous <- baseurl %>%
       paste0("api/organisationUnits?filter=level:eq:3") %>%
       httr::GET(httr::authenticate(username,password)) %>%
       httr::content("text") %>%
       jsonlite::fromJSON(flatten=TRUE) %>%
       purrr::pluck("organisationUnits")
+
+    regs <- baseurl %>%
+      paste0("api/organisationUnits?filter=level:eq:4&filter=name:in:[Thailand,Laos,China,Nepal,Senegal]") %>%
+      httr::GET(httr::authenticate(username,password)) %>%
+      httr::content("text") %>%
+      jsonlite::fromJSON(flatten=TRUE) %>%
+      purrr::pluck("organisationUnits")
+
+    dplyr::bind_rows(ous, regs) %>%
+      dplyr::arrange(displayName)
   }
 
 
@@ -354,7 +364,7 @@
     #identify reporting levels
       ou_info <- identify_levels(ou_name, username = username, password = password, baseurl = baseurl) %>%
         dplyr::left_join(identify_ouuids(username = username, password = password, baseurl = baseurl),
-                         by = c("name3" = "displayName"))
+                         by = c("country_name" = "displayName"))
       ou_fac <- ou_info$facility
       ou_comm <- ou_info$community
       ou_psnu <- ou_info$prioritization

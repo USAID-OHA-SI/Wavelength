@@ -21,25 +21,28 @@
 
 structure_civ <- function(filepath, folderpath_output = NULL){
 
-#import
-  df <- readxl::read_excel(filepath, col_types = "text")
+  #import
+    df <- readxl::read_excel(filepath, col_types = "text")
 
-#filter to relevant variables
-  df <- dplyr::filter(df, !indicator %in% c("TX_TO_FIND", "TX_FOUND"))
+  #filter to relevant variables
+    df <- df %>%
+      dplyr::filter(indicator %in% c("HTS_TST", "HTS_TST_POS", "TX_NEW_NewHIV", "TX_MMD", "TX_CURR")) %>%
+      dplyr::mutate(indicator = ifelse(indicator == "TX_NEW_NewHIV", "TX_NEW", indicator),
+                    sex = ifelse(indicator == "TX_MMD", NA, sex),
+                    agecoarse = ifelse(indicator == "TX_MMD", NA, agecoarse))
+  #add disagg name
+    df <- dplyr::mutate(df, disaggregate = ifelse(indicator == "TX_MMD", "Total Numerator", "Age/Sex"))
 
-#adjust date
-  df <- df %>%
-    dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30")) %>%
-    assign_pds()
+  #adjust date
+    df <- df %>%
+      dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30")) %>%
+      assign_pds()
 
-#add disagg name
-  df <- dplyr::mutate(df, disaggregate = "Age/Sex")
+  #standardize variable order
+    df <- order_vars(df)
 
-#standardize variable order
-  df <- order_vars(df)
+  #export
+    export_hfr(df, folderpath_output)
 
-#export
-  export_hfr(df, folderpath_output)
-
-  invisible(df)
+    invisible(df)
 }

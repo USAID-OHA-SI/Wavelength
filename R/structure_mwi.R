@@ -84,7 +84,8 @@ structure_mwi <- function(filepath, folderpath_output = NULL){
                     ind = stringr::str_replace(ind, " (FEMALE|MALE)", "\\.\\1"),
                     ind = toupper(ind)) %>%
       tidyr::separate(ind, c("indicator", "sex", "agefine", "agecoarse"), sep = "\\.", fill = "right") %>%
-      dplyr::mutate(agecoarse = ifelse(is.na(agecoarse), "15+", agecoarse),
+      dplyr::mutate(indicator = ifelse(indicator == "PREP_NEW", "PrEP_NEW", indicator),
+                    agecoarse = ifelse(is.na(agecoarse), "15+", agecoarse),
                     sex = stringr::str_to_sentence(sex)) %>%
       dplyr::select(-agefine)
 

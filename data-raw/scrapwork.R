@@ -73,7 +73,7 @@ x2 %>%
   readr::write_tsv("C:/Users/achafetz/Documents/GitHub/Wavelength/out/Processed/HFR_JOINT_ZMB_FY19P09-10.txt", na = "")
 
 
-all <- list.files("C:/Users/achafetz/Downloads/HFR_ready", "JOINT", full.names = TRUE) %>%
+all <- list.files("out/joint/", full.names = TRUE) %>%
   purrr::map_dfr(readr::read_tsv, col_types = c(.default = "c"))
 
 #fix dates (Moz & Ukraine)

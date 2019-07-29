@@ -104,7 +104,8 @@ structure_moz <- function(filepath, folderpath_output = NULL){
 
   #fix date format
     df <- df %>%
-      dplyr::mutate(date = lubridate::as_date(as.integer(date), origin = "1899-12-30")) %>%
+      dplyr::mutate(date = ifelse(date = "2019-06-01", "2019-06-03"),
+                    date = lubridate::as_date(as.integer(date), origin = "1899-12-30") - 2) %>%
       dplyr::select(date, dplyr::everything()) %>%
       assign_pds()
 

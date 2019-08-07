@@ -104,7 +104,7 @@ structure_moz <- function(filepath, folderpath_output = NULL){
 
   #fix date format
     df <- df %>%
-      dplyr::mutate(date = ifelse(date = "2019-06-01", "2019-06-03"),
+      dplyr::mutate(date = ifelse(date == "43617", "43621", date),
                     date = lubridate::as_date(as.integer(date), origin = "1899-12-30") - 2) %>%
       dplyr::select(date, dplyr::everything()) %>%
       assign_pds()
@@ -113,15 +113,12 @@ structure_moz <- function(filepath, folderpath_output = NULL){
     df <- add_ou(df, "Mozambique")
 
   #add reporting frequency
-    df <- tibble::add_column(df, reporting_freq = "Weekly",
-                           .after = "facility")
+    df <- dplyr::mutate(df, reporting_freq = ifelse(indicator == "VMMC_CIRC", "Weekly", "Monthly"))
 
   #aggregate
     group_vars <- setdiff(names(df), "val")
 
     df <- df %>%
-      dplyr::mutate(date = as.character(date),
-                    fy = as.character(fy)) %>%
       dplyr::group_by_at(dplyr::vars(group_vars)) %>%
       dplyr::summarise_at(dplyr::vars(val), sum, na.rm = TRUE) %>%
       dplyr::ungroup()

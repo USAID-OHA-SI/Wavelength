@@ -1,0 +1,141 @@
+#' #' Append HFR and DATIM Data
+#'
+#' @param folderpath_hfr folder path to HFR processed data
+#' @param folderpath_targets folder path to DATIM extracts, see `extract_datim()`
+#' @param start_date start date of HFR period, YYYY-MM-DD format
+#' @param weeks number of weeks to create, default = 4
+#' @param folderpath_output folder path for saving the output
+#'
+#' @export
+#'
+
+append_sources <- function(folderpath_hfr,
+                           folderpath_targets,
+                           start_date,
+                           weeks = 4,
+                           folderpath_output){
+
+  # IMPORT ------------------------------------------------------------------
+
+  #pull in HFR data
+  df_hfr <- purrr::map_dfr(.x = list.files(folderpath_hfr, full.names = TRUE),
+                           .f = ~ readr::read_csv(.x, col_types = c(.default = "c")))
+  df_hfr <- df_hfr %>% dplyr::select(-dplyr::matches("Type of organisational unit"))
+
+  #pull in DATIM target files
+  df_datim <- purrr::map_dfr(.x = list.files(folderpath_targets, full.names = TRUE),
+                             .f = ~ readr::read_tsv(.x, col_types = c(.default = "c")))
+  df_datim <- df_datim %>%
+    dplyr::rename(orgunit = facility)
+
+
+  # MAP MECHANISM INFORMATION -----------------------------------------------
+
+  #pull list of mechanism from DATIM targets
+  df_mech_map <- df_datim %>%
+    dplyr::distinct(mechanismid, primepartner, implementingmechanismname) %>%
+    dplyr::rename_at(dplyr::vars(primepartner, implementingmechanismname), ~ paste0(., "_d"))
+
+  #merge on mechanismid
+  df_hfr <- df_hfr %>%
+    dplyr::left_join(df_mech_map, by = "mechanismid") %>%
+    dplyr::mutate(primepartner = primepartner_d,
+                  implementingmechanismname = implementingmechanismname_d) %>%
+    dplyr::select(-dplyr::ends_with("_d"))
+
+  rm(df_mech_map)
+
+  # MAP ORG HIERARCHY -------------------------------------------------------
+
+  #pull list of org hierarchy from DATIM targets
+  df_org_map <- df_datim %>%
+    dplyr::distinct(orgunit, orgunituid, snu1, psnu) %>%
+    dplyr::rename_all(~ paste0(., "_d"))
+
+  #merge for those with facility uids
+  df_hfr_orguids <- df_hfr %>%
+    dplyr::filter(!is.na(orgunituid)) %>%
+    dplyr::left_join(df_org_map, by = c("orgunituid" = "orgunituid_d")) %>%
+    dplyr::mutate(snu1 = snu1_d,
+                  psnu = psnu_d,
+                  orgunit = orgunit_d) %>%
+    dplyr::select(-dplyr::ends_with("_d"))
+
+  #merge for those without facility uids
+  df_org_map_missing <- dplyr::distinct(df_org_map, orgunit_d, .keep_all= TRUE)
+  df_hfr_orguids_missing <- df_hfr %>%
+    dplyr::filter(is.na(orgunituid)) %>%
+    dplyr::left_join(df_org_map_missing, by = c("orgunit" = "orgunit_d")) %>%
+    dplyr::mutate(snu1 = snu1_d,
+                  psnu = psnu_d,
+                  orgunituid = orgunituid_d) %>%
+    dplyr::select(-dplyr::ends_with("_d"))
+
+  #append df with org hierarchy together
+  df_hfr <- dplyr::bind_rows(df_hfr_orguids, df_hfr_orguids_missing)
+
+  rm(df_hfr_orguids, df_hfr_orguids_missing, df_org_map, df_org_map_missing)
+
+  # REMOVE ENDING MECHANISMS ------------------------------------------------
+
+  #access current mechanism list posted publically to DATIM
+  sql_view_url <- "https://www.datim.org/api/sqlViews/fgUtV6e9YIX/data.csv"
+  mech_official <- readr::read_csv(sql_view_url,
+                                   col_types = readr::cols(.default = "c"))
+
+  #rename variables to match MSD and remove mechid from mech name
+  ending_mechs <- mech_official %>%
+    dplyr::filter(agency == "USAID") %>%
+    dplyr::mutate(enddate = lubridate::ymd(enddate)) %>%
+    dplyr::select(mechanismid = code, enddate) %>%
+    dplyr::filter(lubridate::year(enddate) == 2019) %>%
+    dplyr::pull(mechanismid)
+
+  df_datim <- dplyr::filter(df_datim, !mechanismid %in% ending_mechs)
+
+  rm(sql_view_url, mech_official, ending_mechs)
+
+  # DUPICATE TARGETS --------------------------------------------------------
+
+  #duplicate targets for each week (DATIM)
+  dates <- lubridate::as_date(start_date) %>% seq(by = 7, length.out = weeks)
+  df_datim_rpt <- purrr::map_dfr(.x = dates,
+                                 .f = ~dplyr::mutate(df_datim, date = .x)) %>%
+    assign_pds()
+
+  rm(df_datim, dates)
+
+  # APPEND HFR AND TARGETS --------------------------------------------------
+
+  df_hfr <- df_hfr %>%
+    dplyr::mutate(date = dplyr::case_when(date == "2019-06-03" ~ "6/3/2019",
+                                          date == "2019-06-10" ~ "6/10/2019",
+                                          date == "2019-06-17" ~ "6/17/2019",
+                                          date == "2019-06-24" ~ "6/24/2019",
+                                          date == "2019-07-01" ~ "7/1/2019",
+                                          TRUE ~ date)) %>%
+    dplyr::mutate(date = lubridate::mdy(date),
+                  operatingunit = ifelse(operatingunit == "DRC","Democratic Republic of the Congo", operatingunit)) %>%
+    dplyr::bind_rows(df_datim_rpt)
+
+  #aggregate to reduce # of lines
+  sum_vars <- c("mer_results", "mer_targets", "weekly_targets", "weekly_targets_gap", "val")
+
+  df_hfr <- df_hfr %>%
+    dplyr::mutate_at(dplyr::vars(sum_vars), as.numeric) %>%
+    dplyr::group_by_at(setdiff(names(df_hfr), sum_vars)) %>%
+    dplyr::summarise_at(dplyr::vars(sum_vars), sum, na.rm = TRUE) %>%
+    dplyr::ungroup()
+
+  rm(df_datim_rpt, sum_vars)
+
+
+  # EXPORT ------------------------------------------------------------------
+
+  df_hfr <- dplyr::filter(df_hfr, date <= "2019-07-01")
+
+  readr::write_tsv(df_hfr, paste0(output_folder,"HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".txt"), na = "")
+
+  invisible(df_hfr)
+
+  }

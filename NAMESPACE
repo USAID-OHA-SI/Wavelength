@@ -2,6 +2,7 @@
 
 export("%>%")
 export(add_ou)
+export(append_sources)
 export(apply_agebands)
 export(assign_pds)
 export(clean_vars_mwi)

@@ -28,20 +28,6 @@ structure_ken <- function(filepath, folderpath_output = NULL){
     if(stringr::str_detect(filepath, "Afya Pwani"))
       df <- dplyr::filter(df, !is.na(value))
 
-  #reshape long for Afya Ziwani
-    if(stringr::str_detect(filepath, "Afya Ziwani")){
-      meta <- meta <- dplyr::select(df, County:`Week Number`) %>% names()
-      df <- df %>%
-        reshape_long(meta) %>%
-        dplyr::mutate(ind = stringr::str_replace_all(ind, " (Unknown|Below 1|Above 50|[:digit:]|<|Male|Female|M$|F$)", "\\.\\1")) %>%
-        tidyr::separate(ind, c("ind", "agesemifine", "sex"), sep = "\\.", fill = "right") %>%
-        dplyr::mutate(sex = dplyr::recode(sex, M = "Male", F = "Female"),
-                      agesemifine = dplyr::case_when(agesemifine == "Below 1"   ~ "<01",
-                                                     agesemifine == "1-9"       ~ "01-09",
-                                                     agesemifine == "Above 50"  ~ "50+",
-                                                     TRUE                       ~ agesemifine))
-    }
-
   #reshape long for AfyaKamilisha
     if(stringr::str_detect(filepath, "AfyaKamilisha")){
       meta <- dplyr::select(df, -dplyr::contains("15")) %>% names()
@@ -65,34 +51,33 @@ structure_ken <- function(filepath, folderpath_output = NULL){
     df <- clean_vars_ken(df)
 
   #clean up mechanism ID, FY and value
-    char_vars <- dplyr::case_when(stringr::str_detect(filepath, "COGRI")       ~ c("mechanismid", "fy"),
-                                  stringr::str_detect(filepath, "Afya Ziwani") ~ "fy",
-                                  TRUE                                         ~ "mechanismid")
-    num_vars <- ifelse(stringr::str_detect(filepath, "COGRI|Afya Ziwani"), "val", c("val", "fy"))
     df <- df %>%
-      dplyr::mutate_at(dplyr::vars(char_vars), ~ as.integer(.) %>% as.character()) %>%
-      dplyr::mutate_at(dplyr::vars(num_vars), as.numeric)
+      dplyr::mutate_at(dplyr::vars(val), as.numeric)
 
   #add OU, coarse age & map indicator info and drop extra indicators Afya Ziwani
-    if(stringr::str_detect(filepath, "Afya Ziwani")){
+    if(var_exists(df, "agefine")){
 
+      #remove yrs
+      df <- df %>%
+        dplyr::mutate(agefine = stringr::str_remove_all(agefine, "(y|Y)rs") %>%
+                        stringr::str_trim(),
+                      agefine = dplyr::case_when(agefine %in% c("0-60 days", "2months-1yr") ~ "<01",
+                                                 agefine == "1-4" ~ "01-04",
+                                                 agefine == "5-9" ~ "05-09",
+                                                 TRUE ~ agefine))
       #add coarse age
       df <- age_map %>%
-        dplyr::distinct(agecoarse, agesemifine) %>%
-        dplyr::left_join(df, ., by = "agesemifine") %>%
-        dplyr::mutate(agecoarse = ifelse(agesemifine == "Unknown", "Unknown", agecoarse))
-      #map indicator info and drop extra indicators
-      df <- df %>%
-        dplyr::left_join(ind_map_ken, by = "ind") %>%
-        dplyr::filter(!is.na(indicator)) %>%
-        dplyr::select(-ind)
+        dplyr::left_join(df, ., by = "agefine") %>%
+        dplyr::mutate(agecoarse = ifelse(agefine == "Unknown age", "Unknown", agecoarse)) %>%
+        dplyr::select(-agefine)
     }
 
   #remove "yrs" from age and adjust 15+
     df <- df %>%
       dplyr::mutate(agecoarse = stringr::str_remove_all(agecoarse, "(y|Y)rs") %>%
-                          stringr::str_trim(),
+                      stringr::str_trim(),
                     agecoarse = ifelse(agecoarse == ">15", "15+", agecoarse))
+
 
   #remove s at end of sex for some partners
     df <- df %>%
@@ -152,6 +137,9 @@ clean_vars_ken <- function(df){
     dplyr::rename_all(stringr::str_replace_all, "( |-)", "_") %>%
     dplyr::rename_all(tolower)
 
+  if(var_exists(df, "weekstartdate"))
+    df <- dplyr::rename(df, date = weekstartdate)
+
   if(var_exists(df, "orgunitlevel1"))
     df <- dplyr::rename(df, operatingunit = orgunitlevel1)
 
@@ -163,6 +151,12 @@ clean_vars_ken <- function(df){
 
   if(var_exists(df, "ward"))
     df <- dplyr::rename(df, psnu = ward)
+
+  if(var_exists(df, "site_name"))
+    df <- dplyr::rename(df, facility = site_name)
+
+  if(var_exists(df, "indicator_name"))
+    df <- dplyr::rename(df, indicator = indicator_name)
 
   if(var_exists(df, "value"))
     df <- dplyr::rename(df, val = value)
@@ -182,13 +176,19 @@ clean_vars_ken <- function(df){
   if(var_exists(df, "fy19"))
     df <- dplyr::rename(df, fy = fy19)
 
+  if(var_exists(df, "datim_org_unit_id"))
+    df <- dplyr::rename(df, orgunituid = datim_org_unit_id)
+
+  if(var_exists(df, "organisationunitid"))
+    df <- dplyr::rename(df, orgunituid = organisationunitid)
+
   if(var_exists(df, "facilityuid") && !var_exists(df, "orgunituid"))
     df <- dplyr::rename(df, orgunituid = facilityuid)
 
   if(var_exists(df, "financial_year"))
     df <- dplyr::rename(df, fy = financial_year)
 
-  df <- dplyr::select(df, -dplyr::matches("mfl|sub_county|subcounty|facilityuid|psnuid|implementingmechanismname"))
+  df <- dplyr::select(df, -dplyr::matches("mfl|sub_county|subcounty|facilityuid|psnuid|implementingmechanismname|week_number"))
 
   return(df)
 }
@@ -210,11 +210,18 @@ var_exists <- function(df, var) {
 #' @param filepath Kenya HFR file path
 
 fix_dates_ken <- function(df, filepath){
-  if(stringr::str_detect(filepath, "Afya Pwani|AMPATHPlus|HCM")){
+  if(stringr::str_detect(filepath, "Afya Pwani|HCM|AFYA Nyota")){
 
     df <- dplyr::mutate(df, date = lubridate::as_date(as.integer(date), origin = "1899-12-30"))
 
-  } else if (stringr::str_detect(filepath, "Afya Nyota|COGRI")){
+  } else if (stringr::str_detect(filepath, "AMPATHPlus")){
+
+    df <- df %>%
+      dplyr::mutate(date2 = lubridate::ymd(as.numeric(date))) %>%
+      dplyr::select(-date) %>%
+      dplyr::rename(date = date2)
+
+  } else if (stringr::str_detect(filepath, "COGRI")){
 
     df <- dplyr::mutate(df, date = lubridate::as_date(date))
 

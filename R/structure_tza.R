@@ -21,53 +21,80 @@
 structure_tza <- function(filepath, folderpath_output = NULL){
 
   #import
-    df <- readxl::read_xlsx(filepath, sheet = "Weekly", col_type = "text")
+    df <- purrr::map_dfr(.x = readxl::excel_sheets(filepath),
+                         .f = ~ readxl::read_xlsx(filepath, sheet = .x,
+                                                  skip = ifelse(.x == "Weekly USAID data", 2, 4),
+                                                  col_type = "text"))
 
-  #filter to select indicators
-    sel_ind <- dplyr::pull(ind_map_tza, ind_label)
-    df <- df %>%
-      dplyr::select(`Start date`:`Site ID (from DATIM)`, dplyr::one_of(sel_ind), -`End date`)
+  #filter out unnessary variables
+    vars <- setdiff(names(df), c("DATE_END", "...3", "VMMC_CIRC_PED...30", "VMMC_CIRC_M...31", "Month_Num"))
+    df <- dplyr::select_at(df, vars)
 
-  #fix date (one day off, start on Sundays)
+  #fix naming issue for weekly
     df <- df %>%
-      dplyr::mutate(date = as.Date(as.double(`Start date`), origin = "1899-12-30") + 1) %>%
-      dplyr::select(date, dplyr::everything(), -`Start date`)
+      dplyr::rename(PrEP_NEW_M = PrEP_NEW_M...24,
+                    PrEP_NEW_F = PreP_NEW_F...25,
+                    PrEP_NEW_PEDS_M = PrEP_NEW_M...26,
+                    PrEP_NEW_PEDS_F = PreP_NEW_F...27,
+                    VMMC_CIRC_PED = VMMC_CIRC_PED...28,
+                    VMMC_CIRC_M = VMMC_CIRC_M...29)
+
+  #fix site_id v datim_id
+      df <- df %>%
+        dplyr::mutate(DATIM_ID = ifelse(!is.na(SITE_ID), SITE_ID, DATIM_ID)) %>%
+        dplyr::select(-SITE_ID)
+
+  #fix date (one day off, start on Sundays, one year = 2016)
+    df <- df %>%
+      dplyr::mutate(date = as.Date(as.double(DATE_START), origin = "1899-12-30") + 2,
+                    date = dplyr::case_when(lubridate::year(date) == 2016 ~ date + lubridate::years(3),
+                                            TRUE ~ date),
+                    date = lubridate::floor_date(date, unit = "week", week_start = 1))
+
+  #fix for month
+    df <- df %>%
+      dplyr::mutate(Month = dplyr::case_when(Month == "June" ~ lubridate::ymd("2019-06-03")),
+                    date = ifelse(!is.na(Month), as.Date(Month), as.Date(date)),
+                    date = lubridate::as_date(date)) %>%
+      dplyr::select(-Month, - DATE_START) %>%
+      dplyr::select(date, DATIM_ID, dplyr::everything())
 
   #munge and reshape long
-    meta <- dplyr::select(df, date:`Site ID (from DATIM)`) %>% names()
+    meta <- dplyr::select(df, date:SITE) %>% names()
     df <- reshape_long(df, meta)
 
   #clean names
     df <- df %>%
-      dplyr::rename(facility = `Site Name`,
-                    orgunituid = `Site ID (from DATIM)`,
-                    snu1 = Region,
-                    psnu = Council,
-                    community = Ward,
-                    fundingagency = Agency) %>%
-      dplyr::select(-District) %>%
-      dplyr::rename_all(tolower) %>%
-      dplyr::mutate(facility = stringr::str_remove_all(facility, " -.*$| \\."))
+      dplyr::rename(facility = SITE,
+                    orgunituid = DATIM_ID,
+                    snu1 = REGION,
+                    psnu = COUNCIL,
+                    community = WARD,
+                    fundingagency = AGENCY,
+                    indicator = ind) %>%
+      dplyr::select(-DISTRICT) %>%
+      dplyr::rename_all(tolower) #%>%
+      #dplyr::mutate(facility = stringr::str_remove_all(facility, " -.*$| \\."))
 
   #map indicator name on & filter to just OHA select values
     df <- df %>%
-      dplyr::left_join(ind_map_tza, by =  c("ind" = "ind_label")) %>%
-      dplyr::select(-ind, -ind.y) %>%
-      dplyr::select(-val, dplyr::everything())
+      dplyr::mutate(sex = stringr::str_extract(indicator, "M|F"),
+                    agecoarse = ifelse(stringr::str_detect(indicator, "PEDS"), "<15", "15+"),
+                    sex = dplyr::recode(sex, "M" = "Male", "F" = "Female"),
+                    indicator = stringr::str_remove_all(indicator, "_(PEDS|A|M|F)"),
+                    indicator = dplyr::recode(indicator, "HTS" = "HTS_TST", "POS" = "HTS_TST_POS"))
 
   #add reporting pd
-    df <- tibble::add_column(df, reporting_freq = "Weekly",
-                             .before = "indicator") %>%
-      dplyr::mutate(reporting_freq = ifelse(indicator == "TX_CURR", "Monthly", reporting_freq))
+    df <- dplyr::mutate(df, reporting_freq = ifelse(indicator == "TX_CURR", "Monthly", "Weekly"))
 
   #add FY
-    df <- df %>%
-      dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10)) %>%
-      dplyr::select(date, dplyr::everything()) %>%
-      assign_pds()
+    df <- assign_pds(df)
 
   #add operatingunit
     df <- add_ou(df, "Tanzania")
+
+  #add disaggregate
+    df <- dplyr::mutate(df,  disaggregate = "Age/Sex")
 
   #standardize variable order
     df <- order_vars(df)

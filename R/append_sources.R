@@ -20,12 +20,12 @@ append_sources <- function(folderpath_hfr,
   #pull in HFR data
   df_hfr <- purrr::map_dfr(.x = list.files(folderpath_hfr, full.names = TRUE),
                            .f = ~ readr::read_csv(.x, col_types = c(.default = "c")))
-  df_hfr <- df_hfr %>% dplyr::select(-dplyr::matches("Type of organisational unit"))
 
   #pull in DATIM target files
   df_datim <- purrr::map_dfr(.x = list.files(folderpath_targets, full.names = TRUE),
                              .f = ~ readr::read_tsv(.x, col_types = c(.default = "c")))
   df_datim <- df_datim %>%
+    dplyr::select(-dplyr::matches("Type of organisational unit")) %>%
     dplyr::rename(orgunit = facility)
 
 

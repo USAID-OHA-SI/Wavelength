@@ -452,7 +452,7 @@
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility
       df_combo <- df_combo %>%
-        dplyr::rename(facility = `Organisation unit`,
+        dplyr::rename(orgunit = `Organisation unit`,
                       operatingunit = orglvl_3,
                       snu1 = orglvl_4)
 
@@ -468,7 +468,7 @@
       }
 
       df_combo <- df_combo %>%
-        dplyr::select(facility, orgunituid, dplyr::everything()) %>%
+        dplyr::select(orgunit, orgunituid, dplyr::everything()) %>%
         dplyr::select(-dplyr::starts_with("orglvl_"))
 
     #clean variables and variable names
@@ -476,7 +476,7 @@
         dplyr::rename(fy = Period, implementingmechanismname = `Funding Mechanism`, fundingagency = `Funding Agency`,
                       primepartner = `Implementing Partner`, agecoarse = `Age: <15/15+  (Coarse)`,
                       sex = `Cascade sex`, indicator = `Technical Area`, type = `Targets / Results`) %>%
-        dplyr::select(-dplyr::matches("Disaggregation Type")) %>%
+        dplyr::select(-dplyr::matches("Disaggregation Type", "Type of organisational unit")) %>%
         tibble::add_column(mechanismid = as.character(NA), .before = "implementingmechanismname") %>%
         dplyr::mutate(fy = stringr::str_sub(fy,-4), #%>% as.integer,
                       mechanismid = stringr::str_extract(implementingmechanismname, "^[:alnum:]{5,6}"),

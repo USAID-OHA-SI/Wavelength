@@ -23,7 +23,6 @@ order_vars <- function(df) {
                   "indicator",
                   "disaggregate",
                   "agecoarse",
-                  "agesemifine",
                   "sex",
                   "modality",
                   "otherdisaggregate",

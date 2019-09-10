@@ -25,8 +25,7 @@ append_sources <- function(folderpath_hfr,
   df_datim <- purrr::map_dfr(.x = list.files(folderpath_targets, full.names = TRUE),
                              .f = ~ readr::read_tsv(.x, col_types = c(.default = "c")))
   df_datim <- df_datim %>%
-    dplyr::select(-dplyr::matches("Type of organisational unit")) %>%
-    dplyr::rename(orgunit = facility)
+    dplyr::select(-dplyr::matches("Type of organisational unit"))
 
 
   # MAP MECHANISM INFORMATION -----------------------------------------------
@@ -88,7 +87,7 @@ append_sources <- function(folderpath_hfr,
     dplyr::filter(agency == "USAID") %>%
     dplyr::mutate(enddate = lubridate::ymd(enddate)) %>%
     dplyr::select(mechanismid = code, enddate) %>%
-    dplyr::filter(lubridate::year(enddate) == 2019) %>%
+    dplyr::filter(lubridate::year(enddate) < 2020) %>%
     dplyr::pull(mechanismid)
 
   df_datim <- dplyr::filter(df_datim, !mechanismid %in% ending_mechs)
@@ -108,14 +107,9 @@ append_sources <- function(folderpath_hfr,
   # APPEND HFR AND TARGETS --------------------------------------------------
 
   df_hfr <- df_hfr %>%
-    dplyr::mutate(date = dplyr::case_when(date == "2019-06-03" ~ "6/3/2019",
-                                          date == "2019-06-10" ~ "6/10/2019",
-                                          date == "2019-06-17" ~ "6/17/2019",
-                                          date == "2019-06-24" ~ "6/24/2019",
-                                          date == "2019-07-01" ~ "7/1/2019",
-                                          TRUE ~ date)) %>%
     dplyr::mutate(date = lubridate::mdy(date),
                   operatingunit = ifelse(operatingunit == "DRC","Democratic Republic of the Congo", operatingunit)) %>%
+    assign_pds() %>%
     dplyr::bind_rows(df_datim_rpt)
 
   #aggregate to reduce # of lines
@@ -132,9 +126,9 @@ append_sources <- function(folderpath_hfr,
 
   # EXPORT ------------------------------------------------------------------
 
-  df_hfr <- dplyr::filter(df_hfr, date <= "2019-07-01")
+  df_hfr <- dplyr::filter(df_hfr, date <= "2019-07-29")
 
-  readr::write_tsv(df_hfr, paste0(output_folder,"HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".txt"), na = "")
+  readr::write_tsv(df_hfr, file.path(folderpath_output, paste0("HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".txt")), na = "")
 
   invisible(df_hfr)
 

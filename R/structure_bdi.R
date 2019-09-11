@@ -21,39 +21,43 @@
 
 structure_bdi <- function(filepath, folderpath_output = NULL){
 
-  #import; headers are across 2 rows, so we need to identify and create them
-    headers <- identify_headers_bdi(filepath)
-    df <- readxl::read_excel(filepath, skip = 2, col_names = headers, col_types = "text")
+  sht_exclude <- c("Summary")
 
-  #keep only select variables (no PMTCT & totals for HTS & TX)
-    df <- df %>%
-      dplyr::select(dplyr::ends_with("NA"), dplyr::contains("Total"), dplyr::starts_with("TX"))
+  #import
+    df <- filepath %>%
+      readxl::excel_sheets() %>%
+      setdiff(sht_exclude) %>%
+      purrr::set_names() %>%
+      purrr::map_dfr(~readxl::read_excel(filepath, sheet = .x, skip = 2, col_types = "text"),
+                     .id = "date")
 
-  #reshape long
-    df <- df %>%
-      tidyr::gather(ind, val, -dplyr::ends_with("NA"))
 
-  #clean up indicators & variable headers
+  #keep only select variables (no PMTCT & totals for HTS & TX) & rename
     df <- df %>%
-      dplyr::left_join(ind_map_bdi, by = "ind") %>%
-      dplyr::select(psnu= Province.NA, community = `Health district.NA`,
-                    facility = Facility.NA, indicator, disaggregate,
-                    otherdisaggregate, val)
+      dplyr::select(psnu = Province,
+                    facility = `Health Center (CDS)`,
+                    date,
+                    HTS_TST = `Total tested`,
+                    HTS_TST_POS = `Total Tested POS`,
+                    TX_NEW = `Total new cases on ART`,
+                    TX_MMD = `Number of PLHIV on MMP ( new case in the week)`)
+  #reshape
+    meta <- c("psnu", "facility", "date")
+    df <- df %>%
+      reshape_long(meta) %>%
+      dplyr::rename(indicator = ind)
+
+  #adjust date
+    df <- df %>%
+      dplyr::mutate(date = stringr::str_replace(date, "-[:digit:]{1,2}", ",2019"),
+                    date = lubridate::mdy(date)) %>%
+      assign_pds()
 
   #add ou
     df <- add_ou(df, "Burundi")
 
-  #add reporting frequency
-    df <- tibble::add_column(df, reporting_freq = "Weekly",
-                             .after = "facility")
-
-  #identify reporting date from sheet name and add to df
-    report_date <- readxl::excel_sheets(filepath) %>%
-      stringr::str_remove("-[:digit:]{1,}") %>%
-      lubridate::dmy()
-    df <- df %>%
-      tibble::add_column(date = report_date, fy = NA,.after = "facility") %>%
-      assign_pds()
+  #add partner
+    df <- dplyr::mutate(primepartner = "RAGF")
 
   #standardize variable order
     df <- order_vars(df)

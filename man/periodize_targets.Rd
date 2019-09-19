@@ -7,7 +7,7 @@
 periodize_targets(df, quarters_complete)
 }
 \arguments{
-\item{df}{data frame created by \code{extract_targets()}}
+\item{df}{data frame created by \code{extract_datim()}}
 
 \item{quarters_complete}{MER quarters with data available}
 }
@@ -17,6 +17,6 @@ Adjust Annual Targets to work with HFR peirods
 \examples{
 \dontrun{
  myuser <- "UserX"
- mech_x_targets <- extract_targets(00001, myuser, mypwd(myuser))
+ mech_x_targets <- extract_datim(00001, myuser, mypwd(myuser))
  mech_x_targets <- periodize_targets(mech_x_targets, 2) }
 }

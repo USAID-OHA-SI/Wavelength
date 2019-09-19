@@ -5,7 +5,8 @@
 \title{Extract DATIM Results and Targets (DATIM API Call)}
 \usage{
 extract_datim(mechanism_id = NULL, ou_name = NULL, username, password,
-  baseurl = "https://final.datim.org/", folderpath_output = NULL)
+  baseurl = "https://final.datim.org/", quarters_complete = NULL,
+  folderpath_output = NULL)
 }
 \arguments{
 \item{mechanism_id}{DATIM mechanism ID}
@@ -17,6 +18,8 @@ extract_datim(mechanism_id = NULL, ou_name = NULL, username, password,
 \item{password}{DATIM password, recommend using \code{mypwd()}}
 
 \item{baseurl}{API base url, default = https://final.datim.org/}
+
+\item{quarters_complete}{of quarters completed through FY to determine weeks left in year}
 
 \item{folderpath_output}{folder path to store DATIM output, default = NULL}
 }

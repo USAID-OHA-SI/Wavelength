@@ -331,6 +331,7 @@
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
 #' @param baseurl API base url, default = https://final.datim.org/
+#' @param quarters_complete # of quarters completed through FY to determine weeks left in year
 #' @param folderpath_output folder path to store DATIM output, default = NULL
 #'
 #' @export
@@ -348,6 +349,7 @@
                             ou_name = NULL,
                             username, password,
                             baseurl = "https://final.datim.org/",
+                            quarters_complete = NULL,
                             folderpath_output = NULL){
 
     #ensure that either ou_name or mechanism_id is entered
@@ -360,6 +362,8 @@
           mech_uid <- mech_info$uid
           ou_name <- mech_info$ou
       }
+
+    print(paste("Extracting targets for", ou_name, format(Sys.time(), "%H:%M:%S")))
 
     #identify reporting levels
       ou_info <- identify_levels(ou_name, username = username, password = password, baseurl = baseurl) %>%
@@ -490,14 +494,16 @@
         dplyr::mutate(fy = as.integer(fy)) %>%
         tidyr::spread(type, Value, fill = 0)
 
+    #periodize
+      df_combo <- periodize_targets(df_combo, quarters_complete)
+
     #export
       if(!is.null(folderpath_output)){
-        df_combo <- periodize_targets(df_combo, 2)
 
         iso <- dplyr::filter(iso_map, countryname == ou_name) %>%
           dplyr::pull(iso)
 
-        filename <- paste0("HFR_DATIM_FY19Q3_", iso, "_", format(Sys.Date(),"%Y%m%d"), ".txt")
+        filename <- paste0("HFR_DATIM_FY19Q", quarters_complete, "_", iso, "_", format(Sys.Date(),"%Y%m%d"), ".txt")
 
         readr::write_tsv(df_combo, file.path(folderpath_output, filename), na = "")
       }
@@ -514,7 +520,7 @@
 
 #' Adjust Annual Targets to work with HFR peirods
 #'
-#' @param df data frame created by `extract_targets()`
+#' @param df data frame created by `extract_datim()`
 #' @param quarters_complete MER quarters with data available
 #'
 #' @export
@@ -522,12 +528,17 @@
 #' @examples
 #' \dontrun{
 #'  myuser <- "UserX"
-#'  mech_x_targets <- extract_targets(00001, myuser, mypwd(myuser))
+#'  mech_x_targets <- extract_datim(00001, myuser, mypwd(myuser))
 #'  mech_x_targets <- periodize_targets(mech_x_targets, 2) }
 
 periodize_targets <- function(df, quarters_complete){
 
   weeks_remaining <- 52 - (quarters_complete * 13)
+
+  if(!"mer_results" %in% names(df))
+    df <- dplyr::mutate(df, mer_results = NA)
+  if(!"mer_targets" %in% names(df))
+    df <- dplyr::mutate(df, mer_targets = NA)
 
    df %>%
     #dplyr::group_by(fy, orgunituid) %>%

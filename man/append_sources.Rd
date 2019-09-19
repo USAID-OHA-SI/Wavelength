@@ -4,17 +4,19 @@
 \alias{append_sources}
 \title{#' Append HFR and DATIM Data}
 \usage{
-append_sources(folderpath_hfr, folderpath_targets, start_date, weeks = 4,
-  folderpath_output)
+append_sources(folderpath_hfr, folderpath_datim, start_date, weeks = 4,
+  max_date = NULL, folderpath_output)
 }
 \arguments{
 \item{folderpath_hfr}{folder path to HFR processed data}
 
-\item{folderpath_targets}{folder path to DATIM extracts, see \code{extract_datim()}}
+\item{folderpath_datim}{folder path to DATIM extracts, see \code{extract_datim()}}
 
 \item{start_date}{start date of HFR period, YYYY-MM-DD format}
 
 \item{weeks}{number of weeks to create, default = 4}
+
+\item{max_date}{last week reporting should occur, YYYY-MM-DD format, default = NULL}
 
 \item{folderpath_output}{folder path for saving the output}
 }

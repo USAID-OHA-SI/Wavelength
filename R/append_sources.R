@@ -1,18 +1,20 @@
 #' #' Append HFR and DATIM Data
 #'
 #' @param folderpath_hfr folder path to HFR processed data
-#' @param folderpath_targets folder path to DATIM extracts, see `extract_datim()`
+#' @param folderpath_datim folder path to DATIM extracts, see `extract_datim()`
 #' @param start_date start date of HFR period, YYYY-MM-DD format
 #' @param weeks number of weeks to create, default = 4
+#' @param max_date last week reporting should occur, YYYY-MM-DD format, default = NULL
 #' @param folderpath_output folder path for saving the output
 #'
 #' @export
 #'
 
 append_sources <- function(folderpath_hfr,
-                           folderpath_targets,
+                           folderpath_datim,
                            start_date,
                            weeks = 4,
+                           max_date = NULL,
                            folderpath_output){
 
   # IMPORT ------------------------------------------------------------------
@@ -126,7 +128,8 @@ append_sources <- function(folderpath_hfr,
 
   # EXPORT ------------------------------------------------------------------
 
-  df_hfr <- dplyr::filter(df_hfr, date <= "2019-07-29")
+  if(!is.null(max_date))
+    df_hfr <- dplyr::filter(df_hfr, date <= max_date)
 
   readr::write_tsv(df_hfr, file.path(folderpath_output, paste0("HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".txt")), na = "")
 

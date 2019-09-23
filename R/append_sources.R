@@ -127,7 +127,7 @@ append_sources <- function(folderpath_hfr,
 
   df_hfr <- df_hfr %>%
     dplyr::mutate(date = lubridate::mdy(date),
-                  sex = ifelse(sex = ifelse(sex == "Unknown", "Unspecified", sex)),
+                  sex = ifelse(sex == "Unknown", "Unspecified", sex),
                   operatingunit = ifelse(operatingunit == "DRC","Democratic Republic of the Congo", operatingunit)) %>%
     assign_pds() %>%
     dplyr::bind_rows(df_datim_rpt)

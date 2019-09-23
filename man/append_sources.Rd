@@ -5,7 +5,7 @@
 \title{#' Append HFR and DATIM Data}
 \usage{
 append_sources(folderpath_hfr, folderpath_datim, start_date, weeks = 4,
-  max_date = NULL, folderpath_output)
+  max_date = TRUE, folderpath_output)
 }
 \arguments{
 \item{folderpath_hfr}{folder path to HFR processed data}
@@ -16,7 +16,7 @@ append_sources(folderpath_hfr, folderpath_datim, start_date, weeks = 4,
 
 \item{weeks}{number of weeks to create, default = 4}
 
-\item{max_date}{last week reporting should occur, YYYY-MM-DD format, default = NULL}
+\item{max_date}{cut off data at max date? default = NULL}
 
 \item{folderpath_output}{folder path for saving the output}
 }

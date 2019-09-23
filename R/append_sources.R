@@ -4,7 +4,7 @@
 #' @param folderpath_datim folder path to DATIM extracts, see `extract_datim()`
 #' @param start_date start date of HFR period, YYYY-MM-DD format
 #' @param weeks number of weeks to create, default = 4
-#' @param max_date last week reporting should occur, YYYY-MM-DD format, default = NULL
+#' @param max_date cut off data at max date? default = NULL
 #' @param folderpath_output folder path for saving the output
 #'
 #' @export
@@ -14,17 +14,29 @@ append_sources <- function(folderpath_hfr,
                            folderpath_datim,
                            start_date,
                            weeks = 4,
-                           max_date = NULL,
+                           max_date = TRUE,
                            folderpath_output){
 
   # IMPORT ------------------------------------------------------------------
 
+  #ensure pulling the lastest HFR files
+  hfr_files_newest <- list.files(folderpath_hfr, full.names = TRUE) %>%
+    tibble::enframe(name = NULL, value = "full_path") %>%
+    dplyr::mutate(name = basename(full_path) %>% stringr::str_remove_all("HF(R|D)_|\\.csv")) %>%
+    tidyr::separate(name, c("ou", "date"), sep = "_") %>%
+    dplyr::mutate(date = lubridate::as_date(date)) %>%
+    dplyr::arrange(ou) %>%
+    dplyr::group_by(ou) %>%
+    dplyr::mutate(newest = date == max(date)) %>%
+    dplyr::filter(newest) %>%
+    dplyr::pull(full_path)
+
   #pull in HFR data
-  df_hfr <- purrr::map_dfr(.x = list.files(folderpath_hfr, full.names = TRUE),
+  df_hfr <- purrr::map_dfr(.x = hfr_files_newest,
                            .f = ~ readr::read_csv(.x, col_types = c(.default = "c")))
 
   #pull in DATIM target files
-  df_datim <- purrr::map_dfr(.x = list.files(folderpath_targets, full.names = TRUE),
+  df_datim <- purrr::map_dfr(.x = list.files(folderpath_datim, full.names = TRUE),
                              .f = ~ readr::read_tsv(.x, col_types = c(.default = "c")))
   df_datim <- df_datim %>%
     dplyr::select(-dplyr::matches("Type of organisational unit"))
@@ -37,7 +49,7 @@ append_sources <- function(folderpath_hfr,
     dplyr::distinct(mechanismid, primepartner, implementingmechanismname) %>%
     dplyr::rename_at(dplyr::vars(primepartner, implementingmechanismname), ~ paste0(., "_d"))
 
-  #merge on mechanismid
+  #merge on mechanismid, replacing HFR with DATIM names
   df_hfr <- df_hfr %>%
     dplyr::left_join(df_mech_map, by = "mechanismid") %>%
     dplyr::mutate(primepartner = primepartner_d,
@@ -98,6 +110,11 @@ append_sources <- function(folderpath_hfr,
 
   # DUPICATE TARGETS --------------------------------------------------------
 
+  #clean up age and sex
+  df_datim <- df_datim %>%
+    dplyr::mutate(agecoarse = stringr::str_remove(agecoarse, " Age"),
+                  sex = stringr::str_remove(sex, " sex"))
+
   #duplicate targets for each week (DATIM)
   dates <- lubridate::as_date(start_date) %>% seq(by = 7, length.out = weeks)
   df_datim_rpt <- purrr::map_dfr(.x = dates,
@@ -110,12 +127,13 @@ append_sources <- function(folderpath_hfr,
 
   df_hfr <- df_hfr %>%
     dplyr::mutate(date = lubridate::mdy(date),
+                  sex = ifelse(sex = ifelse(sex == "Unknown", "Unspecified", sex)),
                   operatingunit = ifelse(operatingunit == "DRC","Democratic Republic of the Congo", operatingunit)) %>%
     assign_pds() %>%
     dplyr::bind_rows(df_datim_rpt)
 
   #aggregate to reduce # of lines
-  sum_vars <- c("mer_results", "mer_targets", "weekly_targets", "weekly_targets_gap", "val")
+  sum_vars <- c("mer_results", "mer_targets", "targets_gap", "weekly_targets", "weekly_targets_gap", "val")
 
   df_hfr <- df_hfr %>%
     dplyr::mutate_at(dplyr::vars(sum_vars), as.numeric) %>%
@@ -128,7 +146,8 @@ append_sources <- function(folderpath_hfr,
 
   # EXPORT ------------------------------------------------------------------
 
-  if(!is.null(max_date))
+  if(max_date == TRUE)
+    max <- as.Date(start_date)+(7*(weeks-1))
     df_hfr <- dplyr::filter(df_hfr, date <= max_date)
 
   readr::write_tsv(df_hfr, file.path(folderpath_output, paste0("HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".txt")), na = "")

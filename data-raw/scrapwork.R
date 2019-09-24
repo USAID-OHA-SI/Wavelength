@@ -39,19 +39,12 @@
     path <- "../Downloads/PD 12"
     files <- list.files(path, full.names = TRUE)
 
-    #adjust malawi dating issue
-    path_mwi <- "../Downloads/PD 12/HFR_MWI_20190923.csv"
-
-    path_mwi %>%
-      readr::read_csv(col_types = c(.default = "c")) %>%
-      dplyr::mutate(date = lubridate::as_date(date) %>% format(., "%m/%d/%Y")) %>%
-      readr::write_csv(path_mwi, na ="")
-
     #import
     df_check <- purrr::map_dfr(files,
                                ~ readr::read_csv(.x, col_types = c(.default = "c"))) %>%
       dplyr::mutate(val = as.double(val),
                     date = lubridate::mdy(date))
+
 
     #check headers
     check_headers <- function(filepath){
@@ -235,6 +228,7 @@
     ind_okay <- c("HTS_TST", "HTS_TST_POS", "TX_NEW", "TX_CURR", "TX_MMD", "PrEP_NEW", "VMMC_CIRC")
     sex_okay <- c("Male", "Female", "Unknown", NA)
     age_okay <- c("<15", "15+", NA)
+    otherdisagg_okay <- c("1 month", "2 months", "3 months", "4-5 months", "6 months or more", NA)
 
     df_check %>%
       dplyr::filter(!indicator %in% ind_okay) %>%
@@ -255,7 +249,7 @@
 
     #check_dates
       df_check %>%
-        dplyr::mutate(peratingunit = ifelse(stringr::str_detect(operatingunit, "Region"),
+        dplyr::mutate(operatingunit = ifelse(stringr::str_detect(operatingunit, "Region"),
                                              paste(operatingunit, snu1, sep = "/"), operatingunit)) %>%
         dplyr::filter(date < "2019-09-02") %>%
         dplyr::count(operatingunit, date) %>%
@@ -264,4 +258,21 @@
         dplyr::select(-c(fy, hfr_pd)) %>%
         print(n = Inf)
 
+    #check other disaggregate
+      df_check %>%
+        dplyr::filter(!otherdisaggregate %in% otherdisagg_okay) %>%
+        assign_pds() %>%
+        dplyr::count(operatingunit, indicator, hfr_pd, otherdisaggregate) %>%
+        print(n = Inf)
 
+
+      df_check %>%
+        assign_pds() %>%
+        dplyr::count(operatingunit, date, hfr_pd) %>%
+        dplyr::arrange(operatingunit, date) %>%
+        print(n = Inf)
+
+      df_check %>%
+        dplyr::count(operatingunit, date) %>%
+        dplyr::arrange(operatingunit, date) %>%
+        print(n = Inf)

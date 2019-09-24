@@ -23,7 +23,7 @@ append_sources <- function(folderpath_hfr,
   hfr_files_newest <- list.files(folderpath_hfr, full.names = TRUE) %>%
     tibble::enframe(name = NULL, value = "full_path") %>%
     dplyr::mutate(name = basename(full_path) %>% stringr::str_remove_all("HF(R|D)_|\\.csv")) %>%
-    tidyr::separate(name, c("ou", "date"), sep = "_") %>%
+    tidyr::separate(name, c("ou", "date"), sep = "_", extra = "drop") %>%
     dplyr::mutate(date = lubridate::as_date(date)) %>%
     dplyr::arrange(ou) %>%
     dplyr::group_by(ou) %>%

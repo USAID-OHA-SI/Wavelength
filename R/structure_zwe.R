@@ -26,42 +26,33 @@ structure_zwe <- function(filepath, folderpath_output = NULL){
   # import
     sheet <- filepath %>%
       readxl::excel_sheets(.) %>%
-      stringr::str_subset(pattern = "Weeks_June10_July1")
+      stringr::str_subset(pattern = "Sept HFR")
 
     df <- readxl::read_excel(filepath, sheet, col_types = "text")
 
-  #clean var names and values
     df <- df %>%
-      dplyr::rename(partner = `Partner name`,
-                    operatingunit = `Operating Unit`,
-                    reporting_freq = Reporting_Frequency,
-                    mechanismid = Mechanism_ID,
-                    facility = SiteName,
-                    indicator = Indicator,
-                    agecoarse = Agecoarse,
-                    sex = Sex,
-                    val = Value,
-                    date = Reporting_Week_Starting,
-                    psnu = PSNU,
-                    snu1 = SNU1) %>%
-      dplyr::mutate(fundingagency = "USAID",
-                    disaggregate = "Age/Sex")
+      dplyr::rename_all(tolower) %>%
+      dplyr::rename("2019-08-05" = `43593`,
+                    "2019-08-12" = `43807`,
+                    "2019-08-19" = `19/08/2019`,
+                    "2019-08-26" = `26/08/2019`,
+                    operatingunit = `operating unit`,
+                    facility = `community/facility name`,
+                    mechanismid = mechanism_id)
 
-  #filter indicators
     df <- df %>%
-      dplyr::filter(indicator %in% c("HTS_TST", "HTS_TST_POS", "PrEP_NEW", "TX_NEW", "TX_CURR", "VMMC_CIRC"))
+      tidyr::gather(date, val, `2019-08-05`:`2019-08-26`)
 
-  #fix values
     df <- df %>%
-      dplyr::mutate_at(dplyr::vars(val, date),as.numeric) %>%
-      dplyr::filter(val > 0,
-                  agecoarse != "All")
-  #recode sex
-    df <- dplyr::mutate(df, sex = dplyr::recode(sex, "M" = "Male", "F" = "Female"))
-
-  #fix date
-    df <- df %>%
-      dplyr::mutate(date = lubridate::as_date(date, origin = "1899-12-30")) %>%
+      dplyr::mutate(date = lubridate::as_date(date),
+                    val = as.numeric(val),
+                    indicator = dplyr::case_when(indicator == "PrEP_New" ~ "PrEP_NEW",
+                                                 TRUE ~ indicator),
+                    sex = dplyr::case_when(sex == "M/F" ~ "Unknown",
+                                           sex == "FeMale" ~ "Female",
+                                           TRUE ~ sex)) %>%
+      dplyr::select(-`reporting frequency`, -`partner name`) %>%
+      dplyr::filter(val != 0) %>%
       assign_pds()
 
   #standardize variable order
@@ -72,5 +63,4 @@ structure_zwe <- function(filepath, folderpath_output = NULL){
 
     invisible(df)
 }
-
 

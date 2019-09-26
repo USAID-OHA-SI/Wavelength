@@ -64,7 +64,7 @@ NOTE: This currently only works for a handful of countries as most the processin
                                     folderpath_output = output_folder))
 ```
 
-## Pulling DATIM Data 
+## Pulling DATIM data 
 
 The official PEPFAR MER data are stored in a DHIS2 system called DATIM. Indicators are collected on a quarterly basis and are compared to targets for each fiscal year. We use the MER data to create gap targets (ie how much of the fiscal year target needs to be completed with the cumulative quarterly results so far) as well as to identify offical partner names as well as the offical organizational hierarchy. 
 
@@ -93,7 +93,7 @@ To run `extract_datim()` you will need to install additional packages (`keyringr
                )
 ```
 
-## CREATING A GLOBAL DATASET
+## Creating a global HFR (and MER) dataset
 
 The global HFR dataset that feeds into the Tableau workbook pulls from all the processed country HFR (all historic data to date) and the locally stored DATIM data. The `append_sources()` function brings together these data sources for the Tableau workbook. You willneed to have the HFR data stored in one folder and DATIM data stored in another. If you have countries with historic data but not for the current period, you should include those files in the HFR folder so they can be included in the global dataset.
 
@@ -117,7 +117,7 @@ Checks can can should be run on the global dataset, ensuring that everything was
   - disaggregate components (`agecoarse`, `sex`, and `otherdisaggregate`) are only what is noted in the codebook
 
 
-## POPUATING THE TABLEAU WORKBOOK
+## Populating the HFR Tableau workbook 
 
 With the global dataset created, the [Tableau workbook](https://drive.google.com/drive/u/0/folders/1-V28fJK5XMu_DcaZXNf8Ot_441dADESG) can now be updated with the new data. At this point, country specific files are created and then distributed to country teams.
 

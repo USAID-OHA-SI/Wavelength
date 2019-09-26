@@ -26,7 +26,7 @@ export_hfr <- function(df, folderpath_output = NULL){
       filename <- paste0("HFR_", iso_ou, "_", date, ".txt")
 
     #export data
-      readr::write_tsv(df, file.path(folderpath_output, filename), na = "")
+      readr::write_csv(df, file.path(folderpath_output, filename), na = "")
   }
 }
 

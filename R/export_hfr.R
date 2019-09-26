@@ -23,7 +23,7 @@ export_hfr <- function(df, folderpath_output = NULL){
       date <- format(Sys.Date(),"%Y%m%d")
 
     #compile file name
-      filename <- paste0("HFR_", iso_ou, "_", date, ".txt")
+      filename <- paste0("HFR_", iso_ou, "_", date, ".csv")
 
     #export data
       readr::write_csv(df, file.path(folderpath_output, filename), na = "")

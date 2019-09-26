@@ -143,14 +143,17 @@ append_sources <- function(folderpath_hfr,
 
   rm(df_datim_rpt, sum_vars)
 
+  #cap date at last date of reporting of collection period
+  if(max_date == TRUE){
+    max <- as.Date(start_date)+(7*(weeks-1))
+    df_hfr <- dplyr::filter(df_hfr, date <= as.Date(max))
+  }
 
   # EXPORT ------------------------------------------------------------------
 
-  if(max_date == TRUE)
-    max <- as.Date(start_date)+(7*(weeks-1))
-    df_hfr <- dplyr::filter(df_hfr, date <= as.Date(max))
 
-  readr::write_tsv(df_hfr, file.path(folderpath_output, paste0("HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".txt")), na = "")
+  if(!is.null(folderpath_output))
+    readr::write_tsv(df_hfr, file.path(folderpath_output, paste0("HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".txt")), na = "")
 
   invisible(df_hfr)
 

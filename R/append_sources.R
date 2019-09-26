@@ -153,7 +153,7 @@ append_sources <- function(folderpath_hfr,
 
 
   if(!is.null(folderpath_output))
-    readr::write_tsv(df_hfr, file.path(folderpath_output, paste0("HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".txt")), na = "")
+    readr::write_csv(df_hfr, file.path(folderpath_output, paste0("HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".txt")), na = "")
 
   invisible(df_hfr)
 

@@ -69,9 +69,9 @@ append_sources <- function(folderpath_hfr,
   df_hfr_orguids <- df_hfr %>%
     dplyr::filter(!is.na(orgunituid)) %>%
     dplyr::left_join(df_org_map, by = c("orgunituid" = "orgunituid_d")) %>%
-    dplyr::mutate(snu1 = snu1_d,
-                  psnu = psnu_d,
-                  orgunit = orgunit_d) %>%
+    dplyr::mutate(snu1 = ifelse(!is.na(snu1_d), snu1_d, snu1),
+                  psnu = ifelse(!is.na(psnu_d), psnu_d, psnu),
+                  orgunit = ifelse(!is.na(orgunit_d), orgunit_d, orgunit)) %>%
     dplyr::select(-dplyr::ends_with("_d"))
 
   #merge for those without facility uids
@@ -79,8 +79,8 @@ append_sources <- function(folderpath_hfr,
   df_hfr_orguids_missing <- df_hfr %>%
     dplyr::filter(is.na(orgunituid)) %>%
     dplyr::left_join(df_org_map_missing, by = c("orgunit" = "orgunit_d")) %>%
-    dplyr::mutate(snu1 = snu1_d,
-                  psnu = psnu_d,
+    dplyr::mutate(snu1 = ifelse(!is.na(snu1_d), snu1_d, snu1),
+                  psnu = ifelse(!is.na(psnu_d), psnu_d, psnu),
                   orgunituid = orgunituid_d) %>%
     dplyr::select(-dplyr::ends_with("_d"))
 

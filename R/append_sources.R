@@ -153,7 +153,14 @@ append_sources <- function(folderpath_hfr,
 
 
   if(!is.null(folderpath_output))
-    readr::write_csv(df_hfr, file.path(folderpath_output, paste0("HFR_GLOBAL_output_", format(Sys.time(),"%Y%m%d.%H%M"), ".csv")), na = "")
+    pd <- paste0("PD",max(df_hfr$hfr_pd))
+    readr::write_csv(df_hfr,
+                     file.path(folderpath_output,
+                               paste0("HFR_GLOBAL_output_",
+                                      pd,
+                                      format(Sys.time(),"%Y%m%d.%H%M"),
+                                      ".csv")),
+                     na = "")
 
   invisible(df_hfr)
 

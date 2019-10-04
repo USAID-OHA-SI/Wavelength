@@ -137,7 +137,7 @@ append_sources <- function(folderpath_hfr,
 
   df_hfr <- df_hfr %>%
     dplyr::mutate_at(dplyr::vars(sum_vars), as.numeric) %>%
-    dplyr::group_by_at(setdiff(names(df_hfr), sum_vars)) %>%
+    dplyr::group_by_at(setdiff(names(df_hfr), c("partner", "disaggregate", sum_vars))) %>%
     dplyr::summarise_at(dplyr::vars(sum_vars), sum, na.rm = TRUE) %>%
     dplyr::ungroup()
 

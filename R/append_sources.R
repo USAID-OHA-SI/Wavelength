@@ -156,8 +156,8 @@ append_sources <- function(folderpath_hfr,
     pd <- paste0("PD",max(df_hfr$hfr_pd))
     readr::write_csv(df_hfr,
                      file.path(folderpath_output,
-                               paste0("HFR_GLOBAL_output_",
-                                      pd,
+                               paste0("HFR_GLOBAL_",
+                                      pd, "_output_",
                                       format(Sys.time(),"%Y%m%d.%H%M"),
                                       ".csv")),
                      na = "")

@@ -168,7 +168,7 @@
     package_check("jsonlite")
 
     df_levels <- baseurl %>%
-      paste0(.,"api/dataStore/dataSetAssignments/ous") %>%
+      paste0(.,"api/dataStore/dataSetAssignments/orgUnitLevels") %>%
       httr::GET(httr::authenticate(username,password)) %>%
       httr::content("text") %>%
       jsonlite::fromJSON(flatten=TRUE) %>%

@@ -51,7 +51,7 @@
 
 #' Identify active mechanisms by OU
 #'
-#' @param curr_fy current fiscal year to filter by, default = 2019
+#' @param curr_fy current fiscal year to filter by, default = 2020
 #' @param mechid mechanism id to filter by, optional
 #' @param extract variable to extract from the mechanism table, optional
 #' @param baseurl API base url
@@ -67,7 +67,7 @@
 #'  #uid for a particular mechanism
 #'   identify_mechs(mechid = 00001, extract = "uid") }
 
-    identify_mechs <- function(curr_fy = 2019, mechid = NULL, extract = NULL, baseurl = "https://final.datim.org/"){
+    identify_mechs <- function(curr_fy = 2020, mechid = NULL, extract = NULL, baseurl = "https://final.datim.org/"){
 
       package_check("curl")
       package_check("httr")
@@ -262,7 +262,7 @@
 #' @param org_lvl org hierarchy level, eg facility is level 7 in country X, recommend using `identify_levels()`
 #' @param org_type organization type, either facility (default) or community
 #' @param type_hts is the API call for HTS indicators ("results", "targets"), default = NULL
-#' @param curr_fy current fiscal year, default = 2019
+#' @param curr_fy current fiscal year, default = 2020
 #' @param baseurl API base url, default = https://final.datim.org/
 #'
 #' @export
@@ -278,7 +278,7 @@
 #'  #gen url
 #'   myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts = NULL) }
 
-  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = NULL, curr_fy = 2019, baseurl = "https://final.datim.org/"){
+  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = NULL, curr_fy = 2020, baseurl = "https://final.datim.org/"){
 
     fy_pd <- paste0(curr_fy-1, "Oct")
 

@@ -3,7 +3,7 @@
   ## NOTE: Needs to be updated each quarter for updated Results/Targets/Gap Target
 
   #DATIM username
-    myuser <- ""
+    myuser <- "achafetz_global"
 
   #identify full set of OU/country list for all USAID targets
     ous <- identify_levels(username = myuser, password = mypwd(myuser)) %>%

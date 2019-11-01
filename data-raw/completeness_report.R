@@ -12,7 +12,7 @@
 # VARIABLES ---------------------------------------------------------------
 
   #global file path
-    path <- "out/joint/HFR_GLOBAL_PD12_output_20191003.1624.csv"
+    path <- "out/joint/HFR_GLOBAL_output_PD1220191004.1513.csv"
 
   #numeric variables to convert from string
     vars_num <- c("mer_results", "mer_targets", "targets_gap", "weekly_targets", "weekly_targets_gap", "val")

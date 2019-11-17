@@ -4,11 +4,11 @@
 \alias{identify_mechs}
 \title{Identify active mechanisms by OU}
 \usage{
-identify_mechs(curr_fy = 2019, mechid = NULL, extract = NULL,
+identify_mechs(curr_fy = 2020, mechid = NULL, extract = NULL,
   baseurl = "https://final.datim.org/")
 }
 \arguments{
-\item{curr_fy}{current fiscal year to filter by, default = 2019}
+\item{curr_fy}{current fiscal year to filter by, default = 2020}
 
 \item{mechid}{mechanism id to filter by, optional}
 

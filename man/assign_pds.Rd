@@ -4,12 +4,10 @@
 \alias{assign_pds}
 \title{Add HFR Period column}
 \usage{
-assign_pds(df, fy_start = 2019)
+assign_pds(df)
 }
 \arguments{
 \item{df}{HFR data frame with date}
-
-\item{fy_start}{start fiscal year, creates periods for 3 years, default = 2019}
 }
 \description{
 Add HFR Period column

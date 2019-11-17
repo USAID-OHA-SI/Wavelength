@@ -19,7 +19,8 @@ identify_pds <- function(fy = NULL){
 
   df_dates <- dplyr::bind_cols(date = date, hfr_pd = hfr_pd) %>%
     dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
-                    stringr::str_sub(., 1, 4) %>% as.numeric) %>%
+                    stringr::str_sub(., 1, 4) %>% as.numeric,
+                  fy = ifelse(hfr_pd == 1 & lubridate::month(date) == 9, fy + 1, fy)) %>%
     dplyr::select(date, fy, hfr_pd)
 
   return(df_dates)
@@ -30,7 +31,6 @@ identify_pds <- function(fy = NULL){
 #' Add HFR Period column
 #'
 #' @param df HFR data frame with date
-#' @param fy_start start fiscal year, creates periods for 3 years, default = 2019
 #'
 #' @export
 #'
@@ -38,12 +38,21 @@ identify_pds <- function(fy = NULL){
 #' \dontrun{
 #'  df <- assign_pds(df) }
 
-assign_pds <- function(df, fy_start = 2019){
+assign_pds <- function(df){
 
   if(!var_exists(df, "date"))
     stop("`date` column does not exist in the supplied data frame")
 
-  pds <- purrr::map_dfr(c(fy_start, fy_start + 1, fy_start + 2), identify_pds) %>%
+  fy_start <- min(df$date) %>%
+    lubridate::quarter(with_year = TRUE, fiscal_start = 10) %>%
+    stringr::str_sub(1, 4) %>%
+    as.numeric()
+  fy_end   <- max(df$date) %>%
+    lubridate::quarter(with_year = TRUE, fiscal_start = 10) %>%
+    stringr::str_sub(1, 4) %>%
+    as.numeric()
+
+  pds <- purrr::map_dfr(c(fy_start:fy_end), identify_pds) %>%
     dplyr::rename_at(dplyr::vars(fy, hfr_pd), ~ paste0(., "_drop"))
 
   df <- df %>%

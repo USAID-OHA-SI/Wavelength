@@ -21,6 +21,8 @@ munge_string <- function(df){
                                                     "35mo" = "3-5 months",
                                                     "o6mo" = "6 months or more"
                                                     #.default = as.character(NA)
-                                                    ))
+                                                    ),
+                  mech_code = stringr::str_remove(mech_code, "\\.")
+                  )
   return(df)
 }

@@ -1,11 +1,12 @@
 #' Import and Munge HFR Standard Templates
 #'
 #' @param filepath filepath to sumbitted template
+#' @param folderpath_output if a txt output is desired, provide the full path to the folder
 #'
 #' @export
 
 
-process_template <- function(filepath){
+process_template <- function(filepath, folderpath_output = NULL){
 
   #import template sheet(s)
     df <- import_hfr(filepath)
@@ -29,12 +30,12 @@ process_template <- function(filepath){
 
   #aggregate to combine rows where needed (minimize row count)
     df <- df %>%
-      dplyr::group_by_if(is.character) %>%
+      dplyr::group_by_at(dplyr::vars(setdiff(names(df), "val"))) %>%
       dplyr::summarise_at(dplyr::vars(val), sum, na.rm = TRUE) %>%
       dplyr::ungroup()
 
   #export
-    #TODO
+    export_hfr(df, folderpath_output)
 
   invisible(df)
 }

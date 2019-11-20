@@ -22,7 +22,7 @@ munge_string <- function(df){
                                                     "o6mo" = "6 months or more"
                                                     #.default = as.character(NA)
                                                     ),
-                  mech_code = stringr::str_remove(mech_code, "\\.")
+                  mech_code = stringr::str_remove(mech_code, "\\.0")
                   )
   return(df)
 }

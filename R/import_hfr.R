@@ -18,6 +18,9 @@ import_hfr <- function(filepath){
     stringr::str_subset("HFR") %>%
     purrr::map_dfr(.f = ~ readxl::read_excel(filepath, sheet = .x, skip = 1, col_types = "text"))
 
+  if("mechanismid" %in% names(df))
+    df <- dplyr::rename(df, mech_code = mechanismid)
+
   return(df)
 
 }

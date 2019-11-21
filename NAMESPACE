@@ -2,6 +2,7 @@
 
 export("%>%")
 export(add_ou)
+export(aggr_hfr)
 export(append_sources)
 export(apply_agebands)
 export(assign_pds)

@@ -25,14 +25,8 @@ process_template <- function(filepath, folderpath_output = NULL){
       fix_date() %>%
       assign_pds()
 
-  #convert to numeric
-    df <- dplyr::mutate(df, val = as.double(val))
-
   #aggregate to combine rows where needed (minimize row count)
-    df <- df %>%
-      dplyr::group_by_at(dplyr::vars(setdiff(names(df), "val"))) %>%
-      dplyr::summarise_at(dplyr::vars(val), sum, na.rm = TRUE) %>%
-      dplyr::ungroup()
+    df <- aggr_hfr(df)
 
   #export
     export_hfr(df, folderpath_output)

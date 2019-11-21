@@ -4,10 +4,12 @@
 \alias{process_template}
 \title{Import and Munge HFR Standard Templates}
 \usage{
-process_template(filepath)
+process_template(filepath, folderpath_output = NULL)
 }
 \arguments{
 \item{filepath}{filepath to sumbitted template}
+
+\item{folderpath_output}{if a txt output is desired, provide the full path to the folder}
 }
 \description{
 Import and Munge HFR Standard Templates

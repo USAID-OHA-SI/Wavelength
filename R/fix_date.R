@@ -1,4 +1,3 @@
-
 #' Convert dates to date format
 #'
 #' @param df HFR data frame imported via `import_hfr()`
@@ -7,43 +6,23 @@
 
 fix_date <- function(df){
 
-  if(is_excel_date(df)){
-    df <- dplyr::mutate(df, date = as.Date(as.numeric(date), origin = "1899-12-30"))
-  } else if(is_iso_date(df)){
-    df <- dplyr::mutate(df, date = as.Date(date))
-  } else {
-    df <- dplyr::mutate(df, date = as.Date(NA))
-  }
+  #adjust Excel formated dates
+    df_date_excel <- df %>%
+      dplyr::filter(stringr::str_detect(date, "[:digit:]{5}")) %>%
+      dplyr::mutate(date = as.Date(as.numeric(date), origin = "1899-12-30"))
 
-  return(df)
-}
+  #adjust ISO formated dates
+    df_date_iso <- df %>%
+      dplyr::filter(stringr::str_detect(date,  "[:digit:]{4}-")) %>%
+      dplyr::mutate(date = as.Date(date))
 
+  #replace other dates as NA
+    df_date_other <- df %>%
+      dplyr::filter(stringr::str_detect(date,  "[:digit:]{4}-|[:digit:]{5}", negate = TRUE)) %>%
+      dplyr::mutate(date = as.Date(NA))
 
+  #bind all types together
+    df_date_fixed <- dplyr::bind_rows(df_date_excel, df_date_iso, df_date_other)
 
-#' Determine if dates are in Excel format
-#'
-#' @param df HFR data frame imported via `import_hfr()`
-#'
-#' @export
-
-is_excel_date <- function(df){
-  df %>%
-    dplyr::distinct(date) %>%
-    dplyr::pull() %>%
-    stringr::str_detect("[:digit:]{5}") %>%
-    all() == TRUE
-}
-
-#' Determine if dates are in Excel format
-#'
-#' @param df  HFR data frame imported via `import_hfr()`
-#'
-#' @export
-
-is_iso_date <- function(df){
-  df %>%
-    dplyr::distinct(date) %>%
-    dplyr::pull() %>%
-    stringr::str_detect("[:digit:]{4}-") %>%
-    all() == TRUE
+  return(df_date_fixed)
 }

@@ -14,9 +14,9 @@ import_hfr <- function(filepath){
 
   df <- filepath %>%
     readxl::excel_sheets() %>%
-    setdiff("meta") %>%
-    #purrr::set_names() %>%
-    purrr::map_dfr(.f = ~ readxl::read_excel(filepath, sheet = .x, skip = 1, col_types = "text")) #.id = "sheet"
+    #setdiff("meta") %>%
+    stringr::str_subset("HFR") %>%
+    purrr::map_dfr(.f = ~ readxl::read_excel(filepath, sheet = .x, skip = 1, col_types = "text"))
 
   return(df)
 

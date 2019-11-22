@@ -463,7 +463,7 @@
       if(!!paste0("orglvl_", ou_psnu) %in% names(df_combo))
         df_combo <- dplyr::rename(df_combo, psnu = !!paste0("orglvl_", ou_psnu))
 
-      if(ou_psnu == ou_comm && !!paste0("orglvl_", ou_comm) %in% names(df_combo)){
+      if(ou_psnu == ou_comm && !!!paste0("orglvl_", ou_comm) %in% names(df_combo)){
         df_combo <- df_combo %>%
           tibble::add_column(community = as.character(NA), .after = "psnu") %>%
           dplyr::mutate(community = psnu)

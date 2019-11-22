@@ -289,7 +289,7 @@
              #"dimension=SH885jaRe0o:", mech_uid, "&", #Funding Mechanism
              "dimension=bw8KHXzxd9i:NLV6dy7BE2O&", #Funding Agency -> USAID
              "dimension=SH885jaRe0o&", #Funding Mechanism
-             "dimension=BOyWrF33hiR&", #Implementing Partner
+             #"dimension=BOyWrF33hiR&", #Implementing Partner
              "dimension=xRo1uG2KJHk&", #Age: <15/15+ (Coarse)
              "dimension=jyUTj5YC3OK&") #Cascade sex
 
@@ -477,14 +477,16 @@
 
     #clean variables and variable names
       df_combo <- df_combo %>%
-        dplyr::rename(fy = Period, implementingmechanismname = `Funding Mechanism`, fundingagency = `Funding Agency`,
-                      primepartner = `Implementing Partner`, agecoarse = `Age: <15/15+  (Coarse)`,
+        dplyr::rename(fy = Period, mech_name = `Funding Mechanism`, fundingagency = `Funding Agency`,
+                      #primepartner = `Implementing Partner`,
+                      agecoarse = `Age: <15/15+  (Coarse)`,
                       sex = `Cascade sex`, indicator = `Technical Area`, type = `Targets / Results`) %>%
         dplyr::select(-dplyr::matches("Disaggregation Type", "Type of organisational unit")) %>%
-        tibble::add_column(mechanismid = as.character(NA), .before = "implementingmechanismname") %>%
+        tibble::add_column(mech_code = as.character(NA), .before = "mech_name") %>%
+        tidyr::separate(mech_name, c(NA, "mech_code", "mech_name"), sep = " - ", extra = "merge") %>%
         dplyr::mutate(fy = stringr::str_sub(fy,-4), #%>% as.integer,
-                      mechanismid = stringr::str_extract(implementingmechanismname, "^[:alnum:]{5,6}"),
-                      implementingmechanismname = stringr::str_remove(implementingmechanismname, "^[:alnum:]{5,6} - "),
+                      mech_code = stringr::str_extract(mech_name, "^[:alnum:]{5,6}"),
+                      mech_name = stringr::str_remove(mech_name, "^[:alnum:]{5,6} - "),
                       agecoarse = stringr::str_remove(agecoarse, " \\(Inclusive\\)"),
                       sex = stringr::str_remove(sex, "s$"),
                       type = stringr::str_replace(type, " ", "_") %>% tolower) %>%

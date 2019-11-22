@@ -4,10 +4,12 @@
 \alias{fix_date}
 \title{Convert dates to date format}
 \usage{
-fix_date(df)
+fix_date(df, round_date = FALSE)
 }
 \arguments{
 \item{df}{HFR data frame imported via \code{import_hfr()}}
+
+\item{round_date}{rounds date to the nearest HFRweek start (for non-compliance), default = FALSE}
 }
 \description{
 Convert dates to date format

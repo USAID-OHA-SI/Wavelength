@@ -485,8 +485,6 @@
         tibble::add_column(mech_code = as.character(NA), .before = "mech_name") %>%
         tidyr::separate(mech_name, c(NA, "mech_code", "mech_name"), sep = " - ", extra = "merge") %>%
         dplyr::mutate(fy = stringr::str_sub(fy,-4), #%>% as.integer,
-                      mech_code = stringr::str_extract(mech_name, "^[:alnum:]{5,6}"),
-                      mech_name = stringr::str_remove(mech_name, "^[:alnum:]{5,6} - "),
                       agecoarse = stringr::str_remove(agecoarse, " \\(Inclusive\\)"),
                       sex = stringr::str_remove(sex, "s$"),
                       type = stringr::str_replace(type, " ", "_") %>% tolower) %>%

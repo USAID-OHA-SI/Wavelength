@@ -2,7 +2,7 @@
 ## AUTHOR:   A.CHAFETZ | USAID
 ## PURPOSE:  OU completeness report
 ## DATE:     2019-10-03
-## UPDATED:  2019-10-14
+## UPDATED:  2019-11-23
 
 
 # DEPENDENCIES ------------------------------------------------------------
@@ -12,7 +12,7 @@
 # VARIABLES ---------------------------------------------------------------
 
   #global file path
-    path <- "out/joint/HFR_GLOBAL_output_PD1220191004.1513.csv"
+    path <- "out/joint/HFR_GLOBAL_thru2020.01_output_20191123.0801.csv"
 
   #numeric variables to convert from string
     vars_num <- c("mer_results", "mer_targets", "targets_gap", "weekly_targets", "weekly_targets_gap", "val")
@@ -36,12 +36,16 @@
   #adjust numeric variables and fix issue with lines w/ HTS_TST POS
     df_glob <- df_glob %>%
       dplyr::mutate_at(dplyr::vars(vars_num), as.numeric) %>%
-      dplyr::mutate(indicator = ifelse(indicator == "HTS_TST POS", "HTS_TST_POS", indicator))
+      dplyr::mutate_at(dplyr::vars(fy, hfr_pd), as.integer)
+
+  #adjust period
+    df_glob <- dplyr::mutate(df_glob, hfr_pd = fy + (hfr_pd/100))
 
   #filter out PD 8 (not officially collected) & restrict to OU's in list; shorten to DRC
     df_glob <-  df_glob %>%
-      dplyr::filter(hfr_pd != "8",
-                    operatingunit %in% ou_lst) %>%
+      dplyr::filter(hfr_pd > 2019.08,
+                    operatingunit %in% ou_lst
+                    ) %>%
       dplyr::mutate(operatingunit = ifelse(operatingunit == "Democratic Republic of the Congo", "DRC", operatingunit))
 
   #create denom for TX_MMD
@@ -86,8 +90,8 @@
 
   #clean for export to Excel (clipr - value to clipboard)
     df_glob_sites_comp %>%
+      dplyr::filter(hfr_pd >= 2019.11) %>%
       dplyr::select(-c(mer_targets, val, target_sitecnt, hfr_sitecnt)) %>%
-      dplyr::mutate(hfr_pd = stringr::str_pad(hfr_pd, 2, pad = "0")) %>%
       dplyr::arrange(operatingunit, indicator, hfr_pd) %>%
       tidyr::unite("indicator", c("indicator", "hfr_pd"), sep = "_pd") %>%
       dplyr::bind_rows(df_glob_sites_n) %>%

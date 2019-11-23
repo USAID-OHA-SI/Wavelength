@@ -129,7 +129,7 @@
       purrr::pluck("organisationUnits")
 
     regs <- baseurl %>%
-      paste0("api/organisationUnits?filter=level:eq:4&filter=name:in:[Thailand,Laos,China,Nepal,Senegal,ElSalvador,Guatemala,Honduras,Nicaragua,Panama]") %>%
+      paste0("api/organisationUnits?filter=level:eq:4&filter=name:in:[Thailand,Laos,Senegal,Guatemala,Nicaragua,Panama]") %>% #China,Nepal,ElSalvador,Honduras,
       httr::GET(httr::authenticate(username,password)) %>%
       httr::content("text") %>%
       jsonlite::fromJSON(flatten=TRUE) %>%

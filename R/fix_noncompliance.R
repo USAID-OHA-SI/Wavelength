@@ -14,10 +14,22 @@ fix_noncompliance <- function(df){
                                                          "25-29", "35-39", "40-44", "45-49",
                                                          "50+") ~ "15+",
                                         TRUE ~ agecoarse),
-           otherdisaggregate = dplyr::case_when(otherdisaggregate %in% c("MSM", "MSW", "TG",
+                  otherdisaggregate = dplyr::case_when(otherdisaggregate %in% c("MSM", "MSW", "TG",
                                                                          "TG-SW", "Female Non-KP",
                                                                          "FSW", "Male Non-KP") ~ as.character(NA),
-                                                TRUE ~ otherdisaggregate))
+                                                TRUE ~ otherdisaggregate),
+                  #Laos
+                  indicator = stringr::str_replace_all(indicator, "-", "_"),
+                  #Lesotho
+                  indicator = ifelse(indicator == "HTS_POS", "HTS_TST_POS", indicator),
+                  #Vietnam
+                  indicator = stringr::str_replace(indicator, "MMS", "MMD"),
+                  #South Sudan
+                  val = dplyr::na_if(val, "N/A"),
+                  val = dplyr::na_if(val, "M/A")
+
+                  )
+
 
   return(df)
 }

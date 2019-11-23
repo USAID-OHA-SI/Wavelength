@@ -43,11 +43,11 @@ assign_pds <- function(df){
   if(!var_exists(df, "date"))
     stop("`date` column does not exist in the supplied data frame")
 
-  fy_start <- min(df$date) %>%
+  fy_start <- min(df$date, na.rm = TRUE) %>%
     lubridate::quarter(with_year = TRUE, fiscal_start = 10) %>%
     stringr::str_sub(1, 4) %>%
     as.numeric()
-  fy_end   <- max(df$date) %>%
+  fy_end   <- max(df$date, na.rm = TRUE) %>%
     lubridate::quarter(with_year = TRUE, fiscal_start = 10) %>%
     stringr::str_sub(1, 4) %>%
     as.numeric()

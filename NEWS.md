@@ -1,4 +1,4 @@
-# Wavelength (development version)
+# Wavelength 1.0.0
 
 # Wavelength 0.0.0.9000
 

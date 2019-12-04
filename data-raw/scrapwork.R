@@ -20,6 +20,15 @@
                                     folderpath_output = "out/DATIM"))
 
 
+# Process HFR submissions -------------------------------------------------
+
+    (files <- list.files("ou_submissions", full.names = TRUE))
+
+    df_hfr <- purrr::map_dfr(files, ~ process_template(.x, round_hfrdate = TRUE))
+
+    df_hfr %>%
+      readr::write_csv(paste0("out/processed/HFR_2020.01_Global_",format(Sys.Date(), "%Y%m%d"), ".csv"), na = "")
+
 # Combine HFR & DATIM -----------------------------------------------------
 
   ## NOTE: this creates a global file,
@@ -28,10 +37,11 @@
     path <- "../Downloads/HFR_FILES"
 
   #append DATIM onto HFR (map so completes for all OUs in folderpath_hfr)
-    df <- append_sources(folderpath_hfr = path,
+    df <- append_sources(folderpath_hfr = "out/processed",
                          folderpath_datim = "out/DATIM",
-                         start_date = "2019-06-03",
-                         weeks = 13,
+                         start_date = "2019-09-30",
+                         weeks = 4,
+                         max_date = TRUE,
                          folderpath_output = "out/joint")
 
 # Integrity Checks --------------------------------------------------------

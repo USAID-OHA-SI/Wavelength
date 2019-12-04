@@ -23,7 +23,7 @@ append_sources <- function(folderpath_hfr,
   hfr_files_newest <- list.files(folderpath_hfr, full.names = TRUE) %>%
     tibble::enframe(name = NULL, value = "full_path") %>%
     dplyr::mutate(name = basename(full_path) %>% stringr::str_remove_all("HF(R|D)_|\\.csv")) %>%
-    tidyr::separate(name, c("ou", "date"), sep = "_", extra = "drop") %>%
+    tidyr::separate(name, c(NA, "ou", "date"), sep = "_", extra = "drop") %>%
     dplyr::mutate(date = lubridate::as_date(date)) %>%
     dplyr::arrange(ou) %>%
     dplyr::group_by(ou) %>%
@@ -189,7 +189,7 @@ append_sources <- function(folderpath_hfr,
 # EXPORT ------------------------------------------------------------------
 
 
-  if(!is.null(folderpath_output))
+  if(!is.null(folderpath_output)){
 
     pd <- df_hfr %>%
       dplyr::distinct(fy, hfr_pd) %>%
@@ -199,11 +199,14 @@ append_sources <- function(folderpath_hfr,
 
     readr::write_csv(df_hfr,
                      file.path(folderpath_output,
-                               paste0("HFR_GLOBAL_",
-                                      pd, "_output_",
+                               paste0("HFR_",
+                                      pd, "_Global_output_",
                                       format(Sys.time(),"%Y%m%d.%H%M"),
                                       ".csv")),
                      na = "")
+  }
+
+
 
   invisible(df_hfr)
 

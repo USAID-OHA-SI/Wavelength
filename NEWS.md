@@ -1,5 +1,6 @@
 # Wavelength 2.0.0
 * Rename functions to conform to a model of `hfr_*()`
+* Added function to read in HFR processed/output file, `hfr_read()`
 
 # Wavelength 1.0.0
 * Update with period 2020.01 with standardized template

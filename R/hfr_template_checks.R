@@ -21,7 +21,7 @@ is_metatab <- function(filepath){
 #' It be the Operating Unit (OU), Period, template version, or type, eg wide or long.
 #'
 #' @param filepath filepath to sumbitted template
-#' @param type type of meta data requesting: ou, period, version, type (default)
+#' @param meta_type type of meta data requesting: ou, period, version, type (default)
 #'
 #' @export
 #'

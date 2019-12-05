@@ -1,8 +1,0 @@
-ind,indicator,disaggregate,otherdisaggregate
-HTS_TST.Total tested,HTS_TST,Total Numerator,
-HTS_TST.Total Index Testing,HTS_INDEX,Total Numerator,
-HTS_TST_POS.Total HIV positives,HTS_TST_POS,Total Numerator,
-HTS_TST_POS.Total Index Positives,HTS_INDEX_POS,Total Numerator,
-TX_NEW.Total TX_NEW,TX_NEW,Total Numerator,
-TX_NEW.Same day initiation,TX_SDI,Days,0
-TX_NEW.Within one week,TX_SDI,Days,1-7

@@ -1,3 +1,5 @@
+# Wavelength 2.0.0
+
 # Wavelength 1.0.0
 * update with period 2020.01 with standardized template
 * Added function to import standardized template, `import_hfr()`

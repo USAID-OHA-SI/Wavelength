@@ -25,7 +25,8 @@ Imports:
     stringr,
     readr,
     purrr,
-    lubridate
+    lubridate,
+    vroom
 Suggests: 
     curl,
     httr,

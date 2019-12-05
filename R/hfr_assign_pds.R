@@ -52,7 +52,7 @@ hfr_assign_pds <- function(df){
     stringr::str_sub(1, 4) %>%
     as.numeric()
 
-  pds <- purrr::map_dfr(c(fy_start:fy_end), identify_pds) %>%
+  pds <- purrr::map_dfr(c(fy_start:fy_end), hfr_identify_pds) %>%
     dplyr::rename_at(dplyr::vars(fy, hfr_pd), ~ paste0(., "_drop"))
 
   df <- df %>%

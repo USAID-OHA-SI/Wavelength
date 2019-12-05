@@ -26,7 +26,9 @@ hfr_fix_noncompliance <- function(df){
                   indicator = stringr::str_replace(indicator, "MMS", "MMD"),
                   #South Sudan
                   val = dplyr::na_if(val, "N/A"),
-                  val = dplyr::na_if(val, "M/A")
+                  val = dplyr::na_if(val, "M/A"),
+                  #CDI
+                  indicator = ifelse(indicator == "TX_NEW_NewHIV", "TX_NEW", indicator)
 
                   )
 

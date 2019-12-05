@@ -1,7 +1,8 @@
 # Wavelength 2.0.0
+* Rename functions to conform to a model of `hfr_*()`
 
 # Wavelength 1.0.0
-* update with period 2020.01 with standardized template
+* Update with period 2020.01 with standardized template
 * Added function to import standardized template, `import_hfr()`
 * Added function to adjust wide template to long, `gather_hfr()`
 * Added function to handle adjustments to indicator names, age, sex, and mecahnism, `munge_string()`

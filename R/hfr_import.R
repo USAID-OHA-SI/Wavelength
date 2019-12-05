@@ -10,7 +10,7 @@
 #'   filepath <- "~/WeeklyData/Raw/KEN_Weekly.xlsx"
 #'   df_hfr <- (filepath) }
 
-import_hfr <- function(filepath){
+hfr_import <- function(filepath){
 
   df <- filepath %>%
     readxl::excel_sheets() %>%

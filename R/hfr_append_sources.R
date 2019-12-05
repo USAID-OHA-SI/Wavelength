@@ -142,7 +142,7 @@ append_sources <- function(folderpath_hfr,
   dates <- lubridate::as_date(start_date) %>% seq(by = 7, length.out = weeks)
   df_datim_rpt <- purrr::map_dfr(.x = dates,
                                  .f = ~dplyr::mutate(df_datim, date = .x)) %>%
-    assign_pds()
+    hfr_assign_pds()
 
   rm(df_datim, dates)
 

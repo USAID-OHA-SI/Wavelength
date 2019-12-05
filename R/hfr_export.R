@@ -8,9 +8,9 @@
 #' @examples
 #' \dontrun{
 #'  #write output
-#'    export_hfr(df_tza, "TZA", "~/WeeklyData") }
+#'    hfr_export(df_tza, "TZA", "~/WeeklyData") }
 
-export_hfr <- function(df, folderpath_output = NULL){
+hfr_export <- function(df, folderpath_output = NULL){
 
   if(!is.null(folderpath_output)){
 

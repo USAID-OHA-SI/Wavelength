@@ -1,11 +1,11 @@
 #' Convert dates to date format
 #'
-#' @param df HFR data frame imported via `import_hfr()`
+#' @param df HFR data frame imported via `hfr_import()`
 #' @param round_hfrdate rounds date to the nearest HFRweek start (for non-compliance), default = FALSE
 #'
 #' @export
 
-fix_date <- function(df, round_hfrdate = FALSE){
+hfr_fix_date <- function(df, round_hfrdate = FALSE){
 
   #adjust Excel formated dates
     df_date_excel <- df %>%
@@ -32,18 +32,18 @@ fix_date <- function(df, round_hfrdate = FALSE){
 
   #round date (fixes non-compliance)
    if(round_hfrdate == TRUE)
-     df_date_fixed <- round_date(df_date_fixed)
+     df_date_fixed <- hfr_round_date(df_date_fixed)
 
   return(df_date_fixed)
 }
 
 #' Round to nearest HFR date
 #'
-#' @param df df HFR data frame imported via `import_hfr()`
+#' @param df df HFR data frame imported via `hfr_import()`
 #'
 #' @export
 
-round_date <- function(df){
+hfr_round_date <- function(df){
   if(var_exists(df, "date")){
     df <- df %>%
       dplyr::mutate(date = dplyr::case_when(lubridate::wday(date) == 1 ~

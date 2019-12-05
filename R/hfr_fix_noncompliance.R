@@ -1,10 +1,10 @@
 #' Resolve issues with non-standard entries
 #'
-#' @param df HFR data frame imported via `import_hfr()`
+#' @param df HFR data frame imported via `hfr_import()`
 #'
 #' @export
 
-fix_noncompliance <- function(df){
+hfr_fix_noncompliance <- function(df){
   df <- df %>%
     #resolve issue with reporting for Thailand
     dplyr::mutate(indicator = dplyr::case_when(indicator == "HTS_TST ALL" ~ "HTS_TST",

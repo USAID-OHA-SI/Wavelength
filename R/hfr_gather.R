@@ -1,10 +1,10 @@
 #' Reshape HFR Data frame long
 #'
-#' @param df HFR data frame imported via `import_hfr()`
+#' @param df HFR data frame imported via `hfr_import()`
 #'
 #' @export
 
-gather_hfr <- function(df){
+hfr_gather <- function(df){
 
   #only need to gather if the data set is wide (will not have indicator as column)
 

@@ -1,10 +1,10 @@
 #' Aggregate HFR dataframe
 #'
-#' @param df HFR data frame imported via `import_hfr()`
+#' @param df HFR data frame imported via `hfr_import()`
 #'
 #' @export
 
-aggr_hfr <-function(df){
+hfr_aggr <-function(df){
 
   #convert to values to double
   df <- dplyr::mutate(df, val = as.double(val))

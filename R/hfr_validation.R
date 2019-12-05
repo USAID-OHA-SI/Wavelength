@@ -1,10 +1,10 @@
 #' Validation Checks
 #'
-#' @param df HFR data framed created by `process_template()``
+#' @param df HFR data framed created by `hfr_process_template()`
 #'
 #' @export
 
-run_checks <- function(df){
+hfr_validation <- function(df){
 
   #check headers
   check_names <- all(names(df) %in% c("date", "fy", "hfr_pd", "orgunit",

@@ -4,7 +4,7 @@
 #'
 #' @export
 
-identify_pds <- function(fy = NULL){
+hfr_identify_pds <- function(fy = NULL){
 
   if(is.null(fy))
     stop("Supply fiscal year, eg 2019")
@@ -36,9 +36,9 @@ identify_pds <- function(fy = NULL){
 #'
 #' @examples
 #' \dontrun{
-#'  df <- assign_pds(df) }
+#'  df <- hfr_assign_pds(df) }
 
-assign_pds <- function(df){
+hfr_assign_pds <- function(df){
 
   if(!var_exists(df, "date"))
     stop("`date` column does not exist in the supplied data frame")

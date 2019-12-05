@@ -7,30 +7,30 @@
 #' @export
 
 
-process_template <- function(filepath, round_hfrdate = FALSE, folderpath_output = NULL){
+hfr_process_template <- function(filepath, round_hfrdate = FALSE, folderpath_output = NULL){
 
   #import template sheet(s)
-    df <- import_hfr(filepath)
+    df <- hfr_import(filepath)
 
   #reshape wide to match long df (only affects wide format)
-    df <- gather_hfr(df)
+    df <- hfr_gather(df)
 
   #clean up string variables
-    df <- munge_string(df)
+    df <- hfr_munge_string(df)
 
   #resolve issues with non-standard data entry
-    df <- fix_noncompliance(df)
+    df <- hfr_fix_noncompliance(df)
 
   #adjust date & assign fy + pd
     df <- df %>%
-      fix_date(round_hfrdate) %>%
-      assign_pds()
+      hfr_fix_date(round_hfrdate) %>%
+      hfr_assign_pds()
 
   #aggregate to combine rows where needed (minimize row count)
-    df <- aggr_hfr(df)
+    df <- hfr_aggr(df)
 
   #export
-    export_hfr(df, folderpath_output)
+    hfr_export(df, folderpath_output)
 
   invisible(df)
 }

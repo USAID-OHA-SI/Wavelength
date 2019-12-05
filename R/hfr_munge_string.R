@@ -1,11 +1,11 @@
 #' clean up/standardize string text for indicators and disaggs
 #'
-#' @param df HFR data frame imported via `import_hfr()`
+#' @param df HFR data frame imported via `hfr_import()`
 #'
 #' @export
 #'
 
-munge_string <- function(df){
+hfr_munge_string <- function(df){
 
   df <- df %>%
     dplyr::mutate(indicator = toupper(indicator),

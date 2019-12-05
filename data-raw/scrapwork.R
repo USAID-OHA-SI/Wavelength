@@ -24,7 +24,7 @@
 
     (files <- list.files("ou_submissions", full.names = TRUE))
 
-    df_hfr <- purrr::map_dfr(files, ~ process_template(.x, round_hfrdate = TRUE))
+    df_hfr <- purrr::map_dfr(files, ~ hfr_process_template(.x, round_hfrdate = TRUE))
 
     df_hfr %>%
       readr::write_csv(paste0("out/processed/HFR_2020.01_Global_",format(Sys.Date(), "%Y%m%d"), ".csv"), na = "")

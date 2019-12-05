@@ -1,4 +1,19 @@
+# Wavelength 2.0.0
+* Rename functions to conform to a model of `hfr_*()`
+* Added function to read in HFR processed/output file, `hfr_read()`
+* Update README
+
 # Wavelength 1.0.0
+* Update with period 2020.01 with standardized template
+* Added function to import standardized template, `import_hfr()`
+* Added function to adjust wide template to long, `gather_hfr()`
+* Added function to handle adjustments to indicator names, age, sex, and mecahnism, `munge_string()`
+* Added function to address issues with submissions, `fix_noncompliance()`
+* Update `fix_date()` to handle different date formats submitted
+* Added function to rectify non-HFR week days submitted, `round_date()`
+* Update `assign_pds()` and `identify_pds()` to fix bug with fiscal year and be more automated
+* Add function to aggregate data to reduce rows, `aggr_hfr()`
+* Add function to formalize some of the data checks to the data, `run_checks()`
 
 # Wavelength 0.0.0.9000
 

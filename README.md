@@ -4,30 +4,27 @@
 
 ### OHA High Frequency Reporting Munging
 
-![workflow](https://user-images.githubusercontent.com/8933069/56661405-abb9e300-666f-11e9-8a25-eb9e9c370c4a.png)
+![HFR_Cycle](https://user-images.githubusercontent.com/8933069/70257042-92c1f600-1757-11ea-852a-69a6cb6beb61.png)
 
-
-This project is aimed at collecting and standardizing various High Frequency Reporting (HFR) data, i.e. monthly collection/submission of weekly data, from USAID PEPFAR operating units and partners. A standardized output will make it easier to conduct analysis at the HQ level across all the operating units USAID supports. The [guidance](https://docs.google.com/document/d/1-j4NP0iQBMuBs5Dpny-b3ax7GRo3144F8tM1OBu3Y38/edit?usp=sharing) as well as futher documentation and data can be found on [Google Drive](https://drive.google.com/open?id=14lcqRwZaR7ZhyhF2-NoAwuhF6p4dhVzc).
-
-Notes about each of the countries can be found in the [wiki](https://github.com/USAID-OHA-SI/Wavelength/wiki).
+This project is aimed at collecting and standardizing various High Frequency Reporting (HFR) data, i.e. monthly collection/submission of weekly data, from USAID PEPFAR operating units and partners. A standardized output will make it easier to conduct analysis at the HQ level across all the operating units USAID supports. As of period 2020.01, all submissions are required to be sent in either one of [two templates](https://drive.google.com/open?id=1k0KXIfSwyROCV4ULiZN3qhw6qYH3ekNA) in order to standardize the process. The [guidance](https://docs.google.com/document/d/1-j4NP0iQBMuBs5Dpny-b3ax7GRo3144F8tM1OBu3Y38/edit?usp=sharing) as well as futher documentation and data can be found on [Google Drive](https://drive.google.com/open?id=14lcqRwZaR7ZhyhF2-NoAwuhF6p4dhVzc).
 
 Available features and changes are noted in [NEWS.md](https://github.com/USAID-OHA-SI/Wavelength/blob/master/NEWS.md)
 
 ## Workflow
 
+![HFR_Process](https://user-images.githubusercontent.com/8933069/70255403-b9caf880-1754-11ea-8e0a-b47e4edb1279.png)
+
 The HFR process works on a four week cycle, called a period, detailed in the [HFR calendar](https://drive.google.com/file/d/13fNe1-5sw8VTiBHD7n_t0NyCvKWNKvlP/view?usp=sharing). At the end of each period, USAID implementing partners submit data via [submission templates](https://drive.google.com/open?id=1k0KXIfSwyROCV4ULiZN3qhw6qYH3ekNA) on key indicators data disaggrated by week to the in country USAID team who in turn send it to Washington. 
 
-A team in USAID Washington on the OHA/SIEI division, process the submission to ensure they follow the guidance and have no major errors. This processing occurs either via [Tableau Prep](https://drive.google.com/open?id=1s1rtVaJhPpTOyb_E_sPVBghiKEVE0fLM) or in R via this Wavelength package. 
+A team in USAID Washington on the OHA/SIEI division, process and validate the submission to ensure they follow the guidance and have no major errors. This processing occurs in R via this Wavelength package. The processed file is imported into a relational database that contains pertinent PEPFAR information, including PEPFAR MER results and targets from the latest quarter of the current year are added to the global HFR dataset
 
-After the data is standardized into tidy format, PEPFAR MER results and targets from the latest quarter of the current year are added to the global HFR dataset. This new dataset is then migrated into a Tableau workbook that provides a detailed look at trends over time and how weekly results compare the remaining weekly average targets needed to achieve the fiscal year targets.
+A [Tableau workbook](https://tableau.usaid.gov/#/views/HFRDashboard/Intro?:iid=1) located on USAID's Tableau server is linked to SQL View extract from the database. The standard visuals provide a detailed look at trends over time and how weekly results compare the remaining weekly average targets needed to achieve the fiscal year targets.
  
 ## Creating a flat file output for one or more Operating Units
 
-You can create a flat file by installing this package, `Wavelength` and running `unify_hfr()`. You will need to know the country ISO code, which you can [look up here](https://github.com/USAID-OHA-SI/Wavelength/blob/master/data-raw/ISOcodes_PEPFAR_Countries.csv). If you need to combine multiple partner files, you will need to utitlize the `map_dfr()` function from the `purrr` package. 
+You can create a flat file by installing this package, `Wavelength` and running `hfr_process_template()`. If you need to combine multiple country/partner files, you will need to utitlize the `map_dfr()` function from the `purrr` package. 
 
-Below is an example code to use to create a flat file for a country. In addition to the country ISO code, you will need the country/partner data files and to specify the output folder path where you want the file to be saved.
-
-NOTE: This currently only works for a handful of countries as most the processing to date occurs in Tableau Prep. Given the previous flexiblity around submissions, the templates may change each period and the scripts may need to be updated to account for the structural cahgnes 
+Below is an example code to use to create a flat file for a country submission. You will need the country/partner data files and to specify the output folder path where you want the file to be saved.
 
 
 ```{r}
@@ -43,25 +40,33 @@ NOTE: This currently only works for a handful of countries as most the processin
 ## EXAMPLE WITH ONE FILE
 
   #file path for the 
-    path <- "~/WeeklyData/Uganda"
+    path <- "~/WeeklyData/Saturn"
     output_folder <- "~/WeeklyData/Output"
-  #process Excel file for Uganda, ISO code = UGA
-    unify_hfr(ou_iso = "UGA", 
-              filepath = path, 
-              folderpath_output = output_folder)
+  #process Excel file for Saturn
+    hfr_process_template(path, output_folder)
             
 ## EXAMPLE WITH MULTIPLE FILES
 
   #install purrr if you don't already have it
     install.packages("purrr")
   #file path for the 
-    files <- list.file("~/WeeklyData/Tanzania", full.names = TRUE)
+    files <- list.file("~/WeeklyData", full.names = TRUE)
     output_folder <- "~/WeeklyData/Output"
-  #process Excel file for Tanzania, ISO code = TZA
+  #process Excel file for all submitted file in WeeklyData
     purrr::map_dfr(.x = files,
-                   .f = ~ unify_hfr(ou_iso = "TZA", 
-                                    filepath = .x, 
-                                    folderpath_output = output_folder))
+                   .f = ~ hfr_process_template(.x, output_folder)
+```
+## Reading in HFR data locally
+
+If you have an HFR dataset stored locally and want to read it into R, you can use the `hfr_read()` function. This function utiltizes `vroom` for quicker import times and makes adjustments for the various column types without R having to guess.
+
+```{r}
+## EXAMPLE READING IN A PROCESSED HFR FILE
+
+  #HFR file path
+    path <- "~/WeeklyData/Output/HFR_2020.01_Mars_20201123.csv"
+  #process Excel file for Saturn
+    df_hfr_mars <- hfr_read(path)
 ```
 
 ## Pulling DATIM data 
@@ -76,7 +81,7 @@ To run `extract_datim()` you will need to install additional packages (`keyringr
 #ACCESSING AND STORING DATIM DATA
 
   #identify the operating units you want to pull targets for
-    ou_list <- c("Kenya", "Ethiopia")
+    ou_list <- c("Saturn", "Mars")
   
   #provide your credentials
     myuser <- ""
@@ -86,7 +91,7 @@ To run `extract_datim()` you will need to install additional packages (`keyringr
                 .f = ~ extract_datim(
                                      ou_name = .x,
                                      username = myuser, 
-                                     password = mypwd(myuser), # or if not stored, just your password
+                                     password = mypwd(myuser), # or if not stored, just your password in quotes
                                      quarters_complete = 3, #current quarter of data availability
                                      folderpath_output = "out/DATIM" #path on your machine
                                      )
@@ -95,7 +100,7 @@ To run `extract_datim()` you will need to install additional packages (`keyringr
 
 ## Creating a global HFR (and MER) dataset
 
-The global HFR dataset that feeds into the Tableau workbook pulls from all the processed country HFR (all historic data to date) and the locally stored DATIM data. The `append_sources()` function brings together these data sources for the Tableau workbook. You willneed to have the HFR data stored in one folder and DATIM data stored in another. If you have countries with historic data but not for the current period, you should include those files in the HFR folder so they can be included in the global dataset.
+The global HFR dataset that feeds into the Tableau workbook on the server pulls from all the processed country HFR (all historic data to date) and the locally stored DATIM data. This process is now conducted in the database, but previously it was run locally. The `append_sources()` function brings together these data sources for the Tableau workbook. You will need to have the HFR data stored in one folder and DATIM data stored in another. If you have countries with historic data but not for the current period, you should include those files in the HFR folder so they can be included in the global dataset.
 
 
 ```{r}
@@ -105,7 +110,7 @@ The global HFR dataset that feeds into the Tableau workbook pulls from all the p
     df_combo <- append_sources(folderpath_hfr  = "out/processed",
                                folderpath_datim = "out/DATIM",
                                start_date = "2019-06-03",
-                               weeks = 13, #update with current HFR dates
+                               weeks = 4, #update with current HFR dates
                                max_date = TRUE,
                                folderpath_output = "out/joint")
 ```
@@ -115,11 +120,6 @@ Checks can can should be run on the global dataset, ensuring that everything was
   - ensuring dates all match the HFR reporting calendar
   - indicators are only HFR indicators and spelling match
   - disaggregate components (`agecoarse`, `sex`, and `otherdisaggregate`) are only what is noted in the codebook
-
-
-## Populating the HFR Tableau workbook 
-
-With the global dataset created, the [Tableau workbook](https://drive.google.com/drive/u/0/folders/1-V28fJK5XMu_DcaZXNf8Ot_441dADESG) can now be updated with the new data. At this point, country specific files are created and then distributed to country teams.
 
 
 ---

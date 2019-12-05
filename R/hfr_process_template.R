@@ -1,8 +1,8 @@
 #' Import and Munge HFR Standard Templates
 #'
 #' @param filepath filepath to sumbitted template
+#' @param round_hfrdate rounds date to the nearest HFRweek start (for non-compliance), default = FALSE
 #' @param folderpath_output if a txt output is desired, provide the full path to the folder
-#' @param round_date rounds date to the nearest HFRweek start (for non-compliance), default = FALSE
 #'
 #' @export
 

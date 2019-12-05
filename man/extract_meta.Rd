@@ -9,7 +9,7 @@ extract_meta(filepath, meta_type = "type")
 \arguments{
 \item{filepath}{filepath to sumbitted template}
 
-\item{type}{type of meta data requesting: ou, period, version, type (default)}
+\item{meta_type}{type of meta data requesting: ou, period, version, type (default)}
 }
 \description{
 Useful for pulling information about the template, whether

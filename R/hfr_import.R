@@ -8,7 +8,7 @@
 #' \dontrun{
 #' #identify whether template is long or wide
 #'   filepath <- "~/WeeklyData/Raw/KEN_Weekly.xlsx"
-#'   df_hfr <- (filepath) }
+#'   df_hfr <- hfr_import(filepath) }
 
 hfr_import <- function(filepath){
 

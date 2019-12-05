@@ -2,8 +2,6 @@
 #'
 #' List of column headers for the HFR Long Template
 #'
-#' @docType list
-#'
 #' @usage data(template_cols_long)
 #'
 #' @format A list of all headers
@@ -17,8 +15,6 @@
 #'
 #' List of column headers for the HFR Wide Template
 #'
-#' @docType list
-#'
 #' @usage data(template_cols_wide)
 #'
 #' @format A list of all headers
@@ -31,8 +27,6 @@
 #' Column Headers for HFR Indicator Meta Data
 #'
 #' List of column headers for the HFR Indicator Meta Data
-#'
-#' @docType list
 #'
 #' @usage data(template_cols_meta)
 #'

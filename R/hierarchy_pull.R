@@ -15,6 +15,10 @@
 #'   df <- hierarchy_pull(ouuid, username = myuser, password = mypwd(myuser)) }
 
 hierarchy_pull <- function(ou_uid, username, password, baseurl = "https://final.datim.org/"){
+
+  package_check("httr")
+  package_check("jsonlite")
+
   #compile url
   url <- paste0(baseurl,
                 "api/organisationUnits?filter=path:like:", ou_uid,
@@ -72,6 +76,9 @@ hierarchy_clean <- function(df){
 #' @export
 
 hierarchy_rename <- function(df, country, username, password, baseurl = "https://final.datim.org/"){
+
+  package_check("httr")
+  package_check("jsonlite")
 
   if(!country %in% unique(df$orglvl_3))
     df <- dplyr::filter(df, orglvl_4 == country)

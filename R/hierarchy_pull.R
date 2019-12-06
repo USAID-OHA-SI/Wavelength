@@ -16,8 +16,11 @@
 
 hierarchy_pull <- function(ou_uid, username, password, baseurl = "https://final.datim.org/"){
 
+  package_check("curl")
   package_check("httr")
   package_check("jsonlite")
+
+  stopifnot(curl::has_internet())
 
   #compile url
   url <- paste0(baseurl,
@@ -77,8 +80,11 @@ hierarchy_clean <- function(df){
 
 hierarchy_rename <- function(df, country, username, password, baseurl = "https://final.datim.org/"){
 
+  package_check("curl")
   package_check("httr")
   package_check("jsonlite")
+
+  stopifnot(curl::has_internet())
 
   if(!country %in% unique(df$orglvl_3))
     df <- dplyr::filter(df, orglvl_4 == country)

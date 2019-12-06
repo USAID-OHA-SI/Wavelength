@@ -18,7 +18,17 @@
                                     password = mypwd(myuser),
                                     quarters_complete = 3,
                                     folderpath_output = "out/DATIM"))
+  #pull hierarchy
+    baseurl <- "https://final.datim.org/"
+    ous <- baseurl %>%
+      paste0("api/organisationUnits?filter=level:eq:3") %>%
+      httr::GET(httr::authenticate(myuser,mypwd(myuser))) %>%
+      httr::content("text") %>%
+      jsonlite::fromJSON(flatten=TRUE) %>%
+      purrr::pluck("organisationUnits")
 
+    df_orgs <- purrr::map_dfr(.x = ous$id,
+                              .f = ~ hierarchy_compile(.x, myuser, mypwd(myuser)))
 
 # Process HFR submissions -------------------------------------------------
 

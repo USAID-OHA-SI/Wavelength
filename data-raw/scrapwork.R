@@ -29,6 +29,8 @@
 
     df_orgs <- purrr::map_dfr(.x = ous$id,
                               .f = ~ hierarchy_compile(.x, myuser, mypwd(myuser)))
+  #pull mechanism info
+    df_mech_offical <- pull_mech()
 
 # Process HFR submissions -------------------------------------------------
 

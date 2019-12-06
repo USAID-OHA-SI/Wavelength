@@ -1,5 +1,6 @@
 # Wavelength 2.1.0
 * Added function to extract all OU/country hierarchies, `hierarchy_pull()`
+* Added function to pull mechanism infomration from DATIM, `mech_pull()`
 
 # Wavelength 2.0.0
 * Rename functions to conform to a model of `hfr_*()`

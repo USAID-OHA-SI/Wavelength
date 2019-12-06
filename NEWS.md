@@ -1,4 +1,5 @@
 # Wavelength 2.1.0
+* Added function to extract all OU/country hierarchies, `hierarchy_pull()`
 
 # Wavelength 2.0.0
 * Rename functions to conform to a model of `hfr_*()`

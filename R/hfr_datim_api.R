@@ -158,7 +158,6 @@
 #' @param org_lvl org hierarchy level, eg facility is level 7 in country X, recommend using `identify_levels()`
 #' @param org_type organization type, either facility (default) or community
 #' @param type_hts is the API call for HTS indicators ("results", "targets"), default = NULL
-#' @param curr_fy current fiscal year, default = 2020
 #' @param baseurl API base url, default = https://final.datim.org/
 #'
 #' @export
@@ -174,18 +173,16 @@
 #'  #gen url
 #'   myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts = NULL) }
 
-  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = NULL, curr_fy = 2020, baseurl = "https://final.datim.org/"){
+  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = NULL, baseurl = "https://final.datim.org/"){
 
-    fy_pd <- paste0(curr_fy-1, "Oct")
+    fy_pd <- paste0(curr_fy()-1, "Oct")
 
     core_url <-
       paste0(baseurl,"api/29/analytics?",
              "dimension=pe:", fy_pd, "&", #period
              "dimension=ou:LEVEL-", org_lvl, ";", ou_uid, "&", #level and ou
-             #"dimension=SH885jaRe0o:", mech_uid, "&", #Funding Mechanism
              "dimension=bw8KHXzxd9i:NLV6dy7BE2O&", #Funding Agency -> USAID
              "dimension=SH885jaRe0o&", #Funding Mechanism
-             #"dimension=BOyWrF33hiR&", #Implementing Partner
              "dimension=xRo1uG2KJHk&", #Age: <15/15+ (Coarse)
              "dimension=jyUTj5YC3OK&") #Cascade sex
 

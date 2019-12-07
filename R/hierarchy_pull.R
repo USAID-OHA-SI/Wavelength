@@ -101,10 +101,12 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility
     df <- df %>%
-      dplyr::rename(orgunit = name,
-                    operatingunit = orglvl_3,
-                    snu1 = orglvl_4,
-                    orgunituid = id)
+      dplyr::rename_at(dplyr::vars(dplyr::matches("name|Organisation unit")), ~ "orgunit",
+                       dplyr::vars(dplyr::starts_with("id")), ~ "orgunituid")
+
+    df <- df %>%
+      dplyr::rename(operatingunit = orglvl_3,
+                    snu1 = orglvl_4)
 
     if(!!paste0("orglvl_", ou_country) %in% names(df)) {
       df <- df %>%
@@ -169,9 +171,9 @@ hierarchy_compile <- function(ou_uid, username, password, baseurl = "https://fin
 
   df <- hierarchy_clean(df)
 
-  ou_name <- unique(df$orglvl_3)
-  country_name <- dplyr::case_when(stringr::str_detect(ou_name, "Region") ~ unique(df$orglvl_4) %>% setdiff(NA),
-                                   TRUE ~ ou_name)
+  country_name <- unique(df$orglvl_3)
+  if(stringr::str_detect(ou_name, "Region"))
+    country_name <- unique(df$orglvl_4) %>% setdiff(NA)
 
   df <- purrr::map_dfr(.x = country_name,
                        .f = ~ hierarchy_rename(df, .x, username, password, baseurl))

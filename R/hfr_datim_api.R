@@ -242,7 +242,8 @@
       df_nonhts <-
         gen_url(mech_uid, ou_uid, ou_fac, type_hts = NULL, baseurl = baseurl) %>%
         get_datim_targets(username, password)
-      #remove VMMC_CIRC results w/ Age/Sex/HIVStatus since there is also Age/Sex used for Total Numerator
+
+    #remove VMMC_CIRC results w/ Age/Sex/HIVStatus since there is also Age/Sex used for Total Numerator
       if(!is.null(df_nonhts))
         df_nonhts <- dplyr::mutate(df_nonhts, Value = ifelse(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex/HIVStatus" & `Targets / Results` == "MER Results", NA, Value))
 
@@ -265,7 +266,8 @@
       df_hts_comm_results <-
         gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = "results", baseurl = baseurl) %>%
         get_datim_targets(username, password)
-      #add community level if same as psnu, otherwise will be missing
+
+    #add community level if same as psnu, otherwise will be missing
       if(!is.null(df_hts_comm_results) && ou_psnu == ou_comm)
         df_hts_comm_results <- dplyr::mutate(df_hts_comm_results, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
 
@@ -273,7 +275,8 @@
       df_hts_comm_targets <-
         gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = "targets", baseurl = baseurl) %>%
         get_datim_targets(username, password)
-      #add community level if same as psnu, otherwise will be missing
+
+    #add community level if same as psnu, otherwise will be missing
       if(!is.null(df_hts_comm_targets) && ou_psnu == ou_comm)
         df_hts_comm_targets <- dplyr::mutate(df_hts_comm_targets, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
 
@@ -301,6 +304,7 @@
         dplyr::filter(`HIV Test Status (Specific)` %in% c("HIV Positive (Specific)",
                                                           "Newly Identified Positive (Specific)")) %>%
         dplyr::mutate(`Technical Area` = "HTS_TST_POS")
+
     #bind and aggregate HTS and HTS_POS
       grp_keep <- names(df_combo_hts) %>%
         dplyr::setdiff(c("HTS Modality (USE ONLY for FY19 Results/FY20 Targets)",
@@ -319,25 +323,12 @@
       df_combo <- dplyr::bind_rows(df_nonhts, df_prep_comm_targets, df_combo_hts)
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility
-      df_combo <- df_combo %>%
-        dplyr::rename(orgunit = `Organisation unit`,
-                      operatingunit = orglvl_3,
-                      snu1 = orglvl_4)
+      country_name <- unique(df_combo$orglvl_3)
+      if(stringr::str_detect(ou_name, "Region"))
+        country_name <- unique(df_combo$orglvl_4) %>% setdiff(NA)
 
-      if(!!paste0("orglvl_", ou_psnu) %in% names(df_combo))
-        df_combo <- dplyr::rename(df_combo, psnu = !!paste0("orglvl_", ou_psnu))
-
-      if(ou_psnu == ou_comm && !!!paste0("orglvl_", ou_comm) %in% names(df_combo)){
-        df_combo <- df_combo %>%
-          tibble::add_column(community = as.character(NA), .after = "psnu") %>%
-          dplyr::mutate(community = psnu)
-      } else if (!!paste0("orglvl_", ou_comm) %in% names(df_combo)){
-        df_combo <- dplyr::rename(df_combo, community = !!paste0("orglvl_", ou_comm))
-      }
-
-      df_combo <- df_combo %>%
-        dplyr::select(orgunit, orgunituid, dplyr::everything()) %>%
-        dplyr::select(-dplyr::starts_with("orglvl_"))
+      df_combo <- purrr::map_dfr(.x = country_name,
+                                 .f = ~ hierarchy_rename(df_combo, .x, username, password, baseurl))
 
     #clean variables and variable names
       df_combo <- df_combo %>%
@@ -357,9 +348,6 @@
         dplyr::ungroup() %>%
         dplyr::mutate(fy = as.integer(fy)) %>%
         tidyr::spread(type, Value, fill = 0)
-
-    #periodize
-      df_combo <- periodize_targets(df_combo, quarters_complete)
 
     #export
       hfr_export(df_combo, folderpath_output, type = "DATIM", quarters_complete)

@@ -45,9 +45,7 @@
 #'   myuser <- "UserX"
 #'   identify_levels(username = myuser, password = mypwd())
 #'  #table for just Kenya
-#'    identify_levels("Kenya", username = myuser, password = mypwd())
-#'  #facility level of Kenya
-#'    identify_levels("Kenya", "facility", username = myuser, password = mypwd()) }
+#'    identify_levels("Kenya", username = myuser, password = mypwd()) }
 
   identify_levels <- function(ou = NULL, username, password, baseurl = "https://final.datim.org/"){
 

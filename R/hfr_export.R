@@ -37,11 +37,15 @@ hfr_export <- function(df, folderpath_output = NULL, type = "processed", quarter
       date <- format(Sys.Date(),"%Y%m%d")
 
     #get period for naming
-      pd <- dplyr::case_when(var_exists(df, "hfr_pd") ~ median(df$fy) + median(df$hfr_pd)/100,
-                             !is.null(quarters_complete) ~ paste0("FY",curr_fy()-2000, "Q", quarters_complete),
-                             TRUE ~ paste0("FY",curr_fy()-2000))
+      if(var_exists(df, "hfr_pd")) {
+        pd <- median(df$fy) + median(df$hfr_pd)/100
+      } else if (!is.null(quarters_complete)) {
+        pd <- paste0("FY",curr_fy()-2000, "Q", quarters_complete)
+      } else {
+        pd <- paste0("FY",curr_fy()-2000)
+      }
 
-    #compile file name
+     #compile file name
       filename <- paste("HFR", pd, iso, type, date, sep = "_") %>% paste0(".csv") %>% stringr::str_remove_all("__")
 
     #export data

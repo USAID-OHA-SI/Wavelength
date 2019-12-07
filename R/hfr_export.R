@@ -17,7 +17,13 @@ hfr_export <- function(df, folderpath_output = NULL, type = "processed", quarter
   if(!is.null(folderpath_output)){
 
     #get ISO code for file nameing
+    if(var_exists(df, "countryname")) {
+      ou <- unique(df$countryname)
+    } else if(var_exists(df, "operatingunit")) {
       ou <- unique(df$operatingunit)
+    } else {
+      ou <- NULL
+    }
 
       if(length(ou) == 1){
         iso <- dplyr::filter(iso_map, operatingunit == ou) %>%

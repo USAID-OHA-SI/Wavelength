@@ -7,6 +7,7 @@
 * Added `curr_fy()` to return the current fiscal year
 * Update `hfr_export()` to include period and handle all saving types
 * Removed unused function, `identify_mechs()`
+* Adjust `identify_ouuids()` to capture country UIDs under regional missions
 
 
 # Wavelength 2.0.0

@@ -104,20 +104,20 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
       dplyr::rename_at(dplyr::vars(dplyr::matches("name|Organisation unit")), ~ "orgunit",
                        dplyr::vars(dplyr::starts_with("id")), ~ "orgunituid")
 
-    df <- df %>%
-      dplyr::rename(operatingunit = orglvl_3,
-                    snu1 = orglvl_4)
-
-    if(!!paste0("orglvl_", ou_country) %in% names(df)) {
+    if(ou_country == 3) {
       df <- df %>%
-        tibble::add_column(countryname = NA, .after = "operatingunit") %>%
-        dplyr::mutate(df, countryname = !!paste0("orglvl_", ou_country))
+        tibble::add_column(countryname = as.character(NA), .after = "orglvl_3") %>%
+        dplyr::mutate(countryname = orglvl_3)
+    } else {
+      df <- df %>%
+        tibble::add_column(countryname = as.character(NA), .after = "orglvl_3") %>%
+        dplyr::mutate(countryname = orglvl_4)
     }
 
     if("orglvl_4" %in% names(df)) {
       df <- df %>%
         tibble::add_column(snu1 = NA, .after = "countryname") %>%
-        dplyr::mutate(df, snu1 = orglvl_4)
+        dplyr::mutate(snu1 = orglvl_4)
     }
 
     if(!!paste0("orglvl_", ou_psnu) %in% names(df))
@@ -134,9 +134,12 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
     if(!!paste0("orglvl_", ou_fac) %in% names(df))
       df <- dplyr::rename(df, facility = !!paste0("orglvl_", ou_fac))
 
+    df <- dplyr::rename(df, operatingunit = orglvl_3)
+
     df <- df %>%
       dplyr::select(orgunit, orgunituid, dplyr::everything()) %>%
       dplyr::select(-dplyr::starts_with("orglvl_"))
+
 
     return(df)
   } else {

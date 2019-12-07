@@ -4,10 +4,13 @@
 \alias{mech_pull}
 \title{Pull Partner/Mechanism Info from DATIM}
 \usage{
-mech_pull(fundingagency = TRUE, ou_sel = NULL)
+mech_pull(fundingagency = TRUE, ou_sel = NULL,
+  folderpath_output = NULL)
 }
 \arguments{
 \item{ou_sel}{option to specify an operating unit, default = NULL}
+
+\item{folderpath_output}{provide the full path to the folder for saving}
 
 \item{usaid_only}{specify if only USAID mechansism should be returned, default = TRUE}
 }

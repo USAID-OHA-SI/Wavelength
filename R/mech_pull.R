@@ -2,6 +2,7 @@
 #'
 #' @param usaid_only specify if only USAID mechansism should be returned, default = TRUE
 #' @param ou_sel option to specify an operating unit, default = NULL
+#' @param folderpath_output provide the full path to the folder for saving
 #'
 #' @export
 #'
@@ -10,7 +11,7 @@
 #' #pull mechanism/partner information
 #' df <- mech_pull() }
 
-mech_pull <- function(fundingagency = TRUE, ou_sel = NULL){
+mech_pull <- function(fundingagency = TRUE, ou_sel = NULL, folderpath_output = NULL){
 
   package_check("curl")
 
@@ -32,13 +33,16 @@ mech_pull <- function(fundingagency = TRUE, ou_sel = NULL){
       df <- dplyr::filter(df, fundingagency == "USAID")
 
   #rename variables to match MSD and remove mech_code from mech_name
-  df <- df %>%
-    dplyr::select(operatingunit = ou,
-                  fundingagency = agency,
-                  mech_code = code,
-                  primepartner = partner,
-                  mech_name = mechanism) %>%
-    dplyr::mutate(mech_name = stringr::str_remove(mech_name, "0000[0|1] |[:digit:]+ - "))
+    df <- df %>%
+      dplyr::select(operatingunit = ou,
+                    fundingagency = agency,
+                    mech_code = code,
+                    primepartner = partner,
+                    mech_name = mechanism) %>%
+      dplyr::mutate(mech_name = stringr::str_remove(mech_name, "0000[0|1] |[:digit:]+ - "))
+
+  #export
+    hfr_export(df, folderpath_output, type = "orghierarchy")
 
   return(df)
 }

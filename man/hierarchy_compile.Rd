@@ -5,7 +5,7 @@
 \title{Compile PEPFAR Hierarchy}
 \usage{
 hierarchy_compile(ou_uid, username, password,
-  baseurl = "https://final.datim.org/")
+  baseurl = "https://final.datim.org/", folderpath_output = NULL)
 }
 \arguments{
 \item{ou_uid}{UID for the country, recommend using \code{identify_ouuids()}}
@@ -15,6 +15,8 @@ hierarchy_compile(ou_uid, username, password,
 \item{password}{DATIM password, recommend using \code{mypwd()}}
 
 \item{baseurl}{API base url, default = https://final.datim.org/}
+
+\item{folderpath_output}{provide the full path to the folder for saving}
 }
 \description{
 Compile PEPFAR Hierarchy

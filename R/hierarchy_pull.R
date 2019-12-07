@@ -150,6 +150,7 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
 #' @param baseurl API base url, default = https://final.datim.org/
+#' @param folderpath_output provide the full path to the folder for saving
 #'
 #' @export
 #'
@@ -160,7 +161,7 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 #' #pull hierarchy (paths are all UIDs)
 #'   df <- hierarchy_compile(ouuid, username = myuser, password = mypwd(myuser)) }
 
-hierarchy_compile <- function(ou_uid, username, password, baseurl = "https://final.datim.org/"){
+hierarchy_compile <- function(ou_uid, username, password, baseurl = "https://final.datim.org/", folderpath_output = NULL){
 
   print(ou_uid)
 
@@ -174,6 +175,8 @@ hierarchy_compile <- function(ou_uid, username, password, baseurl = "https://fin
 
   df <- purrr::map_dfr(.x = country_name,
                        .f = ~ hierarchy_rename(df, .x, username, password, baseurl))
+
+  hfr_export(df, folderpath_output, type = "mechanisms")
 
   return(df)
 }

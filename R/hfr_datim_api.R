@@ -449,8 +449,7 @@
       df_combo <- periodize_targets(df_combo, quarters_complete)
 
     #export
-      df_combo <- hfr_export(df_combo, folderpath_output, quarters_complete)
-
+      hfr_export(df_combo, folderpath_output, type = "DATIM", quarters_complete)
 
     invisible(df_combo)
 

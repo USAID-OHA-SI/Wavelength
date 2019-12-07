@@ -2,6 +2,7 @@
 
 export("%>%")
 export(append_sources)
+export(curr_fy)
 export(extract_datim)
 export(extract_meta)
 export(gen_url)

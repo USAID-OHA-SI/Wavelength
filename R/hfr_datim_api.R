@@ -449,15 +449,8 @@
       df_combo <- periodize_targets(df_combo, quarters_complete)
 
     #export
-      if(!is.null(folderpath_output)){
+      df_combo <- hfr_export(df_combo, folderpath_output, quarters_complete)
 
-        iso <- dplyr::filter(iso_map, countryname == ou_name) %>%
-          dplyr::pull(iso)
-
-        filename <- paste0("HFR_DATIM_FY19Q", quarters_complete, "_", iso, "_", format(Sys.Date(),"%Y%m%d"), ".txt")
-
-        readr::write_tsv(df_combo, file.path(folderpath_output, filename), na = "")
-      }
 
     invisible(df_combo)
 

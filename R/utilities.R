@@ -1,3 +1,13 @@
+#' Fiscal Year
+#'
+#' @export
+#'
+#' @return Current Fiscal Year
+#'
+  curr_fy <- function() { 2020 }
+
+
+
 #' Check if package exists
 #'
 #' @param pkg package name

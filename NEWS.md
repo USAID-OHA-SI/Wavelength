@@ -2,6 +2,10 @@
 * Added function to extract all OU/country hierarchies, `hierarchy_pull()`
 * Added function to pull mechanism information from DATIM, `mech_pull()`
 * Update `iso_map` data to be sourced from DATIM
+* Centralize additional functions to a utlities script
+* Moved `periodize_targets()` from `hfr_datim_api()` into own script and renamed `hfr_gap_target()`
+* Added `curr_fy()` to return the current fiscal year
+* Update `hfr_export()` to include period and handle DATIM saving
 
 # Wavelength 2.0.0
 * Rename functions to conform to a model of `hfr_*()`

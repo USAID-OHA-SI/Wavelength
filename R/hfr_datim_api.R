@@ -1,52 +1,3 @@
-## DATIM API CALL FOR TARGETS
-## Mechanism x Site
-
-#https://www.datim.org/api/dimensions?filter=dimension:like:IeMmjHyBUpi
-
-
-# Check for Packges that are in Suggests ----------------------------------
-
-#' Check if package exists
-#'
-#' @param pkg package name
-#'
-#' @export
-
-  package_check <- function(pkg){
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      stop(paste("Package", pkg, "needed for this function to work. Please install it."),
-           call. = FALSE)
-    }
-  }
-
-# Login -------------------------------------------------------------------
-
-#' Proper credentials from secure file
-#'
-#' @param username DATIM username
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'  #see information about keyringr about setting up storing secure credentials
-#'   myuser <- "UserX"
-#'   mypwd(myuser) }
-
-    mypwd <- function(username) {
-
-      package_check("keyringr")
-
-      credential_label <- username
-      credential_path <- paste0(Sys.getenv("USERPROFILE"),
-                                '\\DPAPI\\passwords\\', Sys.info()["nodename"],
-                                '\\', credential_label, '.txt')
-      pass <- keyringr::decrypt_dpapi_pw(credential_path)
-      return(pass)
-    }
-
-
-
 # Identify active mechanisms by OU ----------------------------------------
 
 #' Identify active mechanisms by OU
@@ -516,34 +467,4 @@
   }
 
 
-# Adjust targets ----------------------------------------------------------
 
-#' Adjust Annual Targets to work with HFR peirods
-#'
-#' @param df data frame created by `extract_datim()`
-#' @param quarters_complete MER quarters with data available
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'  myuser <- "UserX"
-#'  mech_x_targets <- extract_datim(00001, myuser, mypwd(myuser))
-#'  mech_x_targets <- periodize_targets(mech_x_targets, 2) }
-
-periodize_targets <- function(df, quarters_complete){
-
-  weeks_remaining <- 52 - (quarters_complete * 13)
-
-  if(!"mer_results" %in% names(df))
-    df <- dplyr::mutate(df, mer_results = NA)
-  if(!"mer_targets" %in% names(df))
-    df <- dplyr::mutate(df, mer_targets = NA)
-
-   df %>%
-    #dplyr::group_by(fy, orgunituid) %>%
-    dplyr::mutate(weekly_targets = mer_targets / 52,
-                  targets_gap = ifelse((mer_targets - mer_results) < 0,0, mer_targets - mer_results),
-                  weekly_targets_gap = targets_gap/weeks_remaining)
-    #dplyr::ungroup()
-}

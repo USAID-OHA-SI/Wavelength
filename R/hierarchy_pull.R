@@ -111,12 +111,12 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
     if(!!paste0("orglvl_", ou_country) %in% names(df)) {
       df <- df %>%
         tibble::add_column(countryname = NA, .after = "operatingunit") %>%
-        dplyr::mutate(df, country = !!paste0("orglvl_", ou_country))
+        dplyr::mutate(df, countryname = !!paste0("orglvl_", ou_country))
     }
 
     if("orglvl_4" %in% names(df)) {
       df <- df %>%
-        tibble::add_column(snu1 = NA, .after = "country") %>%
+        tibble::add_column(snu1 = NA, .after = "countryname") %>%
         dplyr::mutate(df, snu1 = orglvl_4)
     }
 

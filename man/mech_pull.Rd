@@ -4,7 +4,12 @@
 \alias{mech_pull}
 \title{Pull Partner/Mechanism Info from DATIM}
 \usage{
-mech_pull()
+mech_pull(fundingagency = TRUE, ou_sel = NULL)
+}
+\arguments{
+\item{ou_sel}{option to specify an operating unit, default = NULL}
+
+\item{usaid_only}{specify if only USAID mechansism should be returned, default = TRUE}
 }
 \description{
 Pull Partner/Mechanism Info from DATIM

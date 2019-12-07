@@ -11,7 +11,7 @@
 #' #pull mechanism/partner information
 #' df <- mech_pull() }
 
-mech_pull <- function(fundingagency = TRUE, ou_sel = NULL, folderpath_output = NULL){
+mech_pull <- function(usaid_only = TRUE, ou_sel = NULL, folderpath_output = NULL){
 
   package_check("curl")
 

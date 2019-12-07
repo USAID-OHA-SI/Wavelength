@@ -5,8 +5,7 @@
 \title{Generate a API URL}
 \usage{
 gen_url(mech_uid, ou_uid, org_lvl, org_type = "facility",
-  type_hts = NULL, curr_fy = 2020,
-  baseurl = "https://final.datim.org/")
+  type_hts = NULL, baseurl = "https://final.datim.org/")
 }
 \arguments{
 \item{mech_uid}{UID for a specific mechanism, recommend using \code{identify_mechs()}}
@@ -18,8 +17,6 @@ gen_url(mech_uid, ou_uid, org_lvl, org_type = "facility",
 \item{org_type}{organization type, either facility (default) or community}
 
 \item{type_hts}{is the API call for HTS indicators ("results", "targets"), default = NULL}
-
-\item{curr_fy}{current fiscal year, default = 2020}
 
 \item{baseurl}{API base url, default = https://final.datim.org/}
 }

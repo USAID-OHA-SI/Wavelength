@@ -5,7 +5,9 @@
 * Centralize additional functions to a utlities script
 * Moved `periodize_targets()` from `hfr_datim_api()` into own script and renamed `hfr_gap_target()`
 * Added `curr_fy()` to return the current fiscal year
-* Update `hfr_export()` to include period and handle DATIM saving
+* Update `hfr_export()` to include period and handle all saving types
+* Removed unused function, `identify_mechs()`
+
 
 # Wavelength 2.0.0
 * Rename functions to conform to a model of `hfr_*()`

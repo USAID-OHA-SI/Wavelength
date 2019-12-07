@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' \dontrun{
-#'  ous <- identify_ouuids() }
+#'  ous <- identify_ouuids("userx", mypwd("userx")) }
 
   identify_ouuids <- function(username, password, baseurl = "https://final.datim.org/"){
 
@@ -24,15 +24,7 @@
       jsonlite::fromJSON(flatten=TRUE) %>%
       purrr::pluck("organisationUnits")
 
-    regs <- baseurl %>%
-      paste0("api/organisationUnits?filter=level:eq:4&filter=name:in:[Thailand,Laos,Senegal,Guatemala,Nicaragua,Panama]") %>% #China,Nepal,ElSalvador,Honduras,
-      httr::GET(httr::authenticate(username,password)) %>%
-      httr::content("text") %>%
-      jsonlite::fromJSON(flatten=TRUE) %>%
-      purrr::pluck("organisationUnits")
-
-    dplyr::bind_rows(ous, regs) %>%
-      dplyr::arrange(displayName)
+    return(ous)
   }
 
 

@@ -18,5 +18,5 @@ Pull OU UIDS
 }
 \examples{
 \dontrun{
- ous <- identify_ouuids() }
+ ous <- identify_ouuids("userx", mypwd("userx")) }
 }

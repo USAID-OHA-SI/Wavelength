@@ -304,6 +304,9 @@
                           nrow(df_hts_fac_results), nrow(df_hts_fac_targets),
                           nrow(df_nonhts), nrow(df_prep_comm_targets), 1, na.rm = TRUE) - 1) > 0
 
+      data_exists_hts <- (max(nrow(df_hts_comm_results), nrow(df_hts_comm_targets),
+                          nrow(df_hts_fac_results), nrow(df_hts_fac_targets), 1, na.rm = TRUE) - 1) > 0
+
     if(data_exists){
 
     #combine all HTS data
@@ -331,19 +334,23 @@
                          "HIV Test Status (Specific)",
                          "Type of organisational unit",
                          "Value"))
-
+    if(data_exists_hts){
       df_combo_hts <- df_combo_hts %>%
         dplyr::bind_rows(df_hts_pos) %>%
         dplyr::group_by_at(grp_keep) %>%
         dplyr::summarise(Value = sum(Value, na.rm = TRUE)) %>%
         dplyr::ungroup()
+    } else {
+      df_combo_hts <- NULL
+    }
+
 
     #combine non HTS and HTS dfs
       df_combo <- dplyr::bind_rows(df_nonhts, df_prep_comm_targets, df_combo_hts)
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility
       country_name <- unique(df_combo$orglvl_3)
-      if(stringr::str_detect(ou_name, "Region"))
+      if(stringr::str_detect(country_name, "Region"))
         country_name <- unique(df_combo$orglvl_4) %>% setdiff(NA)
 
       df_combo <- purrr::map_dfr(.x = country_name,

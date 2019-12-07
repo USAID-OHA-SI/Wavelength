@@ -24,7 +24,22 @@
       jsonlite::fromJSON(flatten=TRUE) %>%
       purrr::pluck("organisationUnits")
 
-    return(ous)
+    ctrys <- purrr::map_dfr(.x = region_uids,
+                            .f = ~ baseurl %>%
+                                    paste0("api/organisationUnits?filter=level:eq:4&filter=path:like:", .x) %>%
+                                    httr::GET(httr::authenticate(username,password)) %>%
+                                    httr::content("text") %>%
+                                    jsonlite::fromJSON(flatten=TRUE) %>%
+                                    purrr::pluck("organisationUnits") %>%
+                                    dplyr::mutate(regional = TRUE))
+
+
+    uids <- ous %>%
+      dplyr::filter(stringr::str_detect(displayName, "Region", negate = TRUE)) %>%
+      dplyr::bind_rows(ctrys) %>%
+      dplyr::arrange(displayName)
+
+    return(uids)
   }
 
 

@@ -33,7 +33,6 @@
 #' Identify Facility/Community levels in org hierarchy
 #'
 #' @param ou operating unit name
-#' @param type extraction type, eg facility, community
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
 #' @param baseurl base API url, default = https://final.datim.org/
@@ -50,7 +49,7 @@
 #'  #facility level of Kenya
 #'    identify_levels("Kenya", "facility", username = myuser, password = mypwd()) }
 
-  identify_levels <- function(ou = NULL, type = NULL, username, password, baseurl = "https://final.datim.org/"){
+  identify_levels <- function(ou = NULL, username, password, baseurl = "https://final.datim.org/"){
 
     package_check("httr")
     package_check("jsonlite")
@@ -69,9 +68,6 @@
 
     if(!is.null(ou))
       df_levels <- dplyr::filter(df_levels, country_name == ou)
-
-    if(!is.null(ou) && !is.null(type))
-      df_levels <- dplyr::pull(df_levels, type)
 
     return(df_levels)
   }

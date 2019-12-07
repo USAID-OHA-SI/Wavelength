@@ -4,13 +4,11 @@
 \alias{identify_levels}
 \title{Identify Facility/Community levels in org hierarchy}
 \usage{
-identify_levels(ou = NULL, type = NULL, username, password,
+identify_levels(ou = NULL, username, password,
   baseurl = "https://final.datim.org/")
 }
 \arguments{
 \item{ou}{operating unit name}
-
-\item{type}{extraction type, eg facility, community}
 
 \item{username}{DATIM username}
 

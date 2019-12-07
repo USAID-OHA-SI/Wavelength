@@ -24,6 +24,10 @@
       jsonlite::fromJSON(flatten=TRUE) %>%
       purrr::pluck("organisationUnits")
 
+    region_uids <- ous %>%
+      dplyr::filter(stringr::str_detect(displayName, "Region")) %>%
+      dplyr::pull(id)
+
     ctrys <- purrr::map_dfr(.x = region_uids,
                             .f = ~ baseurl %>%
                                     paste0("api/organisationUnits?filter=level:eq:4&filter=path:like:", .x) %>%

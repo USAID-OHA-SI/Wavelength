@@ -222,7 +222,6 @@
 
 #' Extract DATIM Results and Targets (DATIM API Call)
 #'
-#' @param mechanism_id DATIM mechanism ID
 #' @param ou_name Operating Unit name, if mechanism is not specified
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
@@ -234,30 +233,16 @@
 #'
 #' @examples
 #' \dontrun{
-#'  #mechanism targets
-#'  myuser <- "UserX"
-#'  mech_x_targets <- extract_datim(mechanism_id = 00001, username = myuser, password = mypwd(myuser))
 #'  #ou targets
+#'  myuser <- "UserX"
 #'  mech_x_targets <- extract_datim(ou_name = "Namibia", username = myuser, password = mypwd(myuser))
 #'  }
 
-  extract_datim <- function(mechanism_id = NULL,
-                            ou_name = NULL,
+  extract_datim <- function(ou_name = NULL,
                             username, password,
                             baseurl = "https://final.datim.org/",
                             quarters_complete = NULL,
                             folderpath_output = NULL){
-
-    #ensure that either ou_name or mechanism_id is entered
-      # if(is.null(mechanism_id))
-      #   stopifnot(!is.null(ou_name))
-
-    #identify OU and UID from mechanim info
-      if(!is.null(mechanism_id)){
-          mech_info <- identify_mechs(mechid = mechanism_id, baseurl = baseurl)
-          mech_uid <- mech_info$uid
-          ou_name <- mech_info$ou
-      }
 
     print(paste("Extracting targets for", ou_name, format(Sys.time(), "%H:%M:%S")))
 
@@ -394,7 +379,15 @@
       df_combo <- periodize_targets(df_combo, quarters_complete)
 
     #export
-      hfr_export(df_combo, folderpath_output, type = "DATIM", quarters_complete)
+      if(!is.null(folderpath_output)){
+
+        iso <- dplyr::filter(iso_map, countryname == ou_name) %>%
+          dplyr::pull(iso)
+
+        filename <- paste0("HFR_DATIM_FY19Q", quarters_complete, "_", iso, "_", format(Sys.Date(),"%Y%m%d"), ".txt")
+
+        readr::write_tsv(df_combo, file.path(folderpath_output, filename), na = "")
+      }
 
     invisible(df_combo)
 

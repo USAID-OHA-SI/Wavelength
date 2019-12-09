@@ -27,7 +27,8 @@ Imports:
     purrr,
     lubridate,
     vroom,
-    stats
+    stats,
+    crayon
 Suggests: 
     curl,
     httr,

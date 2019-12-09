@@ -30,19 +30,26 @@ mech_pull <- function(usaid_only = TRUE, ou_sel = NULL, folderpath_output = NULL
 
   #filter for USAID mechs if specified
     if(usaid_only == TRUE)
-      df <- dplyr::filter(df, fundingagency == "USAID")
+      df <- dplyr::filter(df, agency == "USAID")
 
-  #rename variables to match MSD and remove mech_code from mech_name
+  #rename variables to match MSD
     df <- df %>%
       dplyr::select(operatingunit = ou,
                     fundingagency = agency,
                     mech_code = code,
                     primepartner = partner,
-                    mech_name = mechanism) %>%
-      dplyr::mutate(mech_name = stringr::str_remove(mech_name, "0000[0|1] |[:digit:]+ - "))
+                    mech_name = mechanism)
+
+  #remove mech_code from mech_name
+    df <- df %>%
+        dplyr::mutate(mech_name = stringr::str_remove(mech_name, "0000[0|1] |[:digit:]+ - "))
+
+  #remove award information from mech_name
+    df <- df %>%
+      dplyr::mutate(mech_name = stringr::str_remove(mech_name, "^(720|AID|GHAG|U2GP).* - "))
 
   #export
-    hfr_export(df, folderpath_output, type = "orghierarchy")
+    hfr_export(df, folderpath_output, type = "mechanisms")
 
   return(df)
 }

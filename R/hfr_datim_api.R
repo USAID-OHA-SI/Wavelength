@@ -102,8 +102,11 @@
 #'
 #' @examples
 #' \dontrun{
-#'  myurl <- paste0(baseurl,
-#'                  "api/29/analytics.json?dimension=LxhLO68FcXm:udCop657yzi&dimension=ou:LEVEL-4;HfVjCurKxh2&filter=pe:2018Oct&displayProperty=SHORTNAME&outputIdScheme=CODE")
+#'  myurl <- paste0(baseurl, "api/29/analytics.json?
+#'                  dimension=LxhLO68FcXm:udCop657yzi&
+#'                  dimension=ou:LEVEL-4;HfVjCurKxh2&
+#'                  filter=pe:2018Oct&
+#'                  displayProperty=SHORTNAME&outputIdScheme=CODE")
 #'  myuser <- "UserX"
 #'  df_targets <- get_datim_targets(myurl, myuser, mypwd(myuser)) }
 

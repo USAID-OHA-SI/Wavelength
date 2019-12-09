@@ -1,3 +1,5 @@
+# Wavelength 2.2.0
+
 # Wavelength 2.1.0
 * Added function to extract all OU/country hierarchies, `hierarchy_pull()`
 * Added function to pull mechanism information from DATIM, `mech_pull()`

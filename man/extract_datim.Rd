@@ -4,13 +4,11 @@
 \alias{extract_datim}
 \title{Extract DATIM Results and Targets (DATIM API Call)}
 \usage{
-extract_datim(mechanism_id = NULL, ou_name = NULL, username, password,
+extract_datim(ou_name = NULL, username, password,
   baseurl = "https://final.datim.org/", quarters_complete = NULL,
   folderpath_output = NULL)
 }
 \arguments{
-\item{mechanism_id}{DATIM mechanism ID}
-
 \item{ou_name}{Operating Unit name, if mechanism is not specified}
 
 \item{username}{DATIM username}
@@ -28,10 +26,8 @@ Extract DATIM Results and Targets (DATIM API Call)
 }
 \examples{
 \dontrun{
- #mechanism targets
- myuser <- "UserX"
- mech_x_targets <- extract_datim(mechanism_id = 00001, username = myuser, password = mypwd(myuser))
  #ou targets
+ myuser <- "UserX"
  mech_x_targets <- extract_datim(ou_name = "Namibia", username = myuser, password = mypwd(myuser))
  }
 }

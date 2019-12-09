@@ -4,12 +4,17 @@
 \alias{hfr_export}
 \title{Export High Frequency Data}
 \usage{
-hfr_export(df, folderpath_output = NULL)
+hfr_export(df, folderpath_output = NULL, type = "processed",
+  quarters_complete = NULL)
 }
 \arguments{
 \item{df}{structured High Frequency Data Frame}
 
 \item{folderpath_output}{provide the full path to the folder for saving}
+
+\item{type}{type of data being saved, default = processed}
+
+\item{quarters_complete}{FOR DATIM ONLY: # of quarters completed through FY to determine weeks left in year}
 }
 \description{
 Export High Frequency Data
@@ -17,5 +22,5 @@ Export High Frequency Data
 \examples{
 \dontrun{
  #write output
-   hfr_export(df_tza, "TZA", "~/WeeklyData") }
+   hfr_export(df_tza, "~/WeeklyData") }
 }

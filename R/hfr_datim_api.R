@@ -1,107 +1,3 @@
-## DATIM API CALL FOR TARGETS
-## Mechanism x Site
-
-#https://www.datim.org/api/dimensions?filter=dimension:like:IeMmjHyBUpi
-
-
-# Check for Packges that are in Suggests ----------------------------------
-
-#' Check if package exists
-#'
-#' @param pkg package name
-#'
-#' @export
-
-  package_check <- function(pkg){
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      stop(paste("Package", pkg, "needed for this function to work. Please install it."),
-           call. = FALSE)
-    }
-  }
-
-# Login -------------------------------------------------------------------
-
-#' Proper credentials from secure file
-#'
-#' @param username DATIM username
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'  #see information about keyringr about setting up storing secure credentials
-#'   myuser <- "UserX"
-#'   mypwd(myuser) }
-
-    mypwd <- function(username) {
-
-      package_check("keyringr")
-
-      credential_label <- username
-      credential_path <- paste0(Sys.getenv("USERPROFILE"),
-                                '\\DPAPI\\passwords\\', Sys.info()["nodename"],
-                                '\\', credential_label, '.txt')
-      pass <- keyringr::decrypt_dpapi_pw(credential_path)
-      return(pass)
-    }
-
-
-
-# Identify active mechanisms by OU ----------------------------------------
-
-#' Identify active mechanisms by OU
-#'
-#' @param curr_fy current fiscal year to filter by, default = 2020
-#' @param mechid mechanism id to filter by, optional
-#' @param extract variable to extract from the mechanism table, optional
-#' @param baseurl API base url
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'  #full active mechanism table
-#'   identify_mechs()
-#'  #mechanism information for a particular mechanism
-#'   identify_mechs(mechid = 00001)
-#'  #uid for a particular mechanism
-#'   identify_mechs(mechid = 00001, extract = "uid") }
-
-    identify_mechs <- function(curr_fy = 2020, mechid = NULL, extract = NULL, baseurl = "https://final.datim.org/"){
-
-      package_check("curl")
-      package_check("httr")
-      package_check("jsonlite")
-
-      stopifnot(curl::has_internet())
-
-      fy_start <- paste(curr_fy-1, "10-01", sep = "-")
-
-      mechs <-
-        paste0(baseurl,"api/sqlViews/fgUtV6e9YIX/data.json") %>%
-        httr::GET(httr::timeout(60)) %>%
-        httr::content("text") %>%
-        jsonlite::fromJSON(flatten=TRUE)
-
-      mechs <- mechs %>%
-        purrr::pluck("rows") %>%
-        tibble::as_tibble(.name_repair = ~ mechs$headers$column)
-
-      mechs <- mechs %>%
-        dplyr::mutate(enddate = lubridate::ymd(enddate)) %>%
-        dplyr::filter(agency == "USAID",
-                      enddate > fy_start)
-
-      if(!is.null(mechid))
-        mechs <- dplyr::filter(mechs, code == mechid)
-
-      if(!is.null(mechid) && !is.null(extract))
-        mechs <- dplyr::pull(mechs, !!extract)
-
-      return(mechs)
-    }
-
-
 # OU UIDs -----------------------------------------------------------------
 
 #' Pull OU UIDS
@@ -114,7 +10,7 @@
 #'
 #' @examples
 #' \dontrun{
-#'  ous <- identify_ouuids() }
+#'  ous <- identify_ouuids("userx", mypwd("userx")) }
 
   identify_ouuids <- function(username, password, baseurl = "https://final.datim.org/"){
 
@@ -128,15 +24,26 @@
       jsonlite::fromJSON(flatten=TRUE) %>%
       purrr::pluck("organisationUnits")
 
-    regs <- baseurl %>%
-      paste0("api/organisationUnits?filter=level:eq:4&filter=name:in:[Thailand,Laos,Senegal,Guatemala,Nicaragua,Panama]") %>% #China,Nepal,ElSalvador,Honduras,
-      httr::GET(httr::authenticate(username,password)) %>%
-      httr::content("text") %>%
-      jsonlite::fromJSON(flatten=TRUE) %>%
-      purrr::pluck("organisationUnits")
+    region_uids <- ous %>%
+      dplyr::filter(stringr::str_detect(displayName, "Region")) %>%
+      dplyr::pull(id)
 
-    dplyr::bind_rows(ous, regs) %>%
+    ctrys <- purrr::map_dfr(.x = region_uids,
+                            .f = ~ baseurl %>%
+                                    paste0("api/organisationUnits?filter=level:eq:4&filter=path:like:", .x) %>%
+                                    httr::GET(httr::authenticate(username,password)) %>%
+                                    httr::content("text") %>%
+                                    jsonlite::fromJSON(flatten=TRUE) %>%
+                                    purrr::pluck("organisationUnits") %>%
+                                    dplyr::mutate(regional = TRUE))
+
+
+    uids <- ous %>%
+      dplyr::filter(stringr::str_detect(displayName, "Region", negate = TRUE)) %>%
+      dplyr::bind_rows(ctrys) %>%
       dplyr::arrange(displayName)
+
+    return(uids)
   }
 
 
@@ -145,7 +52,6 @@
 #' Identify Facility/Community levels in org hierarchy
 #'
 #' @param ou operating unit name
-#' @param type extraction type, eg facility, community
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
 #' @param baseurl base API url, default = https://final.datim.org/
@@ -158,11 +64,9 @@
 #'   myuser <- "UserX"
 #'   identify_levels(username = myuser, password = mypwd())
 #'  #table for just Kenya
-#'    identify_levels("Kenya", username = myuser, password = mypwd())
-#'  #facility level of Kenya
-#'    identify_levels("Kenya", "facility", username = myuser, password = mypwd()) }
+#'    identify_levels("Kenya", username = myuser, password = mypwd()) }
 
-  identify_levels <- function(ou = NULL, type = NULL, username, password, baseurl = "https://final.datim.org/"){
+  identify_levels <- function(ou = NULL, username, password, baseurl = "https://final.datim.org/"){
 
     package_check("httr")
     package_check("jsonlite")
@@ -181,9 +85,6 @@
 
     if(!is.null(ou))
       df_levels <- dplyr::filter(df_levels, country_name == ou)
-
-    if(!is.null(ou) && !is.null(type))
-      df_levels <- dplyr::pull(df_levels, type)
 
     return(df_levels)
   }
@@ -262,7 +163,6 @@
 #' @param org_lvl org hierarchy level, eg facility is level 7 in country X, recommend using `identify_levels()`
 #' @param org_type organization type, either facility (default) or community
 #' @param type_hts is the API call for HTS indicators ("results", "targets"), default = NULL
-#' @param curr_fy current fiscal year, default = 2020
 #' @param baseurl API base url, default = https://final.datim.org/
 #'
 #' @export
@@ -278,18 +178,16 @@
 #'  #gen url
 #'   myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts = NULL) }
 
-  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = NULL, curr_fy = 2020, baseurl = "https://final.datim.org/"){
+  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = NULL, baseurl = "https://final.datim.org/"){
 
-    fy_pd <- paste0(curr_fy-1, "Oct")
+    fy_pd <- paste0(curr_fy()-1, "Oct")
 
     core_url <-
       paste0(baseurl,"api/29/analytics?",
              "dimension=pe:", fy_pd, "&", #period
              "dimension=ou:LEVEL-", org_lvl, ";", ou_uid, "&", #level and ou
-             #"dimension=SH885jaRe0o:", mech_uid, "&", #Funding Mechanism
              "dimension=bw8KHXzxd9i:NLV6dy7BE2O&", #Funding Agency -> USAID
              "dimension=SH885jaRe0o&", #Funding Mechanism
-             #"dimension=BOyWrF33hiR&", #Implementing Partner
              "dimension=xRo1uG2KJHk&", #Age: <15/15+ (Coarse)
              "dimension=jyUTj5YC3OK&") #Cascade sex
 
@@ -326,7 +224,6 @@
 
 #' Extract DATIM Results and Targets (DATIM API Call)
 #'
-#' @param mechanism_id DATIM mechanism ID
 #' @param ou_name Operating Unit name, if mechanism is not specified
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
@@ -338,30 +235,16 @@
 #'
 #' @examples
 #' \dontrun{
-#'  #mechanism targets
-#'  myuser <- "UserX"
-#'  mech_x_targets <- extract_datim(mechanism_id = 00001, username = myuser, password = mypwd(myuser))
 #'  #ou targets
+#'  myuser <- "UserX"
 #'  mech_x_targets <- extract_datim(ou_name = "Namibia", username = myuser, password = mypwd(myuser))
 #'  }
 
-  extract_datim <- function(mechanism_id = NULL,
-                            ou_name = NULL,
+  extract_datim <- function(ou_name = NULL,
                             username, password,
                             baseurl = "https://final.datim.org/",
                             quarters_complete = NULL,
                             folderpath_output = NULL){
-
-    #ensure that either ou_name or mechanism_id is entered
-      # if(is.null(mechanism_id))
-      #   stopifnot(!is.null(ou_name))
-
-    #identify OU and UID from mechanim info
-      if(!is.null(mechanism_id)){
-          mech_info <- identify_mechs(mechid = mechanism_id, baseurl = baseurl)
-          mech_uid <- mech_info$uid
-          ou_name <- mech_info$ou
-      }
 
     print(paste("Extracting targets for", ou_name, format(Sys.time(), "%H:%M:%S")))
 
@@ -378,7 +261,8 @@
       df_nonhts <-
         gen_url(mech_uid, ou_uid, ou_fac, type_hts = NULL, baseurl = baseurl) %>%
         get_datim_targets(username, password)
-      #remove VMMC_CIRC results w/ Age/Sex/HIVStatus since there is also Age/Sex used for Total Numerator
+
+    #remove VMMC_CIRC results w/ Age/Sex/HIVStatus since there is also Age/Sex used for Total Numerator
       if(!is.null(df_nonhts))
         df_nonhts <- dplyr::mutate(df_nonhts, Value = ifelse(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex/HIVStatus" & `Targets / Results` == "MER Results", NA, Value))
 
@@ -401,7 +285,8 @@
       df_hts_comm_results <-
         gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = "results", baseurl = baseurl) %>%
         get_datim_targets(username, password)
-      #add community level if same as psnu, otherwise will be missing
+
+    #add community level if same as psnu, otherwise will be missing
       if(!is.null(df_hts_comm_results) && ou_psnu == ou_comm)
         df_hts_comm_results <- dplyr::mutate(df_hts_comm_results, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
 
@@ -409,7 +294,8 @@
       df_hts_comm_targets <-
         gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = "targets", baseurl = baseurl) %>%
         get_datim_targets(username, password)
-      #add community level if same as psnu, otherwise will be missing
+
+    #add community level if same as psnu, otherwise will be missing
       if(!is.null(df_hts_comm_targets) && ou_psnu == ou_comm)
         df_hts_comm_targets <- dplyr::mutate(df_hts_comm_targets, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
 
@@ -417,6 +303,9 @@
       data_exists <- (max(nrow(df_hts_comm_results), nrow(df_hts_comm_targets),
                           nrow(df_hts_fac_results), nrow(df_hts_fac_targets),
                           nrow(df_nonhts), nrow(df_prep_comm_targets), 1, na.rm = TRUE) - 1) > 0
+
+      data_exists_hts <- (max(nrow(df_hts_comm_results), nrow(df_hts_comm_targets),
+                          nrow(df_hts_fac_results), nrow(df_hts_fac_targets), 1, na.rm = TRUE) - 1) > 0
 
     if(data_exists){
 
@@ -437,6 +326,7 @@
         dplyr::filter(`HIV Test Status (Specific)` %in% c("HIV Positive (Specific)",
                                                           "Newly Identified Positive (Specific)")) %>%
         dplyr::mutate(`Technical Area` = "HTS_TST_POS")
+
     #bind and aggregate HTS and HTS_POS
       grp_keep <- names(df_combo_hts) %>%
         dplyr::setdiff(c("HTS Modality (USE ONLY for FY19 Results/FY20 Targets)",
@@ -444,36 +334,27 @@
                          "HIV Test Status (Specific)",
                          "Type of organisational unit",
                          "Value"))
-
+    if(data_exists_hts){
       df_combo_hts <- df_combo_hts %>%
         dplyr::bind_rows(df_hts_pos) %>%
         dplyr::group_by_at(grp_keep) %>%
         dplyr::summarise(Value = sum(Value, na.rm = TRUE)) %>%
         dplyr::ungroup()
+    } else {
+      df_combo_hts <- NULL
+    }
+
 
     #combine non HTS and HTS dfs
       df_combo <- dplyr::bind_rows(df_nonhts, df_prep_comm_targets, df_combo_hts)
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility
-      df_combo <- df_combo %>%
-        dplyr::rename(orgunit = `Organisation unit`,
-                      operatingunit = orglvl_3,
-                      snu1 = orglvl_4)
+      country_name <- unique(df_combo$orglvl_3)
+      if(stringr::str_detect(country_name, "Region"))
+        country_name <- unique(df_combo$orglvl_4) %>% setdiff(NA)
 
-      if(!!paste0("orglvl_", ou_psnu) %in% names(df_combo))
-        df_combo <- dplyr::rename(df_combo, psnu = !!paste0("orglvl_", ou_psnu))
-
-      if(ou_psnu == ou_comm && !!!paste0("orglvl_", ou_comm) %in% names(df_combo)){
-        df_combo <- df_combo %>%
-          tibble::add_column(community = as.character(NA), .after = "psnu") %>%
-          dplyr::mutate(community = psnu)
-      } else if (!!paste0("orglvl_", ou_comm) %in% names(df_combo)){
-        df_combo <- dplyr::rename(df_combo, community = !!paste0("orglvl_", ou_comm))
-      }
-
-      df_combo <- df_combo %>%
-        dplyr::select(orgunit, orgunituid, dplyr::everything()) %>%
-        dplyr::select(-dplyr::starts_with("orglvl_"))
+      df_combo <- purrr::map_dfr(.x = country_name,
+                                 .f = ~ hierarchy_rename(df_combo, .x, username, password, baseurl))
 
     #clean variables and variable names
       df_combo <- df_combo %>%
@@ -494,19 +375,8 @@
         dplyr::mutate(fy = as.integer(fy)) %>%
         tidyr::spread(type, Value, fill = 0)
 
-    #periodize
-      df_combo <- periodize_targets(df_combo, quarters_complete)
-
     #export
-      if(!is.null(folderpath_output)){
-
-        iso <- dplyr::filter(iso_map, countryname == ou_name) %>%
-          dplyr::pull(iso)
-
-        filename <- paste0("HFR_DATIM_FY19Q", quarters_complete, "_", iso, "_", format(Sys.Date(),"%Y%m%d"), ".txt")
-
-        readr::write_tsv(df_combo, file.path(folderpath_output, filename), na = "")
-      }
+      hfr_export(df_combo, folderpath_output, type = "DATIM", quarters_complete)
 
     invisible(df_combo)
 
@@ -516,34 +386,4 @@
   }
 
 
-# Adjust targets ----------------------------------------------------------
 
-#' Adjust Annual Targets to work with HFR peirods
-#'
-#' @param df data frame created by `extract_datim()`
-#' @param quarters_complete MER quarters with data available
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#'  myuser <- "UserX"
-#'  mech_x_targets <- extract_datim(00001, myuser, mypwd(myuser))
-#'  mech_x_targets <- periodize_targets(mech_x_targets, 2) }
-
-periodize_targets <- function(df, quarters_complete){
-
-  weeks_remaining <- 52 - (quarters_complete * 13)
-
-  if(!"mer_results" %in% names(df))
-    df <- dplyr::mutate(df, mer_results = NA)
-  if(!"mer_targets" %in% names(df))
-    df <- dplyr::mutate(df, mer_targets = NA)
-
-   df %>%
-    #dplyr::group_by(fy, orgunituid) %>%
-    dplyr::mutate(weekly_targets = mer_targets / 52,
-                  targets_gap = ifelse((mer_targets - mer_results) < 0,0, mer_targets - mer_results),
-                  weekly_targets_gap = targets_gap/weeks_remaining)
-    #dplyr::ungroup()
-}

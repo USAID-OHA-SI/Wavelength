@@ -4,7 +4,14 @@
 \alias{mech_pull}
 \title{Pull Partner/Mechanism Info from DATIM}
 \usage{
-mech_pull()
+mech_pull(usaid_only = TRUE, ou_sel = NULL, folderpath_output = NULL)
+}
+\arguments{
+\item{usaid_only}{specify if only USAID mechansism should be returned, default = TRUE}
+
+\item{ou_sel}{option to specify an operating unit, default = NULL}
+
+\item{folderpath_output}{provide the full path to the folder for saving}
 }
 \description{
 Pull Partner/Mechanism Info from DATIM

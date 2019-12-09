@@ -1,0 +1,5 @@
+version,type,date,note
+1.01,Long,2019-10-01,FY20 base long submission template
+1.01,Wide,2019-10-01,FY20 base wide submission template
+1.01.01,Wide,2019-11-20,TZA - added in columns for (1) start & (2) end for TZA weeks as well as a column for recording (3) facility tier
+1.01.02,Wide,2019-12-08,"MWI - added in columns for index testing, total (1) and pos (2) for all age bands"

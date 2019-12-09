@@ -3,34 +3,30 @@
   ## NOTE: Needs to be updated each quarter for updated Results/Targets/Gap Target
 
   #DATIM username
-    myuser <- "achafetz_global"
+    myuser <- ""
 
   #identify full set of OU/country list for all USAID targets
-    ous <- identify_levels(username = myuser, password = mypwd(myuser)) %>%
-      dplyr::filter(is.na(name4)) %>%
-      dplyr::pull(country_name)
+    df_ous <-
+      dplyr::left_join(identify_levels(username = myuser, password = mypwd(myuser)),
+                       identify_ouuids(myuser, mypwd(myuser)),
+                       by = c("country_name" = "displayName"))
 
-    ous <- c(ous, "Laos","Thailand", 'Guatemala', "Hondura", "Nicaragua", "Panama")
+    ous <- df_ous %>%
+      dplyr::pull(country_name)
 
   #extract and save targets for all OUs
     purrr::walk(ous, ~extract_datim(ou_name = .x,
                                     username = myuser,
                                     password = mypwd(myuser),
-                                    quarters_complete = 3,
+                                    quarters_complete = 0,
                                     folderpath_output = "out/DATIM"))
   #pull hierarchy
-    baseurl <- "https://final.datim.org/"
-    ous <- baseurl %>%
-      paste0("api/organisationUnits?filter=level:eq:3") %>%
-      httr::GET(httr::authenticate(myuser,mypwd(myuser))) %>%
-      httr::content("text") %>%
-      jsonlite::fromJSON(flatten=TRUE) %>%
-      purrr::pluck("organisationUnits")
-
-    df_orgs <- purrr::map_dfr(.x = ous$id,
+    df_orgs <- purrr::map_dfr(.x = df_ous$id,
                               .f = ~ hierarchy_compile(.x, myuser, mypwd(myuser)))
+    hfr_export(df_orgs, "out/DATIM", type = "orghierarchy")
+
   #pull mechanism info
-    df_mech_offical <- pull_mech()
+    mech_pull(folderpath_output = "out/DATIM")
 
 # Process HFR submissions -------------------------------------------------
 

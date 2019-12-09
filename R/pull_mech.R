@@ -9,9 +9,9 @@
 #' @examples
 #' \dontrun{
 #' #pull mechanism/partner information
-#' df <- mech_pull() }
+#' df <- pull_mech() }
 
-mech_pull <- function(usaid_only = TRUE, ou_sel = NULL, folderpath_output = NULL){
+pull_mech <- function(usaid_only = TRUE, ou_sel = NULL, folderpath_output = NULL){
 
   package_check("curl")
 

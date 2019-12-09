@@ -240,10 +240,10 @@
 #' \dontrun{
 #'  #ou targets
 #'  myuser <- "UserX"
-#'  mech_x_targets <- extract_datim(ou_name = "Namibia", username = myuser, password = mypwd(myuser))
+#'  mech_x_targets <- pull_mer(ou_name = "Namibia", username = myuser, password = mypwd(myuser))
 #'  }
 
-  extract_datim <- function(ou_name = NULL,
+  pull_mer <- function(ou_name = NULL,
                             username, password,
                             baseurl = "https://final.datim.org/",
                             quarters_complete = NULL,

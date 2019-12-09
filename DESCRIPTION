@@ -1,6 +1,6 @@
 Package: Wavelength
 Title: Wavelength
-Version: 2.1.0
+Version: 2.2.0
 Authors@R: 
     person(given = "Aaron",
            family = "Chafetz",
@@ -27,7 +27,8 @@ Imports:
     purrr,
     lubridate,
     vroom,
-    stats
+    stats,
+    crayon
 Suggests: 
     curl,
     httr,

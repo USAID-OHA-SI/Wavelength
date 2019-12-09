@@ -1,4 +1,9 @@
 # Wavelength 2.2.0
+* Add validations to run inline with import
+  * before import, check there are sheets to import (contain HFR in tab name), pull meta data in, and identify import/ignored tabs,   `validate_initial()`
+  * after import, validate that the correct columns exists and if there are extras, `validate_import()`
+  * at end, check columns, dates, orgunituids, mechanisms, indicators, and disaggs, `validate_output()`
+*rename scripts for pulling DATIM data, `pull_()`
 
 # Wavelength 2.1.0
 * Added function to extract all OU/country hierarchies, `hierarchy_pull()`

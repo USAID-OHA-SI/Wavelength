@@ -15,7 +15,7 @@
       dplyr::pull(country_name)
 
   #extract and save targets for all OUs
-    purrr::walk(ous, ~extract_datim(ou_name = .x,
+    purrr::walk(ous, ~pull_mer(ou_name = .x,
                                     username = myuser,
                                     password = mypwd(myuser),
                                     quarters_complete = 0,
@@ -26,7 +26,7 @@
     hfr_export(df_orgs, "out/DATIM", type = "orghierarchy")
 
   #pull mechanism info
-    mech_pull(folderpath_output = "out/DATIM")
+    pull_mech(folderpath_output = "out/DATIM")
 
 # Process HFR submissions -------------------------------------------------
 

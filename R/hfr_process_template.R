@@ -9,8 +9,14 @@
 
 hfr_process_template <- function(filepath, round_hfrdate = FALSE, folderpath_output = NULL){
 
+  #validation checks
+    validate_initial(filepath)
+
   #import template sheet(s)
     df <- hfr_import(filepath)
+
+  #validation checks
+    validate_import(df)
 
   #reshape wide to match long df (only affects wide format)
     df <- hfr_gather(df)
@@ -28,6 +34,9 @@ hfr_process_template <- function(filepath, round_hfrdate = FALSE, folderpath_out
 
   #aggregate to combine rows where needed (minimize row count)
     df <- hfr_aggr(df)
+
+  #validation checks
+    validate_output(df)
 
   #export
     hfr_export(df, folderpath_output)

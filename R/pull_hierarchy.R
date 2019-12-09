@@ -12,9 +12,9 @@
 #' #get OU UID
 #'   ouuid <- identify_ouuids() %>% dplyr::filter(ou == "Kenya")
 #' #pull hierarchy (paths are all UIDs)
-#'   df <- hierarchy_pull(ouuid, username = myuser, password = mypwd(myuser)) }
+#'   df <- hierarchy_extract(ouuid, username = myuser, password = mypwd(myuser)) }
 
-hierarchy_pull <- function(ou_uid, username, password, baseurl = "https://final.datim.org/"){
+hierarchy_extract <- function(ou_uid, username, password, baseurl = "https://final.datim.org/"){
 
   package_check("curl")
   package_check("httr")
@@ -40,7 +40,7 @@ hierarchy_pull <- function(ou_uid, username, password, baseurl = "https://final.
 
 #' Clean up DATIM Hierarchy Path
 #'
-#' @param df data frame created by `hierarchy_pull()`
+#' @param df data frame created by `hierarchy_extract()`
 #'
 #' @export
 
@@ -80,7 +80,7 @@ hierarchy_clean <- function(df){
 
 #' Rename Hierarchy from Levels to OU/SNU1/PSNU/Facility
 #'
-#' @param df data frame created by `hierarchy_pull() %>% hierarchy_clean()`
+#' @param df data frame created by `hierarchy_extract() %>% hierarchy_clean()`
 #' @param country county name, eg "Malawi" or "Nepal"
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
@@ -164,7 +164,7 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 
 #' Extract country name from OU or country name
 #'
-#' @param df data frame created by `hierarchy_pull() %>% hierarchy_clean()`
+#' @param df data frame created by `hierarchy_extract() %>% hierarchy_clean()`
 #'
 #' @export
 
@@ -196,13 +196,13 @@ hierarchy_identify_ctry <- function(df){
 #' #get OU UID
 #'   ouuid <- identify_ouuids() %>% dplyr::filter(ou == "Kenya")
 #' #pull hierarchy (paths are all UIDs)
-#'   df <- hierarchy_compile(ouuid, username = myuser, password = mypwd(myuser)) }
+#'   df <- pull_hierarchy(ouuid, username = myuser, password = mypwd(myuser)) }
 
-hierarchy_compile <- function(ou_uid, username, password, baseurl = "https://final.datim.org/", folderpath_output = NULL){
+pull_hierarchy <- function(ou_uid, username, password, baseurl = "https://final.datim.org/", folderpath_output = NULL){
 
   print(ou_uid)
 
-  df <- hierarchy_pull(ou_uid, username, password, baseurl)
+  df <- hierarchy_extract(ou_uid, username, password, baseurl)
 
   df <- hierarchy_clean(df)
 

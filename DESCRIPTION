@@ -26,7 +26,8 @@ Imports:
     readr,
     purrr,
     lubridate,
-    vroom
+    vroom,
+    stats
 Suggests: 
     curl,
     httr,

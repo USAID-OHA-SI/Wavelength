@@ -6,6 +6,7 @@
 #' @param quarters_complete FOR DATIM ONLY: # of quarters completed through FY to determine weeks left in year
 #'
 #' @export
+#' @importFrom stats median
 #'
 #' @examples
 #' \dontrun{

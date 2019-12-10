@@ -123,13 +123,23 @@ The global HFR dataset that feeds into the Tableau workbook on the server pulls 
 ```
 
 ## Validations
-Checks can and should be run on the global dataset, ensuring that everything was uniformly processed. Variable names and their contents should be compared against the [HFR codebook](https://github.com/USAID-OHA-SI/Wavelength/wiki/HFR-Codebook). Some of the checks include:
+Validation checks are run when processing the submitted data, ensuring that everything is there and uniformly processed. Some of the checks include:
   - all variables are lower case and match the codebook
   - ensuring dates all match the HFR reporting calendar
   - indicators are only HFR indicators and spelling match
   - disaggregate components (`agecoarse`, `sex`, and `otherdisaggregate`) are only what is noted in the codebook
-These validations are built into the `hfr_process_template()` at various points via the `validation_*()` scripts.
-
+These validations are built into the `hfr_process_template()` at various points via the `validation_*()` scripts and appear inline when processing.
+```{r}
+#VALIDATE DATA
+  #submission file path
+    #file path for the 
+    path <- "~/WeeklyData/Saturn"
+    output_folder <- "~/WeeklyData/Output"
+   #validations appear in the console
+    hfr_process_template(path)
+   #validations appear in the console, adjusting the submission date automatically
+    hfr_process_template(path, round_hfrdate = TRUE)
+```
 ---
 
 *Disclaimer: The findings, interpretation, and conclusions expressed herein are those of the authors and do not necessarily reflect the views of United States Agency for International Development. All errors remain our own.*

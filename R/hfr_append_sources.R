@@ -10,7 +10,7 @@
 #' @export
 #'
 
-append_sources <- function(folderpath_hfr,
+hfr_append_sources <- function(folderpath_hfr,
                            folderpath_datim,
                            start_date,
                            weeks = 4,

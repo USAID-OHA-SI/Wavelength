@@ -73,9 +73,9 @@ If you have an HFR dataset stored locally and want to read it into R, you can us
 
 The official PEPFAR MER data are stored in a DHIS2 system called DATIM. Indicators are collected on a quarterly basis and are compared to targets for each fiscal year. We use the MER data to create gap targets (ie how much of the fiscal year target needs to be completed with the cumulative quarterly results so far) as well as to identify offical partner names as well as the offical organizational hierarchy. 
 
-DATIM allows for API call so as to access site level results and targets. The `extract_datim()` script allows users with DATIM account to extract this data, which is also stored on the HFR Google Drive.
+DATIM allows for API call so as to access site level results and targets. The `pull_mer()` script allows users with DATIM account to extract this data, which is also stored on the HFR Google Drive. In addition to `pull_mer()` two other API call extract org unit information from DATIM (`pull_hierarchy()`) and mechanism and partner information (`pull_mech()`).  
 
-To run `extract_datim()` you will need to install additional packages (`keyringr`, `curl`, `httr`, and `jsonlite`). Since DATIM needs your credentials, you will need to securely store them on your machine, following the documentation laided out in the [`keyringr` package vignette](https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html).
+To run `pull_mer()` you will need to install additional packages (`keyringr`, `curl`, `httr`, and `jsonlite`). Since DATIM needs your credentials, you will need to securely store them on your machine, following the documentation laided out in the [`keyringr` package vignette](https://cran.r-project.org/web/packages/keyringr/vignettes/Avoiding_plain_text_passwords_in_R_with_keyringr.html).
 
 ```{r}
 #ACCESSING AND STORING DATIM DATA
@@ -86,41 +86,48 @@ To run `extract_datim()` you will need to install additional packages (`keyringr
   #provide your credentials
     myuser <- ""
     
-  #API Pull
+  #API MER Pull
     purrr::walk(.x = ou_list,
-                .f = ~ extract_datim(
-                                     ou_name = .x,
-                                     username = myuser, 
-                                     password = mypwd(myuser), # or if not stored, just your password in quotes
-                                     quarters_complete = 3, #current quarter of data availability
-                                     folderpath_output = "out/DATIM" #path on your machine
-                                     )
+                .f = ~ pull_mer(
+                                ou_name = .x,
+                                username = myuser, 
+                                password = mypwd(myuser), # or if not stored, just your password in quotes
+                                quarters_complete = 3, #current quarter of data availability
+                                folderpath_output = "out/DATIM" #path on your machine
+                                )
                )
+               
+  #pull hierarchy
+    ouuids <- identify_ouuids(myuser, mypwd(myuser)) %>% dplyr::pull(id)
+    df_orgs <- purrr::map_dfr(.x = ouuids,
+                              .f = ~ pull_hierarchy(.x, myuser, mypwd(myuser)))
+    
+  #pull mechanism info
+    df_mech_info <- pull_mech()
 ```
 
 ## Creating a global HFR (and MER) dataset
 
-The global HFR dataset that feeds into the Tableau workbook on the server pulls from all the processed country HFR (all historic data to date) and the locally stored DATIM data. This process is now conducted in the database, but previously it was run locally. The `append_sources()` function brings together these data sources for the Tableau workbook. You will need to have the HFR data stored in one folder and DATIM data stored in another. If you have countries with historic data but not for the current period, you should include those files in the HFR folder so they can be included in the global dataset.
+The global HFR dataset that feeds into the Tableau workbook on the server pulls from all the processed country HFR (all historic data to date) and the locally stored DATIM data. This process is now conducted in the database, but previously it was run locally. The `hfr_append_sources()` function brings together these data sources for the Tableau workbook. You will need to have the HFR data stored in one folder and DATIM data stored in another. If you have countries with historic data but not for the current period, you should include those files in the HFR folder so they can be included in the global dataset.
 
 
 ```{r}
 #APPEND DATA
 
   #create an appended data source
-    df_combo <- append_sources(folderpath_hfr  = "out/processed",
-                               folderpath_datim = "out/DATIM",
-                               start_date = "2019-06-03",
-                               weeks = 4, #update with current HFR dates
-                               max_date = TRUE,
-                               folderpath_output = "out/joint")
+    df_combo <- hfr_append_sources(folderpath_hfr  = "out/processed",
+                                   folderpath_datim = "out/DATIM",
+                                   start_date = "2019-06-03",
+                                   weeks = 4, #update with current HFR dates
+                                   max_date = TRUE)
 ```
 
-Checks can can should be run on the global dataset, ensuring that everything was uniformly processed. Variable names and their contents should be compared against the [HFR codebook](https://github.com/USAID-OHA-SI/Wavelength/wiki/HFR-Codebook). Some of the checks can be found in the `data-raw/scrapwork.R` script. Items to check include:
+Checks can can should be run on the global dataset, ensuring that everything was uniformly processed. Variable names and their contents should be compared against the [HFR codebook](https://github.com/USAID-OHA-SI/Wavelength/wiki/HFR-Codebook). Some of the checks include:
   - all variables are lower case and match the codebook
   - ensuring dates all match the HFR reporting calendar
   - indicators are only HFR indicators and spelling match
   - disaggregate components (`agecoarse`, `sex`, and `otherdisaggregate`) are only what is noted in the codebook
-
+These validations are built into the `hfr_process_template()` at various points via the `validation_*()` scripts.
 
 ---
 

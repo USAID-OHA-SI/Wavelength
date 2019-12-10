@@ -60,7 +60,7 @@ check_meta <- function(filepath){
     temp_version <- crayon::blue(temp_version)
 
   #country/file
-    ou_name <-  extract_meta(filepath, "ou")
+    ou_name <-  hfr_extract_meta(filepath, "ou")
     ou_name <- ifelse(is.na(ou_name), crayon::red(ou_name), crayon::blue(ou_name))
     file_name <- crayon::blue(basename(filepath))
 

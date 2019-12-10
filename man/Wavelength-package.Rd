@@ -6,7 +6,7 @@
 \alias{Wavelength-package}
 \title{Wavelength: Wavelength}
 \description{
-USAID OHA Office. Munging of weekly/monthly data.
+USAID OHA Office. Munging of mission weekly HFR data.
 }
 \seealso{
 Useful links:

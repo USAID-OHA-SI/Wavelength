@@ -6,7 +6,7 @@ Authors@R:
            family = "Chafetz",
            role = c("aut", "cre"),
            email = "achafetz@usaid.gov")
-Description: USAID OHA Office. Munging of weekly/monthly data.
+Description: USAID OHA Office. Munging of mission weekly HFR data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -17,18 +17,18 @@ RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.1.2)
 Imports: 
-    magrittr,
-    readxl,
+    crayon,
     dplyr,
-    tidyr,
-    tibble,
-    stringr,
-    readr,
-    purrr,
     lubridate,
-    vroom,
+    magrittr,
+    purrr,
+    readr,
+    readxl,
     stats,
-    crayon
+    stringr,
+    tibble,
+    tidyr,
+    vroom
 Suggests: 
     curl,
     httr,

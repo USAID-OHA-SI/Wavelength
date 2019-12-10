@@ -122,7 +122,8 @@ The global HFR dataset that feeds into the Tableau workbook on the server pulls 
                                    max_date = TRUE)
 ```
 
-Checks can can should be run on the global dataset, ensuring that everything was uniformly processed. Variable names and their contents should be compared against the [HFR codebook](https://github.com/USAID-OHA-SI/Wavelength/wiki/HFR-Codebook). Some of the checks include:
+## Validations
+Checks can and should be run on the global dataset, ensuring that everything was uniformly processed. Variable names and their contents should be compared against the [HFR codebook](https://github.com/USAID-OHA-SI/Wavelength/wiki/HFR-Codebook). Some of the checks include:
   - all variables are lower case and match the codebook
   - ensuring dates all match the HFR reporting calendar
   - indicators are only HFR indicators and spelling match

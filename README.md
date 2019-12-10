@@ -132,12 +132,10 @@ These validations are built into the `hfr_process_template()` at various points 
 ```{r}
 #VALIDATE DATA
   #submission file path
-    #file path for the 
     path <- "~/WeeklyData/Saturn"
-    output_folder <- "~/WeeklyData/Output"
-   #validations appear in the console
+  #validations appear in the console
     hfr_process_template(path)
-   #validations appear in the console, adjusting the submission date automatically
+  #alternative, validate, adjusting the submission date automatically
     hfr_process_template(path, round_hfrdate = TRUE)
 ```
 ---

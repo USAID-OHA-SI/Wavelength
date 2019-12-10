@@ -39,7 +39,6 @@
 
 
     uids <- ous %>%
-      dplyr::filter(stringr::str_detect(displayName, "Region", negate = TRUE)) %>%
       dplyr::bind_rows(ctrys) %>%
       dplyr::arrange(displayName)
 

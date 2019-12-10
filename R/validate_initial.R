@@ -20,8 +20,6 @@ validate_initial <- function(filepath){
 #'
 #' @param filepath filepath to sumbitted template
 #'
-#' @export
-#'
 
 is_hfrtab <- function(filepath){
 
@@ -51,8 +49,8 @@ is_hfrtab <- function(filepath){
 check_meta <- function(filepath){
   #type
     if(is_metatab(filepath)){
-      type <- extract_meta(filepath, "type")
-      temp_version <- extract_meta(filepath, "version")
+      type <- hfr_extract_meta(filepath, "type")
+      temp_version <- hfr_extract_meta(filepath, "version")
     } else {
       df <- hfr_import(filepath)
       type <- ifelse(var_exists(df, "val"), "Long [no meta provided]", "Wide [no meta provided]")

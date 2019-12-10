@@ -1,7 +1,5 @@
 #' Fiscal Year
 #'
-#' @export
-#'
 #' @return Current Fiscal Year
 #'
   curr_fy <- function() { 2020 }
@@ -66,8 +64,6 @@
 #' Determine whether meta tab exists
 #'
 #' @param filepath filepath to sumbitted template
-#'
-#' @export
 
 is_metatab <- function(filepath){
 
@@ -94,13 +90,13 @@ is_metatab <- function(filepath){
 #' \dontrun{
 #' #identify whether template is long or wide
 #'   filepath <- "~/WeeklyData/Raw/KEN_Weekly.xlsx"
-#'   extract_meta(filepath, meta_type = "type")
+#'   hfr_extract_meta(filepath, meta_type = "type")
 #' #identify period
-#'   extract_meta(filepath, meta_type = "period")
+#'   hfr_extract_meta(filepath, meta_type = "period")
 #' #identify OU
-#'   extract_meta(filepath, meta_type = "ou") }
+#'   hfr_extract_meta(filepath, meta_type = "ou") }
 
-extract_meta <- function(filepath, meta_type = "type"){
+hfr_extract_meta <- function(filepath, meta_type = "type"){
 
   if(is_metatab(filepath)){
     metatable <- readxl::read_excel(filepath, range = "meta!B2:C5",
@@ -129,8 +125,6 @@ extract_meta <- function(filepath, meta_type = "type"){
 #'
 #' @param df data frame
 #' @param var variable to count missing values
-#'
-#' @export
 
 count_missing <- function(df, var){
 

@@ -2,7 +2,7 @@
 #'
 #' @param filepath filepath to sumbitted template
 #' @param round_hfrdate rounds date to the nearest HFRweek start (for non-compliance), default = FALSE
-#' @param folderpath_output if a txt output is desired, provide the full path to the folder
+#' @param folderpath_output if a csv output is desired, provide the full path to the folder
 #'
 #' @export
 

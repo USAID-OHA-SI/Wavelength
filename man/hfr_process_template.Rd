@@ -12,7 +12,7 @@ hfr_process_template(filepath, round_hfrdate = FALSE,
 
 \item{round_hfrdate}{rounds date to the nearest HFRweek start (for non-compliance), default = FALSE}
 
-\item{folderpath_output}{if a txt output is desired, provide the full path to the folder}
+\item{folderpath_output}{if a csv output is desired, provide the full path to the folder}
 }
 \description{
 Import and Munge HFR Standard Templates

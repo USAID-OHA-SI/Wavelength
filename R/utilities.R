@@ -1,5 +1,6 @@
 #' Fiscal Year
 #'
+#' @export
 #' @return Current Fiscal Year
 #'
   curr_fy <- function() { 2020 }
@@ -51,6 +52,7 @@
 
 #' Check if variable exist
 #'
+#' @export
 #' @param df data frame to check against
 #' @param var quoted variable of interest
 
@@ -63,6 +65,7 @@
 
 #' Determine whether meta tab exists
 #'
+#' @export
 #' @param filepath filepath to sumbitted template
 
 is_metatab <- function(filepath){
@@ -123,6 +126,7 @@ hfr_extract_meta <- function(filepath, meta_type = "type"){
 
 #' Count missing values
 #'
+#' @export
 #' @param df data frame
 #' @param var variable to count missing values
 
@@ -142,6 +146,8 @@ count_missing <- function(df, var){
 
 #' Flag Missing Variables
 #'
+#' @export
+#'
 #' @param required list of required vars
 #' @param submitted list of vars pulled from submission
 #'
@@ -159,7 +165,7 @@ count_missing <- function(df, var){
 
 
 #' Flag Extra Variables
-#'
+#' @export
 #' @param required list of required vars
 #' @param submitted list of vars pulled from submission
 

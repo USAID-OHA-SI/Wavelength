@@ -28,7 +28,7 @@ hfr_fix_noncompliance <- function(df){
                   val = dplyr::na_if(val, "N/A"),
                   val = dplyr::na_if(val, "M/A"),
                   #CDI
-                  indicator = ifelse(indicator == "TX_NEW_NewHIV", "TX_NEW", indicator),
+                  indicator = ifelse(indicator %in% c("TX_NEW_NewHIV", "TX_NEW_NEWHIV"), "TX_NEW", indicator),
                   #Moz
                   otherdisaggregate = ifelse(indicator == "TX_3MD", "3-5 months", otherdisaggregate),
                   indicator = ifelse(indicator == "TX_3MD", "TX_MMD", indicator)

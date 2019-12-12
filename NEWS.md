@@ -1,3 +1,5 @@
+# Wavelength 2.3.0
+
 # Wavelength 2.2.0
 * Add validations to run inline with import
   * before import, check there are sheets to import (contain HFR in tab name), pull meta data in, and identify import/ignored tabs,   `validate_initial()`

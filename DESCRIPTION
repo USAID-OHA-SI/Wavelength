@@ -1,6 +1,6 @@
 Package: Wavelength
 Title: Wavelength
-Version: 2.2.0
+Version: 2.3.0
 Authors@R: 
     person(given = "Aaron",
            family = "Chafetz",

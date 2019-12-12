@@ -61,12 +61,13 @@ check_meta <- function(filepath){
 
   #country/file
     ou_name <-  hfr_extract_meta(filepath, "ou")
-    ou_name <- ifelse(is.na(ou_name), crayon::red(ou_name), crayon::blue(ou_name))
+    ou_name <- ifelse(is.na(ou_name), crayon::yellow(ou_name), crayon::blue(ou_name))
     file_name <- crayon::blue(basename(filepath))
 
   #PRINT VALIDATION
 
-  cat("\nCountry:", ou_name,
+  cat("\n--------------------------------------------",
+      "\nCountry:", ou_name,
       "\nFile name:", file_name,
       "\nWhat template was submitted?", temp_version
       )

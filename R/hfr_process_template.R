@@ -18,6 +18,9 @@ hfr_process_template <- function(filepath, round_hfrdate = FALSE, folderpath_out
   #validation checks
     validate_import(df)
 
+  #remove any extra columns
+    df <- hfr_restrict_cols(df)
+
   #reshape wide to match long df (only affects wide format)
     df <- hfr_gather(df)
 

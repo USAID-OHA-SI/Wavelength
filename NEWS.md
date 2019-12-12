@@ -1,4 +1,5 @@
 # Wavelength 2.3.0
+* Add `hfr_restrict_cols()` to remove any non HFR columns submitted in template
 
 # Wavelength 2.2.0
 * Add validations to run inline with import

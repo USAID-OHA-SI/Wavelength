@@ -124,7 +124,7 @@ check_inds <-function(df){
   #print validation
   cat("\nAre there any unspecified indicators?", missing_ind,
       "\nAre there any missing indicators?", missing,
-      "\nAre there any extra indicators?", extra, "\n")
+      "\nAre there any extra indicators?", extra)
 }
 
 
@@ -154,6 +154,6 @@ check_disaggs <-function(df){
   #print validation
   cat( "\nAre there any missing age/sex disaggs?", missing,
        "\nAre there any extra age/sex disaggs?", extra,
-       "\nAre there any extra other disaggs?", extra_otherdisagg)
+       "\nAre there any extra other disaggs?", extra_otherdisagg, "\n")
 }
 

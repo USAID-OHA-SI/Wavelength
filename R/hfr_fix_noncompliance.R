@@ -20,6 +20,7 @@ hfr_fix_noncompliance <- function(df){
                                                 TRUE ~ otherdisaggregate),
                   #Laos
                   indicator = stringr::str_replace_all(indicator, "-", "_"),
+                  agecoarse = ifelse(agecoarse == "Male 20-25", "15+", agecoarse),
                   #Lesotho
                   indicator = ifelse(indicator == "HTS_POS", "HTS_TST_POS", indicator),
                   #Vietnam

@@ -7,9 +7,11 @@
 hfr_restrict_cols <- function(df){
 
   if(var_exists(df, "val")){
-    df <- dplyr::select_at(df, template_cols_long)
+    cols <- intersect(template_cols_long, names(df))
+    df <- dplyr::select_at(df, cols)
   } else {
-    df <- dplyr::select_at(df, template_cols_wide)
+    cols <- intersect(template_cols_wide, names(df))
+    df <- dplyr::select_at(df, cols)
   }
 
   return(df)

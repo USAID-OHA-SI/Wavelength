@@ -25,6 +25,7 @@ hfr_fix_noncompliance <- function(df){
                   indicator = ifelse(indicator == "HTS_POS", "HTS_TST_POS", indicator),
                   #Vietnam
                   indicator = stringr::str_replace(indicator, "MMS", "MMD"),
+                  operatingunit = ifelse(operatingunit == "Viet Nam", "Vietnam", operatingunit),
                   #South Sudan
                   val = dplyr::na_if(val, "N/A"),
                   val = dplyr::na_if(val, "M/A"),

@@ -42,7 +42,7 @@ hfr_process_template <- function(filepath, round_hfrdate = FALSE, folderpath_out
     validate_output(df)
 
   #export
-    hfr_export(df, folderpath_output)
+    hfr_export(df, folderpath_output, by_mech = TRUE)
 
   invisible(df)
 }

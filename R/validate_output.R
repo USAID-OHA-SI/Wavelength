@@ -124,7 +124,7 @@ check_inds <-function(df){
   #print validation
   cat("\nAre there any unspecified indicators?", missing_ind,
       "\nAre there any missing indicators?", missing,
-      "\nAre there any extra indicators?", extra)
+      "\nAre there any extra indicators?", extra, "\n")
 }
 
 

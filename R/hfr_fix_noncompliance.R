@@ -33,7 +33,15 @@ hfr_fix_noncompliance <- function(df){
                   indicator = ifelse(indicator %in% c("TX_NEW_NewHIV", "TX_NEW_NEWHIV"), "TX_NEW", indicator),
                   #Moz
                   otherdisaggregate = ifelse(indicator == "TX_3MD", "3-5 months", otherdisaggregate),
-                  indicator = ifelse(indicator == "TX_3MD", "TX_MMD", indicator)
+                  indicator = ifelse(indicator == "TX_3MD", "TX_MMD", indicator),
+                  #South Africa
+                  indicator = dplyr::case_when(indicator == "TX_CURR_90" ~ "TX_CURR",
+                                               indicator == "MULTI DRUG" ~ "TX_MMD",
+                                               TRUE ~ indicator),
+                  otherdisaggregate = dplyr::case_when(otherdisaggregate %in% c("1", "2") ~ "<3 months",
+                                                       otherdisaggregate %in% c("3", "4", "5") ~ "3-5 months",
+                                                       otherdisaggregate %in% c("6", "6+") ~ "6 months or more",
+                                                       TRUE ~ otherdisaggregate)
 
                   )
 

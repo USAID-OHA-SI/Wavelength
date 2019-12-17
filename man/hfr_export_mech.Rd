@@ -4,20 +4,14 @@
 \alias{hfr_export_mech}
 \title{Export csv files by mechanism}
 \usage{
-hfr_export_mech(df, pd, iso, mech, type, date, folderpath_output)
+hfr_export_mech(df, mech, type, folderpath_output)
 }
 \arguments{
 \item{df}{tructured High Frequency Data Frame}
 
-\item{pd}{HFR period}
-
-\item{iso}{country ISO code}
-
 \item{mech}{mech_code}
 
 \item{type}{type type of data being saved, default = processed}
-
-\item{date}{today's date}
 
 \item{folderpath_output}{provide the full path to the folder for saving}
 }

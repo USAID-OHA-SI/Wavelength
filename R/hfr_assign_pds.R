@@ -47,7 +47,7 @@ hfr_assign_pds <- function(df){
     lubridate::quarter(with_year = TRUE, fiscal_start = 10) %>%
     stringr::str_sub(1, 4) %>%
     as.numeric()
-  fy_end   <- max(df$date, na.rm = TRUE) %>%
+  fy_end   <- (max(df$date, na.rm = TRUE) + 7) %>%
     lubridate::quarter(with_year = TRUE, fiscal_start = 10) %>%
     stringr::str_sub(1, 4) %>%
     as.numeric()

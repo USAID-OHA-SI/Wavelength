@@ -2,7 +2,7 @@
 ## AUTHOR:   A.CHAFETZ | USAID
 ## PURPOSE:  OU completeness report
 ## DATE:     2019-10-03
-## UPDATED:  2019-11-23
+## UPDATED:  2020-01-07
 
 
 # DEPENDENCIES ------------------------------------------------------------
@@ -12,7 +12,8 @@
 # VARIABLES ---------------------------------------------------------------
 
   #global file path
-    path <- "out/joint/HFR_GLOBAL_thru2020.01_output_20191123.0801.csv"
+    path <- "out/joint/HFR_GLOBAL_thru2020.01_output_20191204.1713.zip"
+    path_new <- "out/joint/HFR_GLOBAL_2020.02_output_20200107.0838.csv"
 
   #numeric variables to convert from string
     vars_num <- c("mer_results", "mer_targets", "targets_gap", "weekly_targets", "weekly_targets_gap", "val")
@@ -28,15 +29,19 @@
 # IMPORT DATASET ----------------------------------------------------------
 
   #import, reading in all as character as default
-    df_glob <- readr::read_csv(path, col_types = c(.default = "c"))
-
+    df_glob <- hfr_read(path)
+  #import new
+    df_glob_new <- hfr_read(path_new)
+  #append
+    df_glob <- dplyr::bind_rows(df_glob, df_glob_new)
+    rm(df_glob_new)
 
 # MUNGE -------------------------------------------------------------------
 
   #adjust numeric variables and fix issue with lines w/ HTS_TST POS
-    df_glob <- df_glob %>%
-      dplyr::mutate_at(dplyr::vars(vars_num), as.numeric) %>%
-      dplyr::mutate_at(dplyr::vars(fy, hfr_pd), as.integer)
+    # df_glob <- df_glob %>%
+    #   dplyr::mutate_at(dplyr::vars(vars_num), as.numeric) %>%
+    #   dplyr::mutate_at(dplyr::vars(fy, hfr_pd), as.integer)
 
   #adjust period
     df_glob <- dplyr::mutate(df_glob, hfr_pd = fy + (hfr_pd/100))
@@ -90,7 +95,7 @@
 
   #clean for export to Excel (clipr - value to clipboard)
     df_glob_sites_comp %>%
-      dplyr::filter(hfr_pd >= 2019.11) %>%
+      dplyr::filter(hfr_pd >= 2019.12) %>%
       dplyr::select(-c(mer_targets, val, target_sitecnt, hfr_sitecnt)) %>%
       dplyr::arrange(operatingunit, indicator, hfr_pd) %>%
       tidyr::unite("indicator", c("indicator", "hfr_pd"), sep = "_pd") %>%

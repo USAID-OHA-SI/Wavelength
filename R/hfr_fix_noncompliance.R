@@ -16,20 +16,22 @@ hfr_fix_noncompliance <- function(df){
                   #Lesotho
                   indicator = ifelse(indicator == "HTS_POS", "HTS_TST_POS", indicator),
                   #Nigeria
-                  otherdisaggregate = dplyr::case_when(otherdisaggregate == "2Months" ~ "<3 months",
+                  otherdisaggregate = dplyr::case_when(otherdisaggregate %in% c("2Months","< 3 months")  ~ "<3 months",
                                                        otherdisaggregate %in% c("3Months", "4Months", "5Months") ~ "3-5 months",
                                                        otherdisaggregate == "6Months" ~ "6 months or more",
                                                        TRUE ~ otherdisaggregate),
                   #Moz
-                  otherdisaggregate = ifelse(indicator == "TX_3MD", "3-5 months", otherdisaggregate),
+                  otherdisaggregate = dplyr::case_when(indicator == "TX_3MD" ~ "3-5 months",
+                                                       indicator == "< 3 months" ~ "<3 months",
+                                                       TRUE ~ otherdisaggregate),
                   indicator = ifelse(indicator == "TX_3MD", "TX_MMD", indicator),
                   #South Africa
                   indicator = dplyr::case_when(indicator == "TX_CURR_90" ~ "TX_CURR",
                                                indicator == "MULTI DRUG" ~ "TX_MMD",
                                                TRUE ~ indicator),
-                  otherdisaggregate = dplyr::case_when(otherdisaggregate %in% c("1", "2") ~ "<3 months",
-                                                       otherdisaggregate %in% c("3", "4", "5") ~ "3-5 months",
-                                                       otherdisaggregate %in% c("6", "6+") ~ "6 months or more",
+                  otherdisaggregate = dplyr::case_when(otherdisaggregate %in% c("1", "2", "1 Month", "2 Months") ~ "<3 months",
+                                                       otherdisaggregate %in% c("3", "4", "5", "3 Months", "4 Months", "5 Months") ~ "3-5 months",
+                                                       otherdisaggregate %in% c("6", "6+", "6 Months") ~ "6 months or more",
                                                        TRUE ~ otherdisaggregate),
                   #South Sudan
                   val = dplyr::na_if(val, "N/A"),
@@ -40,10 +42,10 @@ hfr_fix_noncompliance <- function(df){
                                                TRUE ~ indicator),
                   agecoarse = dplyr::case_when(agecoarse %in% c("15-19", "20-24", "30-34",
                                                          "25-29", "35-39", "40-44", "45-49",
-                                                         "50+") ~ "15+",
+                                                         "40-49", "50+") ~ "15+",
                                         TRUE ~ agecoarse),
                   otherdisaggregate = dplyr::case_when(otherdisaggregate %in% c("MSM", "MSW", "TG",
-                                                                         "TG-SW", "Female Non-KP",
+                                                                         "TG-SW", "TGSW", "Female Non-KP",
                                                                          "FSW", "Male Non-KP") ~ as.character(NA),
                                                 TRUE ~ otherdisaggregate),
 

@@ -33,4 +33,4 @@
     ggplot2::theme_minimal() +
     ggplot2::theme(axis.text = ggplot2::element_blank(), panel.grid = ggplot2::element_blank())
 
-    ggsave(filepath(folderpath_output, "hfr_logo.png"), dpi = 600, height = 5, width = 10)
+    ggplot2::ggsave(file.path(folderpath_output, "hfr_logo.png"), dpi = 600, height = 5, width = 10)

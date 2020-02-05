@@ -1,3 +1,5 @@
+# Wavelength 2.3.1
+
 # Wavelength 2.3.0
 * Add `hfr_restrict_cols()` to remove any non HFR columns submitted in template
 * Adjust export to handle exporting by mechanims

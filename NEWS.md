@@ -1,4 +1,5 @@
 # Wavelength 2.3.1
+* Add `hfr_filter_pd()` to filter when exporting processed files to restrict export to just the period of choice.
 
 # Wavelength 2.3.0
 * Add `hfr_restrict_cols()` to remove any non HFR columns submitted in template

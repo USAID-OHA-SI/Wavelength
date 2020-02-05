@@ -4,13 +4,18 @@
 \alias{hfr_process_template}
 \title{Import and Munge HFR Standard Templates}
 \usage{
-hfr_process_template(filepath, round_hfrdate = FALSE,
-  folderpath_output = NULL)
+hfr_process_template(
+  filepath,
+  round_hfrdate = FALSE,
+  hfr_pd_sel = NULL,
+  folderpath_output = NULL
+)
 }
 \arguments{
 \item{filepath}{filepath to sumbitted template}
 
-\item{round_hfrdate}{rounds date to the nearest HFRweek start (for non-compliance), default = FALSE}
+\item{round_hfrdate}{rounds date to the nearest HFRweek start (for non-compliance), default = FALSE
+@param hfr_pd_sel filter for HFR reporting period, 1-13, no filter when NULL, default = NULL}
 
 \item{folderpath_output}{if a csv output is desired, provide the full path to the folder}
 }

@@ -2,12 +2,13 @@
 #'
 #' @param filepath filepath to sumbitted template
 #' @param round_hfrdate rounds date to the nearest HFRweek start (for non-compliance), default = FALSE
+#'  @param hfr_pd_sel filter for HFR reporting period, 1-13, no filter when NULL, default = NULL
 #' @param folderpath_output if a csv output is desired, provide the full path to the folder
 #'
 #' @export
 
 
-hfr_process_template <- function(filepath, round_hfrdate = FALSE, folderpath_output = NULL){
+hfr_process_template <- function(filepath, round_hfrdate = FALSE, hfr_pd_sel = NULL, folderpath_output = NULL){
 
   #validation checks
     validate_initial(filepath)
@@ -34,6 +35,9 @@ hfr_process_template <- function(filepath, round_hfrdate = FALSE, folderpath_out
     df <- df %>%
       hfr_fix_date(round_hfrdate) %>%
       hfr_assign_pds()
+
+  #filter if required to specific pd
+    df <- hfr_filter_pd(df, hfr_pd_sel, hfr_fy_sel = 2020)
 
   #aggregate to combine rows where needed (minimize row count)
     df <- hfr_aggr(df)

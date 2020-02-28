@@ -264,9 +264,9 @@
         gen_url(mech_uid, ou_uid, ou_fac, type_hts = NULL, baseurl = baseurl) %>%
         get_datim_targets(username, password)
 
-    #remove VMMC_CIRC results w/ Age/Sex/HIVStatus since there is also Age/Sex used for Total Numerator
+    #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex/HIVStatus
       if(!is.null(df_nonhts))
-        df_nonhts <- dplyr::mutate(df_nonhts, Value = ifelse(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex/HIVStatus" & `Targets / Results` == "MER Results", NA, Value))
+        df_nonhts <- dplyr::filter(df_nonhts, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex"))
 
     #pull PrEP targets (some at community)
       df_prep_comm_targets <-

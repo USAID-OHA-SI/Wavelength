@@ -9,12 +9,14 @@ mypwd(username)
 \arguments{
 \item{username}{DATIM username}
 }
+\value{
+see keyringr vignette about setting up storing secure credentials
+}
 \description{
 Proper credentials from secure file
 }
 \examples{
 \dontrun{
- #see information about keyringr about setting up storing secure credentials
   myuser <- "UserX"
   mypwd(myuser) }
 }

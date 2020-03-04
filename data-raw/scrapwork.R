@@ -5,43 +5,43 @@
   #DATIM username
     myuser <- ""
 
+  #quarters with results in DATIM
+    qtr <- 1
+
+  #folderpath output
+    savefolder <- "out/DATIM"
+
   #pull MER data
     ous <- identify_levels(username = myuser, password = mypwd(myuser)) %>% dplyr::pull(country_name)
     purrr::walk(ous, ~pull_mer(ou_name = .x,
                                     username = myuser,
                                     password = mypwd(myuser),
-                                    quarters_complete = 0,
-                                    folderpath_output = "out/DATIM"))
+                                    quarters_complete = qtr,
+                                    folderpath_output = savefolder))
   #pull hierarchy
     ouuids <- identify_ouuids(myuser, mypwd(myuser)) %>% dplyr::pull(id)
     df_orgs <- purrr::map_dfr(.x = ouuids,
                               .f = ~ pull_hierarchy(.x, myuser, mypwd(myuser)))
-    hfr_export(df_orgs, "out/DATIM", type = "orghierarchy")
+    hfr_export(df_orgs, savefolder, type = "orghierarchy")
 
   #pull mechanism info
     pull_mech(folderpath_output = "out/DATIM")
 
 # Process HFR submissions -------------------------------------------------
 
+  #hfr submission period
+    submission_pd <- 5
+
+  #processed/output folder
+    savefolder <- "out/processed"
+
+  #store list of HFR submissions
     (files <- list.files("ou_submissions", full.names = TRUE))
 
-    df_hfr <- purrr::map_dfr(files, ~ hfr_process_template(.x, round_hfrdate = TRUE))
+  #validate submissions
+    purrr::walk(files, hfr_process_template)
 
-    df_hfr %>%
-      readr::write_csv(paste0("out/processed/HFR_2020.01_Global_",format(Sys.Date(), "%Y%m%d"), ".csv"), na = "")
-
-# Combine HFR & DATIM -----------------------------------------------------
-
-  ## NOTE: this creates a global file,
-
-  #folder where all HFR processed files are stored (will determine latest verion by OU)
-    path <- "../Downloads/HFR_FILES"
-
-  #append DATIM onto HFR (map so completes for all OUs in folderpath_hfr)
-    df <- append_sources(folderpath_hfr = "out/processed",
-                         folderpath_datim = "out/DATIM",
-                         start_date = "2019-09-30",
-                         weeks = 4,
-                         max_date = TRUE,
-                         folderpath_output = "out/joint")
+  #save processed files if submissions meet validation checks(filter for just submission pd)
+    purrr::walk(files, hfr_process_template, round_hfrdate = TRUE,
+                 hfr_pd_sel = submission_pd, folderpath_output = savefolder)
 

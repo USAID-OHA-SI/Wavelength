@@ -181,7 +181,7 @@
 #'  #gen url
 #'   myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts  = NULL) }
 
-  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts  = NULL, type_txcurr = FALSE, baseurl = "https://final.datim.org/"){
+  gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts  = NULL, type_txcurr = NULL, baseurl = "https://final.datim.org/"){
 
     fy_pd <- paste0(curr_fy()-1, "Oct")
 
@@ -201,19 +201,22 @@
                "dimension=LxhLO68FcXm:f5IPTM7mieH;wdoUps1qb3V;BTIqHnjeG7l;rI3JlpiuwEK;CUblPgOMGaT&", #technical area
                "dimension=", ifelse(type_hts  == "results", "ra9ZqrTtSQn", "Jm6OwL9IqEa"), "&", #HTS Modality (USE ONLY for FY20 Results/FY21 Targets) or HTS Modality (USE ONLY for FY19 Results/FY20 Targets)
                "dimension=bDWsPYyXgWP:awSDzziN3Dn;EvyNJHbQ7ZE;i4Fgst9vzF9;mSBg9AZx1lV;viYXyEy7wKi;GNXy3pvTTM2&") #HIV Test Status (Specific))
+    } else if(!is.null(type_txcurr)){
+      tech_url <-
+        paste0(core_url,
+               "dimension=IeMmjHyBUpi:", ifelse(type_txcurr == "targets", "W8imnja2Owd", "Jh0jDM5yQ2E"), "&", #Targets / Results -> targets W8imnja2Owd
+               "dimension=LxhLO68FcXm:MvszPTQrUhy&", #technical areas, prep targets at community
+               "dimension=",ifelse(type_txcurr == "mmd", "dx:z3JQrvdUCDM;VgUStUs4PM6;OnDTCTo7wM0", "HWPJnUTMjEq:Qbz6SrpmJ1y;h0pvSVe1TYf;pxz2gGSIQhG&")) #Disaggregation Type -> Age/Sex, Age/Sex/HIVStatus, Age Aggregated/Sex/HIVStatus
     } else {
       tech_url <-
         paste0(core_url,
                "dimension=IeMmjHyBUpi&", #Targets / Results -> targets W8imnja2Owd
-               "dimension=LxhLO68FcXm:", ifelse(org_type == "community", "gma5vVZgK49","udCop657yzi;gma5vVZgK49;wdoUps1qb3V;MvszPTQrUhy"), "&", #technical areas, prep targets at community
+               "dimension=LxhLO68FcXm:", ifelse(org_type == "community", "gma5vVZgK49","udCop657yzi;gma5vVZgK49;wdoUps1qb3V"), "&", #technical areas, prep targets at community
                "dimension=HWPJnUTMjEq:Qbz6SrpmJ1y;h0pvSVe1TYf;pxz2gGSIQhG&") #Disaggregation Type -> Age/Sex, Age/Sex/HIVStatus, Age Aggregated/Sex/HIVStatus
     }
 
-    if(type_txcurr == TRUE){
+    if(!is.null(type_txcurr) && type_txcurr %in% c("mmd", "results"))
       tech_url <- stringr::str_replace(tech_url, fy_pd, "LAST_QUARTER")
-      tech_url <- stringr::str_replace(tech_url, "dimension=IeMmjHyBUpi", "dimension=IeMmjHyBUpi:Jh0jDM5yQ2E")
-      tech_url <- stringr::str_remove(tech_url, "udCop657yzi;gma5vVZgK49;wdoUps1qb3V;")
-    }
 
     if(org_type == "community")
       tech_url <-
@@ -235,9 +238,9 @@
 #'
 #' @param ou_name Operating Unit name, if mechanism is not specified
 #' @param username DATIM username
-#' @param password DATIM password, recommend using `mypwd()`
+#' @param password DATIM password, recommend using mypwd()
 #' @param baseurl API base url, default = https://final.datim.org/
-#' @param quarters_complete # of quarters completed through FY to determine weeks left in year
+#' @param quarters_complete number of quarters completed through FY to determine weeks left in year
 #' @param folderpath_output folder path to store DATIM output, default = NULL
 #'
 #' @export
@@ -276,9 +279,20 @@
         df_nonhts <- dplyr::filter(df_nonhts, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex"))
 
     #pull TX_CURR results
-      df_txcurr <-
-        gen_url(mech_uid, ou_uid, ou_fac, type_hts  = NULL, type_txcurr = TRUE, baseurl = baseurl) %>%
+      df_txcurr_results <-
+        gen_url(mech_uid, ou_uid, ou_fac, type_hts  = NULL, type_txcurr = "results", baseurl = baseurl) %>%
         get_datim_targets(username, password)
+
+    #pull TX_CURR targets
+      df_txcurr_targets <-
+        gen_url(mech_uid, ou_uid, ou_fac, type_hts  = NULL, type_txcurr = "targets", baseurl = baseurl) %>%
+        get_datim_targets(username, password)
+
+    #pull TX_MMD
+      # df_txcurr_mmd <-
+      #   gen_url(mech_uid, ou_uid, ou_fac, type_hts  = NULL, type_txcurr = "mmd", baseurl = baseurl) %>%
+      #   get_datim_targets(username, password)
+
 
     #pull PrEP targets (some at community)
       df_prep_comm_targets <-
@@ -315,7 +329,8 @@
 
     #ensure data exists before continuing
       data_exists <- (max(nrow(df_hts_comm_results), nrow(df_hts_comm_targets),
-                          nrow(df_hts_fac_results), nrow(df_hts_fac_targets), nrow(df_txcurr),
+                          nrow(df_hts_fac_results), nrow(df_hts_fac_targets),
+                          nrow(df_txcurr_results), nrow(df_txcurr_targets), #nrow(df_txcurr_mmd),
                           nrow(df_nonhts), nrow(df_prep_comm_targets), 1, na.rm = TRUE) - 1) > 0
 
       data_exists_hts <- (max(nrow(df_hts_comm_results), nrow(df_hts_comm_targets),
@@ -360,7 +375,8 @@
 
 
     #combine non HTS and HTS dfs
-      df_combo <- dplyr::bind_rows(df_nonhts, df_txcurr, df_prep_comm_targets, df_combo_hts)
+      df_combo <- dplyr::bind_rows(df_nonhts, df_txcurr_results, df_txcurr_targets, #df_txcurr_mmd
+                                  df_prep_comm_targets, df_combo_hts)
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility
       country_name <- unique(df_combo$orglvl_3)

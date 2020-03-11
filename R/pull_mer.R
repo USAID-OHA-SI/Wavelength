@@ -281,7 +281,8 @@
     #pull TX_CURR results
       df_txcurr_results <-
         gen_url(mech_uid, ou_uid, ou_fac, type_hts  = NULL, type_txcurr = "results", baseurl = baseurl) %>%
-        get_datim_targets(username, password)
+        get_datim_targets(username, password) %>%
+        dplyr::mutate(Period = ifelse(Period == "Oct to Dec 2019", "Oct 2019 to Sep 2020", Period))
 
     #pull TX_CURR targets
       df_txcurr_targets <-

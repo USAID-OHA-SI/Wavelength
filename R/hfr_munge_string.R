@@ -10,6 +10,7 @@ hfr_munge_string <- function(df){
   df <- df %>%
     dplyr::mutate(indicator = toupper(indicator),
                   indicator = ifelse(indicator == "PREP_NEW", "PrEP_NEW", indicator),
+                  indicator = stringr::str_replace_all(indicator, " |  ", "_"),
                   agecoarse = dplyr::recode(agecoarse, "u15" = "<15", "o15" = "15+"),
                   sex = dplyr::recode(sex,
                                       "f" = "Female",

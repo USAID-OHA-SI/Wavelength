@@ -1,4 +1,6 @@
 # Wavelength 2.3.1
+* Fix issue with ordering disconnect between wide/long with age and sex in `hfr_gather()`
+* Replace any spaces in `indicator` with an underscore (`_`) in `hfr_munge_string()`
 * Adjusted `pull_mer()` to handle FY20 HTS result modalities and temporary TX_CURR DATIM bug (FY20Q1 does not show up under `Oct 2019 to Sep 2020` only under quartelry results)
 * Update `mypwd()` to work on unix OS, not just PC
 * Add `hfr_filter_pd()` to filter when exporting processed files to restrict export to just the period of choice.

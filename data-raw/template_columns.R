@@ -15,7 +15,7 @@
   usethis::use_data(template_cols_wide, overwrite = TRUE)
 
 #store column names for wide template
-  s <- readxl::read_excel("templates/HFR_Submission_Template_Wide_LIMITED.xlsx",
+  template_cols_wide_lim <- readxl::read_excel("templates/HFR_Submission_Template_Wide_LIMITED.xlsx",
                                            sheet = "HFR", skip = 1, col_types = "text", n_max = 0) %>%
     names()
 

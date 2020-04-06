@@ -14,6 +14,13 @@
 
   usethis::use_data(template_cols_wide, overwrite = TRUE)
 
+#store column names for wide template
+  s <- readxl::read_excel("templates/HFR_Submission_Template_Wide_LIMITED.xlsx",
+                                           sheet = "HFR", skip = 1, col_types = "text", n_max = 0) %>%
+    names()
+
+  usethis::use_data(template_cols_wide_lim, overwrite = TRUE)
+
 #store meta data columns
   template_cols_meta <- template_cols_long %>% setdiff("val")
 

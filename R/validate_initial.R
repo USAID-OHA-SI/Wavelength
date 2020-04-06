@@ -57,7 +57,7 @@ check_meta <- function(filepath){
       temp_version <- "[no meta provided]"
     }
 
-    temp_version <- crayon::blue(temp_version)
+    temp_version <- crayon::blue(paste(type, temp_version))
 
   #country/file
     ou_name <-  hfr_extract_meta(filepath, "ou")

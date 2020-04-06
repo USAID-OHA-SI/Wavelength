@@ -1,3 +1,7 @@
+# Wavelength 2.3.2
+* Add additional template option, Wide - Limited, for optional use during COVID Response
+* Adjust validations and processing to account for additional template + options
+
 # Wavelength 2.3.1
 * Fix issue with ordering disconnect between wide/long with age and sex in `hfr_gather()`
 * Replace any spaces in `indicator` with an underscore (`_`) in `hfr_munge_string()`

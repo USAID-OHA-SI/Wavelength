@@ -1,5 +1,9 @@
 version,type,date,note
-1.01,Long,2019-10-01,FY20 base long submission template
-1.01,Wide,2019-10-01,FY20 base wide submission template
-1.01.01,Wide,2019-11-20,TZA - added in columns for (1) start & (2) end for TZA weeks as well as a column for recording (3) facility tier
-1.01.02,Wide,2019-12-08,"MWI - added in columns for index testing, total (1) and pos (2) for all age bands"
+1.01,Long,10/1/2019,FY20 base long submission template
+1.01,Wide,10/1/2019,FY20 base wide submission template
+1.01.01,Wide,11/20/2019,TZA - added in columns for (1) start & (2) end for TZA weeks as well as a column for recording (3) facility tier
+1.01.02,Wide,12/8/2019,"MWI - added in columns for index testing, total (1) and pos (2) for all age bands"
+1.02,Wide,NA,Fixed issue with MMD having duplicate column headers
+1.03,Wide - Limited,4/6/2020,** NEW ** added template to allow for wide reporting with relaxed age/sex reporting
+1.03,Wide,4/6/2020,added note about alternative template
+1.03,Long,4/6/2020,added note about relaxed guidance

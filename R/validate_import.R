@@ -23,4 +23,29 @@ validate_import <- function(df){
   cat("\nAre there any missing columns on import?", missing,
       "\nAre there any extra columns on import?", extra)
 
+  check_distinct_ous(df)
+}
+
+
+#' Check OUs listed in operatingunit
+#'
+#' @param df df create during `hfr_import()`
+#'
+#' @export
+
+check_distinct_ous <- function(df){
+
+  ous <- df %>%
+    dplyr::distinct(operatingunit) %>%
+    dplyr::pull(operatingunit) %>%
+    paste(collapse = ", ")
+
+  multi_ous <- length(ous) > 1
+
+  ou_out <- ifelse(multi_ous == TRUE, crayon::yellow(ous), crayon::blue(ous))
+
+  #print validation
+  cat("\nIs there just one OU (for non regional OUs)?", ou_out)
+
+
 }

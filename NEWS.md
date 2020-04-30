@@ -1,3 +1,6 @@
+# Wavelength 2.3.3
+* Resolve bug that converted NAs to zeros when wide formats were used
+
 # Wavelength 2.3.2
 * Add additional template option, Wide - Limited, for optional use during COVID Response
 * Adjust validations and processing to account for additional template + options

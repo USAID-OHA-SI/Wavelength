@@ -6,7 +6,7 @@
 
 hfr_fix_noncompliance <- function(df){
   df <- df %>%
-    #resolve issue with reporting for:
+    #resolve issue with reporting
     dplyr::mutate(
                   #CDI
                   indicator = ifelse(indicator %in% c("TX_NEW_NewHIV", "TX_NEW_NEWHIV"), "TX_NEW", indicator),
@@ -40,6 +40,7 @@ hfr_fix_noncompliance <- function(df){
                   indicator = dplyr::case_when(indicator == "HTS_TST ALL" ~ "HTS_TST",
                                                indicator == "HTS_TST POSITIVE" ~ "HTS_TST_POS",
                                                TRUE ~ indicator),
+                  agecoarse = as.character(agecoarse),
                   agecoarse = dplyr::case_when(agecoarse %in% c("15-19", "20-24", "30-34",
                                                          "25-29", "35-39", "40-44", "45-49",
                                                          "40-49", "50+") ~ "15+",
@@ -52,7 +53,6 @@ hfr_fix_noncompliance <- function(df){
                   #Vietnam
                   indicator = stringr::str_replace(indicator, "MMS", "MMD"),
                   operatingunit = ifelse(operatingunit == "Viet Nam", "Vietnam", operatingunit)
-
                   ) %>%
     dplyr::mutate_at(dplyr::vars(agecoarse, sex), ~ dplyr::na_if(., "NA"))
 

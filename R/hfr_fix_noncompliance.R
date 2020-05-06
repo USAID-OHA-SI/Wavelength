@@ -16,7 +16,7 @@ hfr_fix_noncompliance <- function(df){
                   #Lesotho
                   indicator = ifelse(indicator == "HTS_POS", "HTS_TST_POS", indicator),
                   #Nigeria
-                  otherdisaggregate = dplyr::case_when(otherdisaggregate %in% c("2Months","< 3 months", "<3months")  ~ "<3 months",
+                  otherdisaggregate = dplyr::case_when(otherdisaggregate %in% c("2Months","< 3 months", "<3months", "<3 Months")  ~ "<3 months",
                                                        otherdisaggregate %in% c("3Months", "4Months", "5Months", "3-5Months") ~ "3-5 months",
                                                        otherdisaggregate == "6Months" ~ "6 months or more",
                                                        TRUE ~ otherdisaggregate),
@@ -38,6 +38,7 @@ hfr_fix_noncompliance <- function(df){
                   val = dplyr::na_if(val, "M/A"),
                   #Thailand
                   indicator = dplyr::case_when(indicator == "HTS_TST ALL" ~ "HTS_TST",
+                                               indicator == "HTS_TST.POS" ~ "HTS_TST",
                                                indicator == "HTS_TST POSITIVE" ~ "HTS_TST_POS",
                                                TRUE ~ indicator),
                   agecoarse = as.character(agecoarse),

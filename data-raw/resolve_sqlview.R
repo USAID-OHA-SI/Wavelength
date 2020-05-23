@@ -8,7 +8,7 @@ library(tidyverse)
 library(vroom)
 library(lubridate)
 
-filename <- "C:/Users/achafetz/Documents/GitHub/pump_up_the_jam/Data/HFR_2020.07_Tableau_20200507.zip"
+filename <- "C:/Users/achafetz/Downloads/HFR_2020.07_Tableau_20200518.csv"
 df_twbx <- hfr_read(filename)
 
 glimpse(df_twbx)
@@ -20,6 +20,13 @@ df_twbx %>%
 
 df_twbx %>%
   count(fy, hfr_pd, date, wt = val) %>%
+  arrange(fy, date) %>%
+  print(inf)
+
+df_twbx %>%
+  group_by(fy, hfr_pd, date) %>%
+  summarise_at(vars(val, mer_results, mer_targets), sum, na.rm = TRUE) %>%
+  ungroup() %>%
   arrange(fy, date) %>%
   print(inf)
 
@@ -56,6 +63,7 @@ df_adj <- df_twbx %>%
          otherdisaggregate = na_if(otherdisaggregate, "0.0"),
          otherdisaggregate = na_if(otherdisaggregate, "nan"),
          otherdisaggregate = na_if(otherdisaggregate, "\\N"),
+         otherdisaggregate = na_if(otherdisaggregate, "Positivo"),
          psnuuid = NA_character_) %>%
   filter(date != "2109-11-25",
          fy != 2110)

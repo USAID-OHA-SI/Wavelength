@@ -2,7 +2,7 @@
 ## AUTHOR:   A.Chafetz | USAID
 ## PURPOSE:  identify dupliate mechanism files in a pd folder
 ## DATE:     2020-04-23
-
+## UPDATED:  2020-05-23
 
 
 #dependencies
@@ -30,7 +30,8 @@
 
 #extract the folders, mech codes and processed dates from filepath
   df_extract <- df_files %>%
-    separate(path, c(NA, "pd_folder", "filename"), sep = "/") %>%
+    mutate(path = str_extract(path, "2020\\..*")) %>%
+    separate(path, c("pd_folder", "filename"), sep = "/") %>%
     mutate(mech_code = str_extract(filename, "(?<=_)[:digit:]+(?=_)"),
            date_processed = str_extract(filename, "[:digit:]+(?=\\.csv)") %>%
              ymd) %>%
@@ -75,5 +76,28 @@
 
 #check that al moved
   drive_ls(as_id(new_fldr))
+
+
+
+# MOVE DUPLICATES OUT OF FOLDERS ------------------------------------------
+
+#id dropped dups (handle count = 3 manually)
+  df_dups_drop <- df_dups %>%
+    filter(count == 2) %>%
+    select(filename)
+
+#semi join to get ids
+  df_move <- semi_join(df_extract, df_dups_drop)
+
+#create a new deleted folder
+  del_fldr <- drive_ls(as_id(datafldr_id), pattern = "_Deleted") %>%
+    pull(id)
+
+  dupdel_fldr <- drive_mkdir("Duplicates", as_id(del_fldr)) %>%
+    pull(id)
+
+#move dup files into deleted folder
+  walk(df_move$id,
+       ~ drive_mv(as_id(.x), path = as_id(dupdel_fldr)))
 
 

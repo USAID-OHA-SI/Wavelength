@@ -14,6 +14,7 @@
   library(ICPIutilities)
   library(patchwork)
   library(ggrepel)
+  library(RColorBrewer)
   devtools::load_all()
 
 # VARIABLES ---------------------------------------------------------------
@@ -32,6 +33,8 @@
                 "Malawi", "Mozambique", "Namibia", "Nigeria", "South Africa",
                 "South Sudan", "Tanzania", "Uganda", "Ukraine", "Vietnam",
                 "Zambia", "Zimbabwe")
+  #red
+    flag_red <- brewer.pal(5, "OrRd")[5]
 
 # IMPORT DATASET ----------------------------------------------------------
 
@@ -53,6 +56,9 @@
   #adjust period
     df_glob <- dplyr::mutate(df_glob, hfr_pd = fy + (hfr_pd/100))
 
+  #add iso codes before adjusting OU name
+    df_glob <- left_join(df_glob, iso_map)
+
   #filter out PD 8 (not officially collected) & restrict to OU's in list; shorten to DRC
     df_glob <-  df_glob %>%
       # dplyr::filter(hfr_pd > 2019.08,
@@ -69,7 +75,7 @@
   #create denom for TX_MMD
     df_glob_mmd <- df_glob %>%
       dplyr::filter(indicator == "TX_CURR") %>%
-      dplyr::group_by(operatingunit, snu1, psnu, orgunit, mech_code, hfr_pd, indicator) %>% #orgunituid
+      dplyr::group_by(operatingunit, iso, snu1, psnu, orgunit, mech_code, hfr_pd, indicator) %>% #orgunituid
       dplyr::summarise_at(dplyr::vars(mer_targets), sum, na.rm = TRUE) %>%
       dplyr::ungroup() %>%
       dplyr::mutate(indicator = "TX_MMD")
@@ -82,7 +88,7 @@
 
   #distinct set of sites w/ their MER targets and HFR values
     df_glob_sites <- df_glob_sites %>%
-      dplyr::group_by(operatingunit, snu1, psnu, orgunit, mech_code, hfr_pd, indicator) %>% #orgunituid
+      dplyr::group_by(operatingunit, iso, snu1, psnu, orgunit, mech_code, hfr_pd, indicator) %>% #orgunituid
       dplyr::summarise_at(dplyr::vars(mer_targets, val), sum, na.rm = TRUE) %>%
       dplyr::ungroup()
 
@@ -90,7 +96,7 @@
     df_glob_sites_comp <- df_glob_sites %>%
       dplyr::mutate(target_sitecnt = ifelse(mer_targets > 0, 1, 0),
                     hfr_sitecnt = ifelse(val > 0, 1, 0)) %>%
-      dplyr::group_by(operatingunit, mech_code, indicator, hfr_pd) %>%
+      dplyr::group_by(operatingunit, iso, mech_code, indicator, hfr_pd) %>%
       dplyr::summarise_at(dplyr::vars(mer_targets, val, target_sitecnt, hfr_sitecnt), sum, na.rm = TRUE) %>%
       dplyr::ungroup()
 
@@ -178,13 +184,12 @@
                                        avg_comp_2prior == 0 ~ "0%",
                                        avg_comp_2prior <= (1/3) ~ "<33%",
                                        avg_comp_2prior <= (2/3) ~ "<66%",
-                                       TRUE ~ ">66%"
-                    ),
-            comp_prior_bin = factor(comp_prior_bin, c("0%","<33%", "<66%", ">66%")))
+                                       TRUE ~ ">66%"),
+            comp_prior_bin = factor(comp_prior_bin, c("0%","<33%", "<66%", ">66%")),
+            flag_grp = completeness <= .25 & mer_targets >= 100000) %>%
+     filter(!is.na(comp_prior_bin))
 
    df_viz <- rename_official(df_viz)
-
-   df_viz <- left_join(df_viz, iso_map)
 
 
    #plot completened by PD
@@ -204,63 +209,125 @@
    #         strip.text = element_text(face = "bold"))
 
 
+   #partner names for aligning parnters
+   df_viz <- tribble(
+                                                      ~primepartner,                             ~partner_shortname,
+                                              "Abt Associates Inc.",                                          "Abt",
+                                           "ANOVA HEALTH INSTITUTE",                                        "ANOVA",
+         "BAYLOR COLLEGE OF MEDICINE CH ILDREN FOUNDATION TANZANIA",                                       "Baylor",
+          "BAYLOR COLLEGE OF MEDICINE CH ILDRENS FOUNDATION MALAWI",                                       "Baylor",
+       "Baylor College of Medicine Children's Foundation - Lesotho",                                       "Baylor",
+                          "BEZA POSTERITY DEVELOPMENT ORGANIZATION",                     "Beze Posterity Dev. Org.",
+                                  "BROADREACH HEALTHCARE (PTY) LTD",                                   "Broadreach",
+                                   "Caris Foundation International",                  "Caris Foundation Internat'l",
+                                    "Chemonics International, Inc.",                                    "Chemonics",
+                            "CHILDREN OF GOD RELIEF INSTIT UTE LTD",             "Children of God Relief Institute",
+                                      "DELOITTE CONSULTING LIMITED",                                     "Deloitte",
+                       "Elizabeth Glaser Pediatric Aids Foundation",                                        "EGPAF",
+                                      "Family Health International",                                       "FHI360",
+                                          "FHI Development 360 LLC",                                       "FHI360",
+                                                "Fondation Serovie",                            "Fondation Serovie",
+                                       "HEALTH THROUGH WALLS, INC.",                         "Health Through Walls",
+                                       "HEARTLAND ALLIANCE LTD-GTE",                                     "Heatland",
+                        "HIWOT INTEGRATED DEVELOPMENT ORGANIZATION",                   "Hiwot Integrated Dev. Org.",
+                             "Interchurch Medical Assistance, Inc.",               "Interchurch Medical Assistance",
+                                  "INTRAHEALTH INTERNATIONAL, INC.",                                  "Intrahealth",
+                                              "JHPIEGO CORPORATION",                                      "Jhpiego",
+                                          "John Snow, Incorporated",                                          "JSI",
+                        "JSI Research And Training Institute, INC.",                                          "JSI",
+                                     "KHETHIMPILO AIDS FREE LIVING",                                           "KI",
+                               "MOI TEACHING AND REFERRAL HOSPITAL",           "MOI Teaching and Referral Hospital",
+     "ORGANIZATION FOR PUBLIC HEALTH INTERVENTIONS AND DEVELOPMENT", "Org. for Public Heath Interventions and Dev.",
+      "PAKACHERE INSTITUTE OF HEALTH AND DEVELOPMENT COMMUNICATION",                                    "Pakachere",
+                                                 "Partners In Hope",                             "Partners in Hope",
+                                                             "PATH",                                         "PATH",
+                                         "Pathfinder International",                     "Pathfinder International",
+                                "Population Services International",                                          "PSI",
+                                        "POPULATION SERVICES KENYA",                                          "PSI",
+                                                    "RIGHT TO CARE",                                "Right To Care",
+                                        "SOCIETY FOR FAMILY HEALTH",                    "Society for Family Health",
+                                                  "TBD (000000000)",                                          "TBD",
+                                    "THE LUKE COMMISSION SWAZILAND",                          "The Luke Commission",
+                "UNAIDS JOINT UNITED NATIONS PROGRAMME ON HIV/AIDS",                                       "UNAIDS",
+                                     "University Research Co., LLC",                                          "URC",
+                                 "WITS HEALTH CONSORTIUM (PTY) LTD",                                         "Wits"
+     ) %>%
+     left_join(df_viz, .)
+
+   #partner completeness
+    df_viz <- df_viz %>%
+      group_by(partner_shortname) %>%
+      mutate(prtnr_comp = sum(hfr_sitecnt) / sum(target_sitecnt)) %>%
+      ungroup()
+
    #plot completeness pd 7
-    v1 <- df_viz %>%
-      mutate(completeness = ifelse(completeness > 1, 1, completeness)) %>%
-      filter(!is.na(comp_prior_bin)) %>%
-      ggplot(aes(mer_targets, completeness, fill = comp_prior_bin)) +
-      geom_point(size = 4, alpha = .5, shape = 21, stroke = 1, color = "gray70") +
-      scale_x_log10(label = comma) +
-      scale_y_continuous(label = percent) +
-      scale_fill_brewer(palette = "OrRd", direction = -1, na.value = "grey50",
-                        name = "Last 2 Pd Avg. Site Completeness") +
-      labs(x = "FY20 TX_CURR MER TARGETS", y = "HFR Site Reporting Completeness",
-           subtitle = "HFR 2020.07 | TX_CURR",
-           caption = "completeness capped at 100%; historic completeness is average of last two periods
+   target_max <- df_viz %>% filter(completeness < 0.01) %>% summarise(max = max(mer_targets, na.rm = TRUE)) %>% pull()
+
+   v1 <- df_viz %>%
+     mutate(completeness = ifelse(completeness > 1, 1, completeness),
+            filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.25 & mer_targets>= 1e5, "#CB181D", grey40k)) %>%
+     filter(!is.na(comp_prior_bin)) %>%
+     ggplot() +
+     annotate(geom = "rect",
+              xmin = 1e5, ymin = -0.03,
+              xmax = target_max + 1000000, ymax = 0.23,
+              fill = grey30k, alpha = 0.25,
+              color = grey50k, linetype = "dashed") +
+     geom_point(aes(mer_targets, completeness, fill = filter_greys),
+                size = 4, alpha = .75, shape = 21, stroke = 1, color = "white") +
+     scale_x_log10(label = comma) +
+     scale_y_continuous(label = percent) +
+     scale_fill_identity() +
+     labs(x = "FY20 TX_CURR MER TARGETS", y = "HFR Site Reporting Completeness",
+          subtitle = "HFR 2020.07 | TX_CURR",
+          caption = "completeness capped at 100%; historic completeness is average of last two periods
            HFR Data [2020-05-20]") +
-      si_style() +
-      theme(strip.text = element_text(face = "bold"),
-            legend.title = element_text(family = "Source Sans Pro", color = "gray30"))
+     si_style() +
+     theme(strip.text = element_text(face = "bold"),
+           legend.title = element_text(family = "Source Sans Pro", color = "gray30"))
 
-  #create df for inset focusing on <25% completeness and targets larger than 100k
-    df_viz_inset <- df_viz %>%
-      mutate(completeness = ifelse(completeness > 1, 1, completeness)) %>%
-      filter(!is.na(comp_prior_bin),
-             completeness <= .25,
-             mer_targets >= 100000) %>%
-      mutate(
-        primepartner = case_when(primepartner == "Elizabeth Glaser Pediatric Aids Foundation" ~ "EGPAF",
-                                      str_detect(primepartner, "Baylor") ~ "Baylor",
-                                      primepartner == "Partners In Hope" ~ "PIH",
-                                      str_detect(primepartner, "TBD") ~ "TBD",
-                                      primepartner == "KHETHIMPILO AIDS FREE LIVING" ~ "KI",
-                                      primepartner == "John Snow, Incorporated" ~ "JSI",
-                                      primepartner == "JHPIEGO CORPORATION" ~ "JHPIEGO",
-                                      primepartner == "Family Health International" ~ "FHI360",
-                                      str_detect(primepartner, "ORGANIZATION FOR PUBLIC HEALTH") ~ "OPHID"),
-             # lab = paste0(iso, " ", mech_code, ": ", primepartner))
-             lab = paste0(iso, ": ", primepartner))
+   v1
 
-  #plot inset
-    v2 <- df_viz_inset %>%
-      ggplot(aes(mer_targets, completeness, fill = comp_prior_bin)) +
-      geom_point(size = 4, alpha = .5, shape = 21, stroke = 1, color = "gray70") +
-      geom_text_repel(aes(label = lab), family = "Source Sans Pro", size = 3,
-                      color = "gray40", force = 30) +
-      scale_x_log10(label = comma) +
-      scale_y_continuous(label = percent_format(1)) +
-      scale_fill_brewer(palette = "OrRd", direction = -1, na.value = "grey50",
-                        name = "Historic Avg. Site Completeness") +
-      expand_limits(y = -.05) +
-      labs(x = NULL, y = NULL) +
-      si_style() +
-      theme(legend.position = "none")
+   #create df for inset focusing on <25% completeness and targets larger than 100k
+   df_viz_inset <- df_viz %>%
+     mutate(completeness = ifelse(completeness > 1, 1, completeness)) %>%
+     filter(!is.na(comp_prior_bin),
+            completeness <= .25,
+            mer_targets >= 100000) %>%
+     mutate(
+       primepartner = case_when(primepartner == "Elizabeth Glaser Pediatric Aids Foundation" ~ "EGPAF",
+                                str_detect(primepartner, "Baylor") ~ "Baylor",
+                                primepartner == "Partners In Hope" ~ "PIH",
+                                str_detect(primepartner, "TBD") ~ "TBD",
+                                primepartner == "KHETHIMPILO AIDS FREE LIVING" ~ "KI",
+                                primepartner == "John Snow, Incorporated" ~ "JSI",
+                                primepartner == "JHPIEGO CORPORATION" ~ "JHPIEGO",
+                                primepartner == "Family Health International" ~ "FHI360",
+                                str_detect(primepartner, "ORGANIZATION FOR PUBLIC HEALTH") ~ "OPHID"),
+       # lab = paste0(iso, " ", mech_code, ": ", primepartner))
+       lab = paste0(iso, ": ", primepartner))
 
-  #combine plots
-    v1 | (v2 / plot_spacer())
+   #plot inset
+   v2 <- df_viz_inset %>%
+     ggplot(aes(mer_targets, completeness)) +
+     geom_point(fill = "#CB181D", alpha = .75, shape = 21, stroke = 1, color = "white", size = 6) +
+     # geom_text_repel(aes(label = lab), family = "Source Sans Pro", size = 3,
+     #   color = "gray40", force = 30) +
+     scale_x_log10(label = comma) +
+     scale_y_continuous(label = percent_format(1), limits = c(-0.03, .2)) +
+     scale_fill_identity() +
+     expand_limits(y = -.05) +
+     labs(x = NULL, y = NULL) +
+     si_style() +
+     theme(legend.position = "none")
+   v2
+
+   #combine plots
+   v1 | (v2 / plot_spacer())
+
 
   #export
-    ggsave("out/CompletenessMechs07.png", dpi = 330, height = 5.625, width = 10)
+    ggsave("out/CompletenessMechs07.png", dpi = 600, height = 4.78, width = 9.59)
 
   #share of tx target portfolio with no targets
    df_viz %>%
@@ -268,4 +335,40 @@
      count(no_rep, wt = mer_targets) %>%
      mutate(cum_share = n / sum(n))
 
+   #completeness by partner
+   df_viz %>%
+     mutate(completeness = ifelse(completeness > 1, 1, completeness),
+            filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.25 & mer_targets>= 1e5, "#CB181D", grey40k),
+            facet_lab = paste0(toupper(partner_shortname), "\n",
+                               ifelse(prtnr_comp > 1, "+100%",
+                               percent(prtnr_comp,1)))
+            ) %>%
+     filter(!is.na(comp_prior_bin)) %>%
+     ggplot() +
+     annotate(geom = "rect",
+              xmin = 1e5, ymin = -0.03,
+              xmax = target_max + 1000000, ymax = 0.23,
+              fill = grey30k, alpha = 0.25,
+              color = grey50k, linetype = "dashed"
+              ) +
+     geom_point(aes(mer_targets, completeness, fill = filter_greys),
+                size = 4, alpha = .75, shape = 21, stroke = 1, color = "white") +
+     facet_wrap(~ fct_reorder(facet_lab, prtnr_comp, .desc = TRUE)) +
+     scale_x_log10(label = comma) +
+     scale_y_continuous(label = percent) +
+     scale_fill_identity() +
+     labs(x = "FY20 TX_CURR MER TARGETS", y = "HFR Site Reporting Completeness",
+          subtitle = "HFR 2020.07 | TX_CURR",
+          caption = "completeness capped at 100%; ordered by FY20 MER Targets
+           HFR Data [2020-05-20]") +
+     si_style() +
+     theme(strip.text = element_text(face = "bold"),
+           legend.title = element_text(family = "Source Sans Pro", color = "gray30"))
+
+   #export
+   h <- 10
+   w <- (16/9) * h
+   ggsave("out/CompletenessMechs07_sm.png", dpi = 330,
+          height = h,
+          width = w)
 

@@ -82,7 +82,7 @@
     df_glob_site_mmdtarg <- df_glob_site_txcurr_agg %>%
       filter(indicator == "TX_CURR") %>%
       select(-val) %>%
-      mutate(indicator == "TX_MMD")
+      mutate(indicator = "TX_MMD")
 
   #append mmd targets on, create site counts and agg to pd
     df_glob_site_txcurr_agg <- df_glob_site_txcurr_agg %>%

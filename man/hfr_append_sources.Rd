@@ -4,14 +4,8 @@
 \alias{hfr_append_sources}
 \title{#' Append HFR and DATIM Data}
 \usage{
-hfr_append_sources(
-  folderpath_hfr,
-  folderpath_datim,
-  start_date,
-  weeks = 4,
-  max_date = TRUE,
-  folderpath_output
-)
+hfr_append_sources(folderpath_hfr, folderpath_datim, start_date,
+  weeks = 4, max_date = TRUE, folderpath_output)
 }
 \arguments{
 \item{folderpath_hfr}{folder path to HFR processed data}

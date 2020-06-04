@@ -4,13 +4,8 @@
 \alias{pull_hierarchy}
 \title{Compile PEPFAR Hierarchy}
 \usage{
-pull_hierarchy(
-  ou_uid,
-  username,
-  password,
-  baseurl = "https://final.datim.org/",
-  folderpath_output = NULL
-)
+pull_hierarchy(ou_uid, username, password,
+  baseurl = "https://final.datim.org/", folderpath_output = NULL)
 }
 \arguments{
 \item{ou_uid}{UID for the country, recommend using \code{identify_ouuids()}}

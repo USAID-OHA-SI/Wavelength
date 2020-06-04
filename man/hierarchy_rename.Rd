@@ -4,13 +4,8 @@
 \alias{hierarchy_rename}
 \title{Rename Hierarchy from Levels to OU/SNU1/PSNU/Facility}
 \usage{
-hierarchy_rename(
-  df,
-  country,
-  username,
-  password,
-  baseurl = "https://final.datim.org/"
-)
+hierarchy_rename(df, country, username, password,
+  baseurl = "https://final.datim.org/")
 }
 \arguments{
 \item{df}{data frame created by \code{hierarchy_extract() \%>\% hierarchy_clean()}}

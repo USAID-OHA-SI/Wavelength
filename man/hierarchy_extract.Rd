@@ -4,12 +4,8 @@
 \alias{hierarchy_extract}
 \title{Pull Hierarchy Data from DATIM}
 \usage{
-hierarchy_extract(
-  ou_uid,
-  username,
-  password,
-  baseurl = "https://final.datim.org/"
-)
+hierarchy_extract(ou_uid, username, password,
+  baseurl = "https://final.datim.org/")
 }
 \arguments{
 \item{ou_uid}{UID for the country, recommend using \code{identify_ouuids()}}

@@ -4,12 +4,8 @@
 \alias{hfr_process_template}
 \title{Import and Munge HFR Standard Templates}
 \usage{
-hfr_process_template(
-  filepath,
-  round_hfrdate = FALSE,
-  hfr_pd_sel = NULL,
-  folderpath_output = NULL
-)
+hfr_process_template(filepath, round_hfrdate = FALSE,
+  hfr_pd_sel = NULL, folderpath_output = NULL)
 }
 \arguments{
 \item{filepath}{filepath to sumbitted template}

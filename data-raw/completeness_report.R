@@ -100,6 +100,10 @@
 
 # SUMMARIZE COMPLETENESS --------------------------------------------------
 
+  #completeness
+    df_glob_agg <- df_glob_agg %>%
+      mutate(completeness = hfr_sitecnt/target_sitecnt,
+             completeness = ifelse(is.infinite(completeness), NA, completeness))
 
   #heatmap by country x indicator
     # df_glob_agg %>%
@@ -138,11 +142,9 @@
     # ggsave("out/Completeness050607.png", dpi = 330, height = 5.625, width = 10)
 
 
-
    df_viz <- df_glob_agg %>%
       filter(indicator == "TX_CURR") %>%
-      dplyr::mutate(tx_curr_tgts = case_when(indicator == "TX_CURR" ~ mer_targets),
-                    completeness = ifelse(is.infinite(completeness), NA, completeness))
+      dplyr::mutate(tx_curr_tgts = case_when(indicator == "TX_CURR" ~ mer_targets))
 
 
    df_avgcomp <-  df_viz %>%
@@ -223,12 +225,12 @@
 
    v1 <- df_viz %>%
      mutate(completeness = ifelse(completeness > 1, 1, completeness),
-            filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.25 & mer_targets>= 1e5, "#CB181D", grey40k)) %>%
+            filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.3 & mer_targets>= 1e5, "#CB181D", grey40k)) %>%
      filter(!is.na(comp_prior_bin)) %>%
      ggplot() +
      annotate(geom = "rect",
               xmin = 1e5, ymin = -0.03,
-              xmax = target_max + 1000000, ymax = 0.23,
+              xmax = target_max + 1000000, ymax = 0.3,
               fill = grey30k, alpha = 0.25,
               color = grey50k, linetype = "dashed") +
      geom_point(aes(mer_targets, completeness, fill = filter_greys),
@@ -238,7 +240,7 @@
      scale_fill_identity() +
      labs(x = "FY20 TX_CURR MER TARGETS", y = "HFR Site Reporting Completeness",
           subtitle = "HFR 2020.07 | TX_CURR",
-          caption = "completeness capped at 100%; historic completeness is average of last two periods
+          caption = "completeness capped at 100%
            HFR Data [2020-05-20]") +
      si_style() +
      theme(strip.text = element_text(face = "bold"),
@@ -250,7 +252,7 @@
    df_viz_inset <- df_viz %>%
      mutate(completeness = ifelse(completeness > 1, 1, completeness)) %>%
      filter(!is.na(comp_prior_bin),
-            completeness <= .25,
+            completeness <= .3,
             mer_targets >= 100000) %>%
      mutate(
        primepartner = case_when(primepartner == "Elizabeth Glaser Pediatric Aids Foundation" ~ "EGPAF",
@@ -272,7 +274,7 @@
      # geom_text_repel(aes(label = lab), family = "Source Sans Pro", size = 3,
      #   color = "gray40", force = 30) +
      scale_x_log10(label = comma) +
-     scale_y_continuous(label = percent_format(1), limits = c(-0.03, .23)) +
+     scale_y_continuous(label = percent_format(1), limits = c(-0.03, .3)) +
      scale_fill_identity() +
      expand_limits(y = -.05) +
      labs(x = NULL, y = NULL) +
@@ -296,7 +298,7 @@
    #completeness by partner
    df_viz %>%
      mutate(completeness = ifelse(completeness > 1, 1, completeness),
-            filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.25 & mer_targets>= 1e5, "#CB181D", grey40k),
+            filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.3 & mer_targets>= 1e5, "#CB181D", grey40k),
             facet_lab = paste0(toupper(partner_shortname), "\n",
                                ifelse(prtnr_comp > 1, "+100%",
                                percent(prtnr_comp,1)))
@@ -305,7 +307,7 @@
      ggplot() +
      annotate(geom = "rect",
               xmin = 1e5, ymin = -0.03,
-              xmax = target_max + 1000000, ymax = 0.23,
+              xmax = target_max + 1000000, ymax = 0.3,
               fill = grey30k, alpha = 0.25,
               color = grey50k, linetype = "dashed"
               ) +

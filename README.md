@@ -232,9 +232,10 @@ Run a full validation on the data (with all the operating units errors fixed)
     errors %>% glimpse()
 ```
 
-Confirm all the validation by marking valid processed files as validated files
+Confirm all the validations by marking valid processed files as validated files
 
 ```{r}
+  # update the name of files
     confirm_validations(hfr_data = hfr_data, 
                         hfr_errors = errors, 
                         dir_files = dir_data)

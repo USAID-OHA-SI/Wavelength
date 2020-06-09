@@ -141,12 +141,12 @@ These validations are built into the `hfr_process_template()` at various points 
 
 ## Extra validations
 Extra validation checks can be run after processing the submitted data, and correction / update made right before data ingestion :
-  - all eperating units are valid
-  - all org unit uids are valid and matched with their respective operating unit
+  - all operating units are valid
+  - all orgunit uids are valid and matched with their respective operating unit
   - all mechanism codes are valid and matched with their respective operating unit
   - age coarse and sex are valid options
   - val is either NA or a positive integer
-These extrac validations functions are in `hfr_qda_utilities` and `hfr_dqa_checks` files.
+These extra validations functions are in `hfr_qda_utilities` and `hfr_dqa_checks` files.
 
 Set hfr data folder and load look up data 
 
@@ -167,7 +167,7 @@ Set hfr data folder and load look up data
     ims <- read_csv(file = "file_mechanisms")
 ```
 
-Validate and report errors for HFR filenames: this will list out all errers related to ISO3 codes and Mechanism Code
+Validate and report errors for HFR forenames: this will list out all errors related to ISO3 codes and Mechanism Code
 
 ```{r}
   # Validate processed files

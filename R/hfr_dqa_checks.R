@@ -1,10 +1,10 @@
 #' Validate reporting dates
 #'
-#' @param .data dataset
-#' @param df_dates dates df
+#' @param .data df
+#' @param df_dates df_dates
 #' @return boolean
 #' @export
-#' @example
+#' @examples
 #' \dontrun{
 #'   data %>% is_date_valid(df_dates)
 #' }
@@ -26,11 +26,11 @@ is_date_valid <- function(.data, df_dates) {
 
 #' Check if OperatingUnit is valid
 #'
-#' @param data dataset
-#' @param df_dates dates df
+#' @param data df
+#' @param df_orgs df_orgs
 #' @return boolean
 #' @export
-#' @example
+#' @examples
 #' \dontrun{
 #'   data %>% is_ou_valid(df_orgs)
 #' }
@@ -42,6 +42,10 @@ is_ou_valid <- function(.data, df_orgs) {
     dplyr::distinct() %>%
     dplyr::mutate(valid_ou = TRUE)
 
+  if("valid_ou" %in% names(.data)) {
+    .data <- .data %>% dplyr::select(-valid_ou)
+  }
+
   .data %>%
     dplyr::left_join(orgs, by = "operatingunit") %>%
     dplyr::mutate(valid_ou = ifelse(is.na(valid_ou), FALSE, valid_ou))
@@ -50,11 +54,11 @@ is_ou_valid <- function(.data, df_orgs) {
 
 #' Check if Operating Unit name is valid
 #'
-#' @param data dataset
-#' @param df_dates dates df
+#' @param data df
+#' @param df_orgs orgs
 #' @return boolean
 #' @export
-#' @example
+#' @examples
 #' \dontrun{
 #'   data %>% is_orgunituid_valid(df_orgs)
 #' }
@@ -75,11 +79,11 @@ is_orgunituid_valid <- function(.data, df_orgs) {
 
 #' Check if orgunituid exist in operating unit
 #'
-#' @param data dataset
+#' @param data df
 #' @param df_orgs org_hierarchy df
 #' @return data with new column: T/F
-#' @example
-#' @example
+#' @export
+#' @examples
 #' \dontrun{
 #'   data %>% orgunituid4ou(df_orgs)
 #' }
@@ -97,15 +101,14 @@ is_orgunituid4ou <- function(.data, df_orgs) {
 
 #' Validate mechanism code
 #'
-#' @param .data dataset
-#' @param df_mechs mechs df
+#' @param .data df
+#' @param df_mechs mechs
 #' @return boolean
 #' @export
-#' @example
+#' @examples
 #' \dontrun{
 #'   data %>% is_mech_valid(df_dates)
 #' }
-#'
 is_mech_valid <- function(.data, df_mechs) {
 
   mechs <- df_mechs %>%
@@ -125,15 +128,14 @@ is_mech_valid <- function(.data, df_mechs) {
 
 #' Validate mechanism code
 #'
-#' @param .data dataset
-#' @param df_mechs mechs df
+#' @param .data df
+#' @param df_mechs mechs
 #' @return boolean
 #' @export
-#' @example
+#' @examples
 #' \dontrun{
 #'   data %>% is_mech4ou_valid(df_mechs)
 #' }
-#'
 is_mech4ou <- function(.data, df_mechs) {
 
   mechs <- df_mechs %>%
@@ -149,3 +151,5 @@ is_mech4ou <- function(.data, df_mechs) {
     dplyr::left_join(mechs, by = c("operatingunit", "mech_code")) %>%
     dplyr::mutate(mech_to_ou = ifelse(is.na(mech_to_ou), FALSE, mech_to_ou))
 }
+
+

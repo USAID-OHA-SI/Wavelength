@@ -4,10 +4,12 @@
 \name{template_cols_long}
 \alias{template_cols_long}
 \title{Column Headers for HFR Long Template}
-\format{A list of all headers
+\format{
+A list of all headers
 \describe{
 \item{template_cols_long}{column names}
-}}
+}
+}
 \usage{
 data(template_cols_long)
 }

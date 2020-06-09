@@ -19,3 +19,8 @@ valid as a vector c(valid_uid, valid_uid_ou)
 \description{
 Validate org unit uid
 }
+\examples{
+\dontrun{
+  validate_orgunit(df_orgs, 'Eswatini', 'g48XD8px8NN')
+}
+}

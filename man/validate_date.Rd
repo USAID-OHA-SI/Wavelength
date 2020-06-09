@@ -19,3 +19,9 @@ valid: True / False
 \description{
 Validate HFR PD Date
 }
+\examples{
+\dontrun{
+  validate_date(df_pds = valid_dates, '2020-01-27', 5)
+}
+
+}

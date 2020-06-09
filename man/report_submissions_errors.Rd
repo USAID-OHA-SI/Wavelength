@@ -4,16 +4,22 @@
 \alias{report_submissions_errors}
 \title{Report files validation}
 \usage{
-report_submissions_errors(mechanisms, df_files, export = FALSE)
+report_submissions_errors(df_files, mechanisms, export = FALSE)
 }
 \arguments{
-\item{mechanisms}{mechs df}
-
 \item{df_files}{df of filename validation}
+
+\item{mechanisms}{mechs}
 }
 \value{
 void
 }
 \description{
 Report files validation
+}
+\examples{
+\dontrun{
+  report_file_errors(ims, processed)
+}
+
 }

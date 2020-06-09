@@ -7,13 +7,19 @@
 is_date_valid(.data, df_dates)
 }
 \arguments{
-\item{.data}{dataset}
+\item{.data}{df}
 
-\item{df_dates}{dates df}
+\item{df_dates}{df_dates}
 }
 \value{
 boolean
 }
 \description{
 Validate reporting dates
+}
+\examples{
+\dontrun{
+  data \%>\% is_date_valid(df_dates)
+}
+
 }

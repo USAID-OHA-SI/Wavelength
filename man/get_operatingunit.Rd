@@ -4,16 +4,22 @@
 \alias{get_operatingunit}
 \title{Get operating unit name}
 \usage{
-get_operatingunit(orglevels, iso_code)
+get_operatingunit(iso_code, orglevels)
 }
 \arguments{
-\item{orglevels}{df org levels}
-
 \item{iso_code}{iso3 code}
+
+\item{orglevels}{df org levels}
 }
 \value{
 operating unit
 }
 \description{
 Get operating unit name
+}
+\examples{
+\dontrun{
+  get_operatingunit(org_levels, 'XWA')
+}
+
 }

@@ -4,8 +4,13 @@
 \alias{hfr_export}
 \title{Export High Frequency Data}
 \usage{
-hfr_export(df, folderpath_output = NULL, type = "processed",
-  by_mech = FALSE, quarters_complete = NULL)
+hfr_export(
+  df,
+  folderpath_output = NULL,
+  type = "processed",
+  by_mech = FALSE,
+  quarters_complete = NULL
+)
 }
 \arguments{
 \item{df}{structured High Frequency Data Frame}

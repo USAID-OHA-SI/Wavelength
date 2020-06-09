@@ -4,10 +4,12 @@
 \name{template_cols_wide}
 \alias{template_cols_wide}
 \title{Column Headers for HFR Wide Template}
-\format{A list of all headers
+\format{
+A list of all headers
 \describe{
 \item{template_cols_wide}{column names}
-}}
+}
+}
 \usage{
 data(template_cols_wide)
 }

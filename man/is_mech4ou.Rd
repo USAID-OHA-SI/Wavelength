@@ -7,13 +7,18 @@
 is_mech4ou(.data, df_mechs)
 }
 \arguments{
-\item{.data}{dataset}
+\item{.data}{df}
 
-\item{df_mechs}{mechs df}
+\item{df_mechs}{mechs}
 }
 \value{
 boolean
 }
 \description{
 Validate mechanism code
+}
+\examples{
+\dontrun{
+  data \%>\% is_mech4ou_valid(df_mechs)
+}
 }

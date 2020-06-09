@@ -4,10 +4,12 @@
 \name{template_cols_meta}
 \alias{template_cols_meta}
 \title{Column Headers for HFR Indicator Meta Data}
-\format{A list of all headers
+\format{
+A list of all headers
 \describe{
 \item{template_cols_meta}{column names}
-}}
+}
+}
 \usage{
 data(template_cols_meta)
 }

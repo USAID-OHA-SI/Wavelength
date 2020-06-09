@@ -4,12 +4,14 @@
 \name{iso_map}
 \alias{iso_map}
 \title{ISO Code Mapping Table}
-\format{A data frame with each PEPFAR OU and associated ISO code.
+\format{
+A data frame with each PEPFAR OU and associated ISO code.
 \describe{
 \item{operatingunit}{PEPFAR Operating Unit or country}
 \item{iso}{3 letter ISO code for the Operatingunit or country}
 \item{regional}{TRUE if operatingunit is a country under a regional program}
-}}
+}
+}
 \source{
 \url{"https://final.datim.org/api/dataStore/dataSetAssignments/orgUnitLevels"}
 }

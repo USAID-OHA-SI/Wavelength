@@ -4,7 +4,7 @@
 \alias{validate_submission}
 \title{Validate submitted files}
 \usage{
-validate_submission(levels, ims, pfile)
+validate_submission(pfile, levels, ims)
 }
 \arguments{
 \item{levels}{org levels}
@@ -18,4 +18,10 @@ vector c("fy", "hfr_pd", "iso3", "operatingunit", "mech_code", "mech_valid", "me
 }
 \description{
 Validate submitted files
+}
+\examples{
+\dontrun{
+  validate_submissions("HFR_2020.99_XWH_100000_processed_20200101.csv")
+}
+
 }

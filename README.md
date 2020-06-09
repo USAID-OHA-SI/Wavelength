@@ -138,6 +138,111 @@ These validations are built into the `hfr_process_template()` at various points 
   #alternative, validate, adjusting the submission date automatically
     hfr_process_template(path, round_hfrdate = TRUE)
 ```
+
+## Extra validations
+Extra validation checks can be run after processing the submitted data, and correction / update made right before data ingestion :
+  - all eperating units are valid
+  - all org unit uids are valid and matched with their respective operating unit
+  - all mechanism codes are valid and matched with their respective operating unit
+  - age coarse and sex are valid options
+  - val is either NA or a positive integer
+These extrac validations functions are in `hfr_qda_utilities` and `hfr_dqa_checks` files.
+
+Set hfr data folder and load look up data 
+
+```{r} 
+  # HFR Data
+  dir_data <- "..."
+  
+  # HFR Period dates
+    valid_dates <- Wavelength::hfr_identify_pds(fy=2020)
+
+  # ORG Levels
+    org_levels <- read_csv(file = "file_orglevels")
+
+  # ORGs
+    orgs <- read_csv(file = "file_orgs")
+
+  # Mechanisms
+    ims <- read_csv(file = "file_mechanisms")
+```
+
+Validate and report errors for HFR filenames: this will list out all errers related to ISO3 codes and Mechanism Code
+
+```{r}
+  # Validate processed files
+    hfr_processed_files <- validate_submissions(levels = org_levels,
+                                            ims = ims,
+                                            pfolder = dir_hfr_pd208,
+                                            pattern = "HFR_2020.08")
+
+  # Report Errors from processed files
+    report_submissions_errors(hfr_processed_files, 
+                              mechanisms = ims, 
+                              export = F)
+```
+
+Validate processed file content (focus on operating units)
+
+```{r}
+  # Read data from all files
+    hfr_data <- hfr_read_all(dir_data, 
+                             pattern = 'HFR_2020.xx', 
+                             source = T)
+
+  # Check for invalid operating units
+    hfr_data %>%
+        is_ou_valid(df_orgs = orgs) %>%
+        filter(valid_ou == FALSE) %>%
+        distinct(source, operatingunit, valid_ou) %>%
+        arrange(source)
+```
+
+Fix operating units with errors (using mech code and/or country iso3 code)
+
+```{r}
+  # Use mechanism code to update operating units
+    hfr_data <- hfr_data %>%
+        update_operatingunits(levels=org_levels, orgs=orgs, ims=ims)
+        
+  # Check if there are still any invalid operating units (for invalid mech_code)
+    hfr_data %>%
+        is_ou_valid(df_orgs = orgs) %>%
+        filter(valid_ou == FALSE) %>%
+        View()
+
+  # Use iso3 code (second attempt)
+    hfr_data <- hfr_data %>%
+        update_operatingunits(levels=org_levels, orgs=orgs)
+  
+  # Check again for invalid operating units 
+    hfr_data %>%
+        is_ou_valid(df_orgs = orgs) %>%
+        filter(valid_ou == FALSE) %>%
+        View()
+```
+
+Run a full validation on the data (with all the operating units errors fixed)
+
+```{r}
+  # validate hfr data from processed files and return errors
+    errors <- validate_hfr_data(hfr_data, org_levels, orgs, ims, valid_dates)
+  
+  # Explore the errors
+    errors %>% glimpse()
+```
+
+Confirm all the validation by marking valid processed files as validated files
+
+```{r}
+    confirm_validations(hfr_data = hfr_data, 
+                        hfr_errors = errors, 
+                        dir_files = dir_data)
+```
+
+Note: data ingesting can now proceed with only validated files while the rest is being fixed / updated. 
+
+
 ---
 
 *Disclaimer: The findings, interpretation, and conclusions expressed herein are those of the authors and do not necessarily reflect the views of United States Agency for International Development. All errors remain our own.*

@@ -9,11 +9,17 @@ is_orgunituid4ou(.data, df_orgs)
 \arguments{
 \item{df_orgs}{org_hierarchy df}
 
-\item{data}{dataset}
+\item{data}{df}
 }
 \value{
 data with new column: T/F
 }
 \description{
 Check if orgunituid exist in operating unit
+}
+\examples{
+\dontrun{
+  data \%>\% orgunituid4ou(df_orgs)
+}
+
 }

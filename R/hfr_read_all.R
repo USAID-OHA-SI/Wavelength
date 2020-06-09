@@ -5,12 +5,12 @@
 #' @param source append source filename?
 #' @return df
 #' @export
-#' @example
+#' @examples
 #' \dontrun{
-#'   hfr_batch_read('./Data/2020.05', pattern='HFR_FY2020.05')
+#'   hfr_read_all('./Data/2020.05', pattern='HFR_FY2020.05')
 #' }
 #'
-hfr_batch_read <- function(pfolder, pattern, source=FALSE) {
+hfr_read_all <- function(pfolder, pattern, source=FALSE) {
 
   files <- list.files(pfolder, pattern = pattern, full.names = TRUE)
 
@@ -26,7 +26,7 @@ hfr_batch_read <- function(pfolder, pattern, source=FALSE) {
 
     hfr_files <- list.files(pfolder, pattern = pattern, full.names = FALSE) %>%
       as.data.frame(stringsAsFactors=FALSE) %>%
-      dplyr::mutate(id = dplyr::row_number()) %>%
+      dplyr::mutate(id = row_number()) %>%
       purrr::set_names(c("source", 'id'))
 
     hfr_data <- hfr_data %>%

@@ -7,13 +7,19 @@
 is_ou_valid(.data, df_orgs)
 }
 \arguments{
-\item{data}{dataset}
+\item{df_orgs}{df_orgs}
 
-\item{df_dates}{dates df}
+\item{data}{df}
 }
 \value{
 boolean
 }
 \description{
 Check if OperatingUnit is valid
+}
+\examples{
+\dontrun{
+  data \%>\% is_ou_valid(df_orgs)
+}
+
 }

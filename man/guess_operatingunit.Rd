@@ -4,18 +4,24 @@
 \alias{guess_operatingunit}
 \title{Get operating unit name}
 \usage{
-guess_operatingunit(levels, ims, pfile)
+guess_operatingunit(pfile, levels, ims)
 }
 \arguments{
+\item{pfile}{processed file}
+
 \item{levels}{org levels}
 
 \item{ims}{mechanisms df}
-
-\item{pfile}{processed file}
 }
 \value{
 operating unit name
 }
 \description{
 Get operating unit name
+}
+\examples{
+\dontrun{
+  get_mech_ou(ims, 'HFR_2020.99_XAR_100000_processed_20200528.csv')
+}
+
 }

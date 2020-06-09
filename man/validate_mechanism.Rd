@@ -17,3 +17,9 @@ vector c(valid_im,  mech_name)
 \description{
 Validate mechanism code
 }
+\examples{
+\dontrun{
+  validate_mechanism(ims, 'Angola', 16172)
+}
+
+}

@@ -4,9 +4,15 @@
 \alias{gen_url}
 \title{Generate a API URL}
 \usage{
-gen_url(mech_uid, ou_uid, org_lvl, org_type = "facility",
-  type_hts = NULL, type_txcurr = NULL,
-  baseurl = "https://final.datim.org/")
+gen_url(
+  mech_uid,
+  ou_uid,
+  org_lvl,
+  org_type = "facility",
+  type_hts = NULL,
+  type_txcurr = NULL,
+  baseurl = "https://final.datim.org/"
+)
 }
 \arguments{
 \item{mech_uid}{UID for a specific mechanism, recommend using \code{identify_mechs()}}

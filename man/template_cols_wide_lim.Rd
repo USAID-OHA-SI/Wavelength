@@ -4,10 +4,12 @@
 \name{template_cols_wide_lim}
 \alias{template_cols_wide_lim}
 \title{Column Headers for HFR Wide - Limited Template}
-\format{A list of all headers
+\format{
+A list of all headers
 \describe{
 \item{template_cols_wide_lim}{column names}
-}}
+}
+}
 \usage{
 data(template_cols_wide_lim)
 }

@@ -4,9 +4,14 @@
 \alias{pull_mer}
 \title{Extract DATIM Results and Targets (DATIM API Call)}
 \usage{
-pull_mer(ou_name = NULL, username, password,
-  baseurl = "https://final.datim.org/", quarters_complete = NULL,
-  folderpath_output = NULL)
+pull_mer(
+  ou_name = NULL,
+  username,
+  password,
+  baseurl = "https://final.datim.org/",
+  quarters_complete = NULL,
+  folderpath_output = NULL
+)
 }
 \arguments{
 \item{ou_name}{Operating Unit name, if mechanism is not specified}

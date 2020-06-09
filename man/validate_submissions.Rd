@@ -4,12 +4,14 @@
 \alias{validate_submissions}
 \title{Validate files}
 \usage{
-validate_submissions(levels, ims, pfolder, pattern = NULL)
+validate_submissions(pfolder, levels, ims, pattern = NULL)
 }
 \arguments{
 \item{levels}{org levels}
 
 \item{ims}{mechanisms df}
+
+\item{pattern}{filename pattern}
 
 \item{folder}{pfolder}
 }
@@ -18,4 +20,10 @@ dataframe
 }
 \description{
 Validate files
+}
+\examples{
+\dontrun{
+  validate_submissions(dir_hfr_pd205, pattern = "HFR_2020.05")
+}
+
 }

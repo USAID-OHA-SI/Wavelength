@@ -8,7 +8,7 @@ library(tidyverse)
 library(vroom)
 library(lubridate)
 
-filename <- "C:/Users/achafetz/Downloads/HFR_2020.07_Tableau_20200518.csv"
+filename <- "C:/Users/achafetz/Downloads/HFR_2020.08_Tableau_20200604.csv"
 df_twbx <- hfr_read(filename)
 
 glimpse(df_twbx)
@@ -54,7 +54,7 @@ df_twbx %>%
 
 df_adj <- df_twbx %>%
   mutate(primepartner = str_remove(primepartner, "\r$"),
-         sex = ifelse(sex == "nan", "Unspecified", sex),
+         sex = ifelse(sex %in% c("nan", "Unspeficied"), "Unspecified", sex),
          agecoarse = ifelse(!agecoarse %in% c("<15", "15+"), "Unknown", agecoarse),
          otherdisaggregate = ifelse(otherdisaggregate == "< 3 months", "<3 months", otherdisaggregate),
          otherdisaggregate = str_replace(otherdisaggregate, "Months", "months"),

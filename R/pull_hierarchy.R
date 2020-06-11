@@ -126,18 +126,18 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 
     if(ou_country == 3) {
       df <- df %>%
-        tibble::add_column(countryname = as.character(NA), .after = "orglvl_3") %>%
-        dplyr::mutate(countryname = orglvl_3)
+        dplyr::mutate(countryname = orglvl_3) %>%
+        dplyr::relocate(countryname, .after = "orglvl_3")
     } else {
       df <- df %>%
-        tibble::add_column(countryname = as.character(NA), .after = "orglvl_3") %>%
-        dplyr::mutate(countryname = orglvl_4)
+        dplyr::mutate(countryname = orglvl_4) %>%
+        dplyr::relocate(countryname, .after = "orglvl_3")
     }
 
     if("orglvl_4" %in% names(df)) {
       df <- df %>%
-        tibble::add_column(snu1 = NA, .after = "countryname") %>%
-        dplyr::mutate(snu1 = orglvl_4)
+        dplyr::mutate(snu1 = orglvl_4) %>%
+        dplyr::relocate(snu1, .after = "countryname")
     }
 
     if(!!paste0("orglvl_", ou_psnu) %in% names(df))
@@ -145,8 +145,8 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 
     if(ou_psnu == ou_comm && !!!paste0("orglvl_", ou_comm) %in% names(df)){
       df <- df %>%
-        tibble::add_column(community = as.character(NA), .after = "psnu") %>%
-        dplyr::mutate(community = psnu)
+        dplyr::mutate(community = psnu) %>%
+        dplyr::relocate(community, .after = "psnu")
     } else if (!!paste0("orglvl_", ou_comm) %in% names(df)){
       df <- dplyr::rename(df, community = !!paste0("orglvl_", ou_comm))
     }

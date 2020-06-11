@@ -24,7 +24,7 @@ hfr_export <- function(df, folderpath_output = NULL,
       if(by_mech == TRUE){
         #by mechanism, compile file name  and export data
         purrr::walk(.x = unique(df$mech_code),
-                    .f = ~ hfr_export_mech(df, .x, type, folderpath_output))
+                    .f = ~ hfr_export_mech(df, .x, type, folderpath_output, quarters_complete))
       } else {
         #get ISO code for file nameing
           if(var_exists(df, "countryname")) {
@@ -70,8 +70,10 @@ hfr_export <- function(df, folderpath_output = NULL,
 #' @param mech mech_code
 #' @param type type type of data being saved, default = processed
 #' @param folderpath_output provide the full path to the folder for saving
+#' @param quarters_complete FOR DATIM ONLY: # of quarters completed through FY to determine weeks left in year
 
-hfr_export_mech <- function(df, mech, type, folderpath_output){
+
+hfr_export_mech <- function(df, mech, type, folderpath_output, quarters_complete){
 
   #filter to mechanism
     df_mech <- dplyr::filter(df, mech_code == mech)

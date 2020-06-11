@@ -4,7 +4,7 @@
 \alias{hfr_export_mech}
 \title{Export csv files by mechanism}
 \usage{
-hfr_export_mech(df, mech, type, folderpath_output)
+hfr_export_mech(df, mech, type, folderpath_output, quarters_complete)
 }
 \arguments{
 \item{df}{tructured High Frequency Data Frame}
@@ -14,6 +14,8 @@ hfr_export_mech(df, mech, type, folderpath_output)
 \item{type}{type type of data being saved, default = processed}
 
 \item{folderpath_output}{provide the full path to the folder for saving}
+
+\item{quarters_complete}{FOR DATIM ONLY: # of quarters completed through FY to determine weeks left in year}
 }
 \description{
 Export csv files by mechanism

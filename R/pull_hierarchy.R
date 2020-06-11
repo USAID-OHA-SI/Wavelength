@@ -156,9 +156,15 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 
     df <- dplyr::rename(df, operatingunit = orglvl_3)
 
+    #add in psnu uid
+    df <- df %>%
+      dplyr::rename(psnuuid = !!paste0("uidlvl_", ou_psnu)) %>%
+      dplyr::relocate(psnuuid, .after = "psnu")
+
+    #reorder and remove unused vars
     df <- df %>%
       dplyr::select(orgunit, orgunituid, dplyr::everything()) %>%
-      dplyr::select(-dplyr::starts_with("orglvl_"))
+      dplyr::select(-dplyr::starts_with("orglvl_"), -dplyr::starts_with("uidlvl_"))
 
 
     return(df)

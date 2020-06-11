@@ -80,7 +80,7 @@ hierarchy_clean <- function(df){
         dplyr::mutate(coordinates = stringr::str_remove_all(coordinates, '\\[|]|"|[:space:]|\\t')) %>%
         tidyr::separate(coordinates, c("longitude", "latitude"), sep = ",", extra = "drop") %>%
         dplyr::mutate_at(dplyr::vars("longitude", "latitude"), as.double) %>%
-        dplyr::select(-longitude, dplyr::everything())
+        dplyr::select(-latitude, -longitude, dplyr::everything())
     }
 
   return(df)

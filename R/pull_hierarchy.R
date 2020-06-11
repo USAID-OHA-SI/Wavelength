@@ -59,11 +59,19 @@ hierarchy_clean <- function(df){
       tidyr::separate(path, headers, sep = "/", fill = "right") %>%
       dplyr::select(-orglvl_1, -orglvl_2)
 
+  #store uids in order to keep the psnuuid in hierarchy_rename()
+    df_uids <- df %>%
+      dplyr::select(name, id, dplyr::starts_with("orglvl")) %>%
+      dplyr::rename_with(~ stringr::str_replace(., "org","uid"))
+
   #convert level names of the org hierarchy from UIDs to names
     df_key <- dplyr::select(df, name, id)
     df <- df %>%
       dplyr::mutate_at(dplyr::vars(dplyr::starts_with("orglvl")),
                        ~ plyr::mapvalues(., df_key$id, df_key$name, warn_missing = FALSE))
+
+  #add uids back on
+    df <- dplyr::left_join(df, df_uids, by = c("name", "id"))
 
   #clean up coordinates, removing polygons and separating into lat-long
     if(var_exists(df, "coordinates")) {

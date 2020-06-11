@@ -211,7 +211,7 @@ gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts =
   if(org_type == "community")
     tech_url <-
     paste0(tech_url,
-           "dimension=mINJi7rR1a6:PvuaP6YALSA&") #Type of organisational unit -> Community
+           "dimension=mINJi7rR1a6:PvuaP6YALSA;AookYR4ECPH&") #Type of organisational unit -> Community & Other organisation unit type
 
   final_url <-
     paste0(tech_url,

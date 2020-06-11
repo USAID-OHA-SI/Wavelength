@@ -378,7 +378,7 @@ pull_mer <- function(ou_name = NULL,
         tidyr::spread(type, Value, fill = 0)
 
     #export
-      hfr_export(df_combo, folderpath_output, type = "DATIM", quarters_complete)
+      hfr_export(df_combo, folderpath_output, type = "DATIM", by_mech = TRUE, quarters_complete)
 
     invisible(df_combo)
 

@@ -22,7 +22,7 @@ pull_mer(
 
 \item{baseurl}{API base url, default = https://final.datim.org/}
 
-\item{quarters_complete}{of quarters completed through FY to determine weeks left in year}
+\item{quarters_complete}{no. of quarters completed through FY to determine weeks left in year}
 
 \item{folderpath_output}{folder path to store DATIM output, default = NULL}
 }

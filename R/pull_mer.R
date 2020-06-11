@@ -230,7 +230,7 @@ gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts =
 #' @param username DATIM username
 #' @param password DATIM password, recommend using `mypwd()`
 #' @param baseurl API base url, default = https://final.datim.org/
-#' @param quarters_complete # of quarters completed through FY to determine weeks left in year
+#' @param quarters_complete no. of quarters completed through FY to determine weeks left in year
 #' @param folderpath_output folder path to store DATIM output, default = NULL
 #'
 #' @export

@@ -84,6 +84,8 @@ hfr_export_mech <- function(df, mech, type, folderpath_output){
   #filter to mechanism
     df_mech <- dplyr::filter(df, mech_code == mech)
 
+    cat("Columns: ", paste(names(df_mech), collapse = ", "))
+
   #update type to reflect mechs with errors
     if ( var_exists(df_mech, "errors") ) {
       if ( TRUE %in% unique(df_mech$errors)) {
@@ -114,10 +116,6 @@ hfr_export_mech <- function(df, mech, type, folderpath_output){
   #get date for file naming
     date <- format(Sys.Date(),"%Y%m%d")
 
-    cat(paint_red(iso))
-    cat("\n")
-    cat(paint_red(date))
-
   #get period for naming
     if(var_exists(df, "hfr_pd")) {
       pd <- median(df$fy) + median(df$hfr_pd)/100
@@ -127,16 +125,15 @@ hfr_export_mech <- function(df, mech, type, folderpath_output){
       pd <- paste0("FY",curr_fy()-2000)
     }
 
-    cat(paint_red(pd))
-
   #compile file name
     filename <- paste("HFR", pd, iso, mech, type, date, sep = "_") %>%
       paste0(".csv") %>%
       stringr::str_replace_all("_{2,}", "_")
 
-    #export data
+  #export data
     readr::write_csv(df_mech, file.path(folderpath_output, filename), na = "")
-    cat(crayon::blue("         ",file.path(filename), "\n"))
 
+  #print file name
+    cat(crayon::blue("         ",file.path(filename), "\n"))
 }
 

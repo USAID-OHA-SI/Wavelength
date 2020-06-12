@@ -245,16 +245,15 @@ check_content <- function(df, datim_path) {
 
       cat("\nList of mechanisms with errros: ", paint_red(paste(errors, collapse = ", ")))
 
-      df <- df %>%
+      df %>%
         dplyr::group_by(mech_code) %>%
-        dplyr::mutate(row_id = dplyr::row_number(.)) %>%
+        dplyr::mutate(row_id = dplyr::row_number()) %>%
         dplyr::ungroup() %>%
         dplyr::filter(errors > 0) %>%
         dplyr::select(mech_code, valid_ou:row_id) %>%
         readr::write_csv(path = paste0(datim_path, "/HFR_ERRORS_", format(Sys.Date(),"%Y%m%d"), ".csv"), na="")
 
-      cat("\nThe errors file is located here: ", datim_path)
-
+      cat("\nThe errors file is located here: ", paint_blue(datim_path))
     }
 
     df <- df %>%

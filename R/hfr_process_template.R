@@ -47,11 +47,15 @@ hfr_process_template <- function(filepath,
     df <- hfr_aggr(df)
 
   #validation checks: full checks if datim_path provided
-  if (!is.null(datim_path)) {
-    df <- validate_output(df, content=TRUE, datim_path = datim_path)
-  } else {
-    df <- validate_output(df)
-  }
+    if (!is.null(datim_path)) {
+      check_cnt <- TRUE
+      path_files <- datim_path
+    } else {
+      check_cnt <- FALSE
+      path_files <- NULL
+    }
+
+    df <- validate_output(df, content=check_cnt, datim_path = path_files)
 
   #export
     hfr_export(df, folderpath_output, by_mech = TRUE)

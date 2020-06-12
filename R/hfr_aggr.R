@@ -6,8 +6,8 @@
 
 hfr_aggr <-function(df){
 
-  #convert to values to double
-  df <- dplyr::mutate(df, val = as.double(val))
+  #convert to values numeric and then convert to integers
+  df <- dplyr::mutate(df, val = val %>% as.double %>% round %>% as.integer)
 
   #identify all grouping vars (everything but val)
   vars_grp <- setdiff(names(df), "val")

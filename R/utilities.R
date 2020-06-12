@@ -197,7 +197,8 @@ count_missing <- function(df, var){
 #' @export
 #'
 paint_red <- function(txt) {
-  return(crayon::red(txt))
+  msg <- crayon::red(txt)
+  return(msg)
 }
 
 #' Paint console text in green
@@ -206,7 +207,8 @@ paint_red <- function(txt) {
 #' @export
 #'
 paint_green <- function(txt) {
-  return(crayon::green(txt))
+  msg <- crayon::green(txt)
+  return(msg)
 }
 
 #' Paint console text in blue
@@ -215,7 +217,8 @@ paint_green <- function(txt) {
 #' @export
 #'
 paint_blue <- function(txt) {
-  return(crayon::blue(txt))
+  msg <- crayon::blue(txt)
+  return(msg)
 }
 
 #' Paint console text in yellow
@@ -224,5 +227,6 @@ paint_blue <- function(txt) {
 #' @export
 #'
 paint_yellow <- function(txt) {
-  return(crayon::yellow(txt))
+  msg <- rayon::yellow(txt)
+  return(msg)
 }

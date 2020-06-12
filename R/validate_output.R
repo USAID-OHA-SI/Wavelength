@@ -177,8 +177,10 @@ check_content <- function(df, datim_path) {
 
   cat("\nLoading lookup tables ...")
 
-  # Load lookup tables
+  # Load lookup tables: load only once
+  if ( !exists("orgs") ) {
     load_lookups(datim_path)
+  }
 
   cat("\nChecking operatingunits values ...")
 
@@ -192,14 +194,25 @@ check_content <- function(df, datim_path) {
 
     if ( length(err_ou) > 0 ) {
 
-      cat("\nAre there any invalid operatingunits?", length(err_ou) > 0,
-          "\nList of invalid operatingunits: ", err_ou)
+      cat("\nAre there any invalid operatingunits?", ifelse(length(err_ou) > 0, paint_red("Yes"), paint_green("No")),
+          "\nList of invalid operatingunits: ", paint_red(paste(err_ou, collapse = ", ")))
 
-      cat("\nUpdating operatingunits from mech_code ...")
+      cat("\nUpdating operatingunit from mech codes ...")
+
+      # transform & extract unique mech codes
+      ims_ou <- ims %>%
+        dplyr::mutate(mech_code = as.character(mech_code)) %>%
+        dplyr::select(mech_code , ou = operatingunit) %>%
+        dplyr::distinct(mech_code, ou)
 
       df <- df %>%
-        update_operatingunits(levels=orglevels, orgs=orgs, ims=ims)
+        is_ou_valid(df_orgs = orgs) %>%
+        dplyr::mutate(mech_code = as.character(mech_code)) %>%
+        dplyr::left_join(ims_ou, by=c("mech_code" = "mech_code")) %>%
+        dplyr::mutate(operatingunit = ifelse(valid_ou == FALSE, ou, operatingunit)) %>%
+        dplyr::select(-c(valid_ou, ou))
 
+      #Check again after update
       err_ou <- df %>%
         is_ou_valid(df_orgs = orgs) %>%
         dplyr::filter(!valid_ou) %>%
@@ -207,7 +220,8 @@ check_content <- function(df, datim_path) {
         dplyr::distinct(operatingunit) %>%
         dplyr::pull()
 
-      cat("\nAre there still any invalid operatingunits?", length(err_ou) > 0)
+      cat("\nAre there still any invalid operatingunit?", ifelse(length(err_ou) > 0, paint_red("Yes"), paint_green("No")),
+          "\nList of invalid operatingunit: ", ifelse(length(err_ou) > 0, paint_red(paste(err_ou, collapse = ", ")), paint_green("None")))
     }
 
   # Check the rest of the data
@@ -258,7 +272,7 @@ check_content <- function(df, datim_path) {
 
     df <- df %>%
       dplyr::select(1:14, errors) %>%
-      dplyr::mutate(errors == ifelse(errors > 0, TRUE, FALSE))
+      dplyr::mutate(errors = ifelse(errors > 0, TRUE, FALSE))
 
     return(df)
 }

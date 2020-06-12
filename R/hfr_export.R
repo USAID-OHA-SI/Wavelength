@@ -84,8 +84,6 @@ hfr_export_mech <- function(df, mech, type, folderpath_output){
   #filter to mechanism
     df_mech <- dplyr::filter(df, mech_code == mech)
 
-    cat("Columns: ", paste(names(df_mech), collapse = ", "))
-
   #update type to reflect mechs with errors
     if ( var_exists(df_mech, "errors") ) {
       if ( TRUE %in% unique(df_mech$errors)) {

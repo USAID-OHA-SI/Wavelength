@@ -2,8 +2,9 @@
 #'
 #' @param filepath filepath to sumbitted template
 #' @param round_hfrdate rounds date to the nearest HFRweek start (for non-compliance), default = FALSE
-#'  @param hfr_pd_sel filter for HFR reporting period, 1-13, no filter when NULL, default = NULL
+#' @param hfr_pd_sel filter for HFR reporting period, 1-13, no filter when NULL, default = NULL
 #' @param folderpath_output if a csv output is desired, provide the full path to the folder
+#' @param datim_path path to datim lookup files
 #'
 #' @export
 
@@ -47,7 +48,7 @@ hfr_process_template <- function(filepath,
 
   #validation checks: full checks if datim_path provided
   if (!is.null(datim_path)) {
-    df <- validate_output(df, datim_path = datim_path)
+    df <- validate_output(df, content=TRUE, datim_path = datim_path)
   } else {
     df <- validate_output(df)
   }

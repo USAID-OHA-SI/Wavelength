@@ -190,3 +190,39 @@ count_missing <- function(df, var){
     return(extra)
   }
 
+
+#' Paint console text in red
+#'
+#' @param txt text to be printed
+#' @export
+#'
+paint_red <- function(txt) {
+  return(crayon::red(txt))
+}
+
+#' Paint console text in green
+#'
+#' @param txt text to be printed
+#' @export
+#'
+paint_green <- function(txt) {
+  return(crayon::green(txt))
+}
+
+#' Paint console text in blue
+#'
+#' @param txt text to be printed
+#' @export
+#'
+paint_blue <- function(txt) {
+  return(crayon::blue(txt))
+}
+
+#' Paint console text in yellow
+#'
+#' @param txt text to be printed
+#' @export
+#'
+paint_yellow <- function(txt) {
+  return(crayon::yellow(txt))
+}

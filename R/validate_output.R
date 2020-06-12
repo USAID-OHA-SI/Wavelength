@@ -1,10 +1,12 @@
 #' Validation Checks
 #'
 #' @param df HFR data framed created by `hfr_process_template()`
+#' @param content check full dataset
+#' @param datim_path path to look up files
 #'
 #' @export
 
-validate_output <- function(df, content=FALSE, datimpath=NULL){
+validate_output <- function(df, content=FALSE, datim_path=NULL){
 
     check_output_cols(df)
     check_dates(df)
@@ -13,8 +15,9 @@ validate_output <- function(df, content=FALSE, datimpath=NULL){
     check_inds(df)
     check_disaggs(df)
 
+    #optional check
     if (content & !is.null(datim_path)) {
-        df <- check_content(df, datimpath)
+        df <- check_content(df, datim_path)
     }
 
     return(df)
@@ -172,12 +175,16 @@ check_disaggs <-function(df){
 #'
 check_content <- function(df, datim_path) {
 
+  cat("\nLoading lookup tables ...")
+
   # Load lookup tables
     load_lookups(datim_path)
 
+  cat("\nChecking operatingunits values ...")
+
   # Check and update operatingunits
     err_ou <- df %>%
-      is_ou_valid() %>%
+      is_ou_valid(df_orgs = orgs) %>%
       dplyr::filter(!valid_ou) %>%
       dplyr::select(-valid_ou) %>%
       dplyr::distinct(operatingunit) %>%
@@ -194,7 +201,7 @@ check_content <- function(df, datim_path) {
         update_operatingunits(levels=orglevels, orgs=orgs, ims=ims)
 
       err_ou <- df %>%
-        is_ou_valid() %>%
+        is_ou_valid(df_orgs = orgs) %>%
         dplyr::filter(!valid_ou) %>%
         dplyr::select(-valid_ou) %>%
         dplyr::distinct(operatingunit) %>%
@@ -204,7 +211,7 @@ check_content <- function(df, datim_path) {
     }
 
   # Check the rest of the data
-    cat("\nValidating the rest of the content ...")
+    cat("\nChecking the entire dataset ...")
 
     df <- df %>%
       is_ou_valid(df_orgs = orgs) %>%
@@ -224,10 +231,15 @@ check_content <- function(df, datim_path) {
       dplyr::distinct(mech_code) %>%
       dplyr::pull()
 
-    if (errors > 0) {
+    n_errors <- length(errors)
 
-      cat("\nAre there any mechanism with invalid data?", length(errors) > 0,
-          "\nList of invalid operatingunits: ", errors)
+    msg_errors <- ifelse( n_errors > 0 ? paint_red('Yes'), paint_green('N'))
+
+    cat("\nAre there any mechanism with invalid data?", msg_errors)
+
+    if (n_errors > 0) {
+
+      cat("\nList of mechanisms with errros: ", paint_red(paste(errors, collapse = ", ")))
 
       df <- df %>%
         dplyr::group_by(mech_code) %>%
@@ -235,9 +247,10 @@ check_content <- function(df, datim_path) {
         dplyr::ungroup() %>%
         dplyr::filter(errors > 0) %>%
         dplyr::select(mech_code, valid_ou:row_id) %>%
-        readr::write_csv(path = paste0(datim_path, "/HFR_ERRORS_", Sys.Date(), ".csv"))
+        readr::write_csv(path = paste0(datim_path, "/HFR_ERRORS_", format(Sys.Date(),"%Y%m%d"), ".csv"), na="")
 
       cat("\nThe errors file is located here: ", datim_path)
+
     }
 
     df <- df %>%

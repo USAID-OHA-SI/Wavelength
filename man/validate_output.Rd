@@ -4,10 +4,14 @@
 \alias{validate_output}
 \title{Validation Checks}
 \usage{
-validate_output(df, content = FALSE, datimpath = NULL)
+validate_output(df, content = FALSE, datim_path = NULL)
 }
 \arguments{
 \item{df}{HFR data framed created by \code{hfr_process_template()}}
+
+\item{content}{check full dataset}
+
+\item{datim_path}{path to look up files}
 }
 \description{
 Validation Checks

@@ -85,12 +85,15 @@ hfr_export_mech <- function(df, mech, type, folderpath_output){
     df_mech <- dplyr::filter(df, mech_code == mech)
 
   #update type to reflect mechs with errors
-    if ( var_exists(df_mech, "errors") & TRUE %in% unique(df_mech$errors)) {
-      type = "errors"
+    if ( var_exists(df_mech, "errors") ) {
+      if ( TRUE %in% unique(df_mech$errors)) {
+        type = "errors"
+      }
+
       df_mech <- df_mech %>% dplyr::select(-errors)
     }
 
-  #get ISO code for file nameing
+  #get ISO code for file naming
     if(var_exists(df, "countryname")) {
       ou <- unique(df$countryname)
     } else if(var_exists(df, "operatingunit")) {
@@ -111,6 +114,10 @@ hfr_export_mech <- function(df, mech, type, folderpath_output){
   #get date for file naming
     date <- format(Sys.Date(),"%Y%m%d")
 
+    cat(paint_red(iso))
+    cat("\n")
+    cat(paint_red(date))
+
   #get period for naming
     if(var_exists(df, "hfr_pd")) {
       pd <- median(df$fy) + median(df$hfr_pd)/100
@@ -120,8 +127,12 @@ hfr_export_mech <- function(df, mech, type, folderpath_output){
       pd <- paste0("FY",curr_fy()-2000)
     }
 
+    cat(paint_red(pd))
+
   #compile file name
-    filename <- paste("HFR", pd, iso, mech, type, date, sep = "_") %>% paste0(".csv") %>% stringr::str_replace_all("_{2,}", "_")
+    filename <- paste("HFR", pd, iso, mech, type, date, sep = "_") %>%
+      paste0(".csv") %>%
+      stringr::str_replace_all("_{2,}", "_")
 
     #export data
     readr::write_csv(df_mech, file.path(folderpath_output, filename), na = "")

@@ -10,7 +10,6 @@ gen_url(
   org_lvl,
   org_type = "facility",
   type_hts = NULL,
-  type_txcurr = NULL,
   baseurl = "https://final.datim.org/"
 )
 }
@@ -26,8 +25,6 @@ gen_url(
 \item{type_hts}{is the API call for HTS indicators ("results", "targets"), default = NULL}
 
 \item{baseurl}{API base url, default = https://final.datim.org/}
-
-\item{type_tx}{TX_CURR results need to come in quarterly}
 }
 \description{
 Generate a API URL
@@ -41,5 +38,5 @@ Generate a API URL
  #get facility level
   faclvl <- identify_levels("Ghana", "facility", username = myuser, password = mypwd())
  #gen url
-  myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts  = NULL) }
+  myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts = NULL) }
 }

@@ -59,11 +59,19 @@ hierarchy_clean <- function(df){
       tidyr::separate(path, headers, sep = "/", fill = "right") %>%
       dplyr::select(-orglvl_1, -orglvl_2)
 
+  #store uids in order to keep the psnuuid in hierarchy_rename()
+    df_uids <- df %>%
+      dplyr::select(name, id, dplyr::starts_with("orglvl")) %>%
+      dplyr::rename_with(~ stringr::str_replace(., "org","uid"))
+
   #convert level names of the org hierarchy from UIDs to names
     df_key <- dplyr::select(df, name, id)
     df <- df %>%
       dplyr::mutate_at(dplyr::vars(dplyr::starts_with("orglvl")),
                        ~ plyr::mapvalues(., df_key$id, df_key$name, warn_missing = FALSE))
+
+  #add uids back on
+    df <- dplyr::left_join(df, df_uids, by = c("name", "id"))
 
   #clean up coordinates, removing polygons and separating into lat-long
     if(var_exists(df, "coordinates")) {
@@ -72,7 +80,7 @@ hierarchy_clean <- function(df){
         dplyr::mutate(coordinates = stringr::str_remove_all(coordinates, '\\[|]|"|[:space:]|\\t')) %>%
         tidyr::separate(coordinates, c("longitude", "latitude"), sep = ",", extra = "drop") %>%
         dplyr::mutate_at(dplyr::vars("longitude", "latitude"), as.double) %>%
-        dplyr::select(-longitude, dplyr::everything())
+        dplyr::select(-latitude, -longitude, dplyr::everything())
     }
 
   return(df)
@@ -118,18 +126,18 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 
     if(ou_country == 3) {
       df <- df %>%
-        tibble::add_column(countryname = as.character(NA), .after = "orglvl_3") %>%
-        dplyr::mutate(countryname = orglvl_3)
+        dplyr::mutate(countryname = orglvl_3) %>%
+        dplyr::relocate(countryname, .after = "orglvl_3")
     } else {
       df <- df %>%
-        tibble::add_column(countryname = as.character(NA), .after = "orglvl_3") %>%
-        dplyr::mutate(countryname = orglvl_4)
+        dplyr::mutate(countryname = orglvl_4) %>%
+        dplyr::relocate(countryname, .after = "orglvl_3")
     }
 
     if("orglvl_4" %in% names(df)) {
       df <- df %>%
-        tibble::add_column(snu1 = NA, .after = "countryname") %>%
-        dplyr::mutate(snu1 = orglvl_4)
+        dplyr::mutate(snu1 = orglvl_4) %>%
+        dplyr::relocate(snu1, .after = "countryname")
     }
 
     if(!!paste0("orglvl_", ou_psnu) %in% names(df))
@@ -137,8 +145,8 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 
     if(ou_psnu == ou_comm && !!!paste0("orglvl_", ou_comm) %in% names(df)){
       df <- df %>%
-        tibble::add_column(community = as.character(NA), .after = "psnu") %>%
-        dplyr::mutate(community = psnu)
+        dplyr::mutate(community = psnu) %>%
+        dplyr::relocate(community, .after = "psnu")
     } else if (!!paste0("orglvl_", ou_comm) %in% names(df)){
       df <- dplyr::rename(df, community = !!paste0("orglvl_", ou_comm))
     }
@@ -148,9 +156,17 @@ hierarchy_rename <- function(df, country, username, password, baseurl = "https:/
 
     df <- dplyr::rename(df, operatingunit = orglvl_3)
 
+    #add in psnu uid
+    if(!!paste0("uidlvl_", ou_psnu) %in% names(df)){
+      df <- df %>%
+        dplyr::rename(psnuuid = !!paste0("uidlvl_", ou_psnu)) %>%
+        dplyr::relocate(psnuuid, .after = "psnu")
+    }
+
+    #reorder and remove unused vars
     df <- df %>%
       dplyr::select(orgunit, orgunituid, dplyr::everything()) %>%
-      dplyr::select(-dplyr::starts_with("orglvl_"))
+      dplyr::select(-dplyr::starts_with("orglvl_"), -dplyr::starts_with("uidlvl_"))
 
 
     return(df)

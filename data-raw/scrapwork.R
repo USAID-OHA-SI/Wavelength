@@ -6,7 +6,7 @@
     myuser <- ""
 
   #quarters with results in DATIM
-    qtr <- 1
+    qtr <- 2
 
   #folderpath output
     savefolder <- "out/DATIM"

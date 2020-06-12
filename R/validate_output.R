@@ -233,7 +233,11 @@ check_content <- function(df, datim_path) {
 
     n_errors <- length(errors)
 
-    msg_errors <- ifelse( n_errors > 0 ? paint_red('Yes'), paint_green('N'))
+    if( n_errors > 0 ) {
+      msg_errors <- paint_red('Yes')
+    } else {
+      msg_errors <- paint_green('No')
+    }
 
     cat("\nAre there any mechanism with invalid data?", msg_errors)
 

@@ -53,7 +53,9 @@ hfr_fix_noncompliance <- function(df){
 
                   #Vietnam
                   indicator = stringr::str_replace(indicator, "MMS", "MMD"),
-                  operatingunit = ifelse(operatingunit == "Viet Nam", "Vietnam", operatingunit)
+                  operatingunit = ifelse(operatingunit == "Viet Nam", "Vietnam", operatingunit),
+                  #Tanzania
+                  orgunituid = stringr::str_remove_all(orgunituid, "\\r|\\n")
                   ) %>%
     dplyr::mutate_at(dplyr::vars(agecoarse, sex), ~ dplyr::na_if(., "NA"))
 

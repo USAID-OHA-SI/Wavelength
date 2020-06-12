@@ -37,7 +37,7 @@ hfr_process_template <- function(filepath, round_hfrdate = FALSE, hfr_pd_sel = N
       hfr_assign_pds()
 
   #filter if required to specific pd
-    df <- hfr_filter_pd(df, hfr_pd_sel, hfr_fy_sel = 2020)
+    df <- hfr_filter_pd(df, hfr_pd_sel, hfr_fy_sel = curr_fy())
 
   #aggregate to combine rows where needed (minimize row count)
     df <- hfr_aggr(df)

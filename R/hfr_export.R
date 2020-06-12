@@ -14,13 +14,17 @@
 #'  #write output
 #'    hfr_export(df_tza, "~/WeeklyData") }
 
-hfr_export <- function(df, folderpath_output = NULL,
-                       type = "processed", by_mech = FALSE, quarters_complete = NULL){
+hfr_export <- function(df,
+                       folderpath_output = NULL,
+                       type = "processed",
+                       by_mech = FALSE,
+                       quarters_complete = NULL){
 
   if(!is.null(folderpath_output)){
 
     #export
       cat("\nExport:\n")
+
       if(by_mech == TRUE){
         #by mechanism, compile file name  and export data
         purrr::walk(.x = unique(df$mech_code),
@@ -56,8 +60,12 @@ hfr_export <- function(df, folderpath_output = NULL,
           }
 
         #compile file name  and export data
-          filename <- paste("HFR", pd, iso, type, date, sep = "_") %>% paste0(".csv") %>% stringr::str_replace_all("_{2,}", "_")
+          filename <- paste("HFR", pd, iso, type, date, sep = "_") %>%
+            paste0(".csv") %>%
+            stringr::str_replace_all("_{2,}", "_")
+
           readr::write_csv(df, file.path(folderpath_output, filename), na = "")
+
           cat(crayon::blue("         ",file.path(filename), "\n"))
       }
   }
@@ -78,7 +86,16 @@ hfr_export_mech <- function(df, mech, type, folderpath_output, quarters_complete
   #filter to mechanism
     df_mech <- dplyr::filter(df, mech_code == mech)
 
-  #get ISO code for file nameing
+  #update type to reflect mechs with errors
+    if ( var_exists(df_mech, "errors") ) {
+      if ( TRUE %in% unique(df_mech$errors)) {
+        type = "errors"
+      }
+
+      df_mech <- df_mech %>% dplyr::select(-errors)
+    }
+
+  #get ISO code for file naming
     if(var_exists(df, "countryname")) {
       ou <- unique(df$countryname)
     } else if(var_exists(df, "operatingunit")) {
@@ -109,10 +126,14 @@ hfr_export_mech <- function(df, mech, type, folderpath_output, quarters_complete
     }
 
   #compile file name
-    filename <- paste("HFR", pd, iso, mech, type, date, sep = "_") %>% paste0(".csv") %>% stringr::str_replace_all("_{2,}", "_")
+    filename <- paste("HFR", pd, iso, mech, type, date, sep = "_") %>%
+      paste0(".csv") %>%
+      stringr::str_replace_all("_{2,}", "_")
+
   #export data
     readr::write_csv(df_mech, file.path(folderpath_output, filename), na = "")
-    cat(crayon::blue("         ",file.path(filename), "\n"))
 
+  #print file name
+    cat(crayon::blue("         ",file.path(filename), "\n"))
 }
 

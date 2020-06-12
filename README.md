@@ -44,6 +44,9 @@ Below is an example code to use to create a flat file for a country submission. 
     output_folder <- "~/WeeklyData/Output"
   #process Excel file for Saturn
     hfr_process_template(path, output_folder)
+  #process Excel file for Saturn with full validation
+    datim_folder <- "~/Datim"
+    hfr_process_template(path, output_folder, datim_path = datim_folder)
             
 ## EXAMPLE WITH MULTIPLE FILES
 
@@ -55,6 +58,10 @@ Below is an example code to use to create a flat file for a country submission. 
   #process Excel file for all submitted file in WeeklyData
     purrr::map_dfr(.x = files,
                    .f = ~ hfr_process_template(.x, output_folder)
+  #process Excel file for all submitted file in WeeklyData with full validation
+    datim_folder <- "~/Datim"
+    purrr::map_dfr(.x = files,
+                   .f = ~ hfr_process_template(.x, output_folder, datim_path = datim_folder)
 ```
 ## Reading in HFR data locally
 

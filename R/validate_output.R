@@ -1,10 +1,12 @@
 #' Validation Checks
 #'
 #' @param df HFR data framed created by `hfr_process_template()`
+#' @param content check full dataset
+#' @param datim_path path to look up files
 #'
 #' @export
 
-validate_output <- function(df){
+validate_output <- function(df, content=FALSE, datim_path=NULL){
 
     check_output_cols(df)
     check_dates(df)
@@ -13,7 +15,13 @@ validate_output <- function(df){
     check_inds(df)
     check_disaggs(df)
 
+    #optional check
+    if (content & !is.null(datim_path)) {
+        df <- check_content(df, datim_path)
     }
+
+    return(df)
+}
 
 
 #' Validate columns for export
@@ -157,3 +165,114 @@ check_disaggs <-function(df){
        "\nAre there any extra other disaggs?", extra_otherdisagg, "\n")
 }
 
+
+#' Validate output content
+#'
+#' @param df HFR DataFrame
+#' @param datim_path path of datim lookup files
+#' @export
+#' @return df updated HFR dataframe
+#'
+check_content <- function(df, datim_path) {
+
+  cat("\nLoading lookup tables ...")
+
+  # Load lookup tables: load only once
+  if ( !exists("orgs") ) {
+    load_lookups(datim_path)
+  }
+
+  cat("\nChecking operatingunits values ...")
+
+  # Check and update operatingunits
+    err_ou <- df %>%
+      is_ou_valid(df_orgs = orgs) %>%
+      dplyr::filter(!valid_ou) %>%
+      dplyr::select(-valid_ou) %>%
+      dplyr::distinct(operatingunit) %>%
+      dplyr::pull()
+
+    if ( length(err_ou) > 0 ) {
+
+      cat("\nAre there any invalid operatingunits?", ifelse(length(err_ou) > 0, paint_red("Yes"), paint_green("No")),
+          "\nList of invalid operatingunits: ", paint_red(paste(err_ou, collapse = ", ")))
+
+      cat("\nUpdating operatingunit from mech codes ...")
+
+      # transform & extract unique mech codes
+      ims_ou <- ims %>%
+        dplyr::mutate(mech_code = as.character(mech_code)) %>%
+        dplyr::select(mech_code , ou = operatingunit) %>%
+        dplyr::distinct(mech_code, ou)
+
+      df <- df %>%
+        is_ou_valid(df_orgs = orgs) %>%
+        dplyr::mutate(mech_code = as.character(mech_code)) %>%
+        dplyr::left_join(ims_ou, by=c("mech_code" = "mech_code")) %>%
+        dplyr::mutate(operatingunit = ifelse(valid_ou == FALSE, ou, operatingunit)) %>%
+        dplyr::select(-c(valid_ou, ou))
+
+      #Check again after update
+      err_ou <- df %>%
+        is_ou_valid(df_orgs = orgs) %>%
+        dplyr::filter(!valid_ou) %>%
+        dplyr::select(-valid_ou) %>%
+        dplyr::distinct(operatingunit) %>%
+        dplyr::pull()
+
+      cat("\nAre there still any invalid operatingunit?", ifelse(length(err_ou) > 0, paint_red("Yes"), paint_green("No")),
+          "\nList of invalid operatingunit: ", ifelse(length(err_ou) > 0, paint_red(paste(err_ou, collapse = ", ")), paint_green("None")))
+    }
+
+  # Check the rest of the data
+    cat("\nChecking the entire dataset ...")
+
+    df <- df %>%
+      is_ou_valid(df_orgs = orgs) %>%
+      is_mech_valid(df_mechs = ims) %>%
+      is_mech4ou(df_mechs = ims) %>%
+      is_orgunituid_valid(df_orgs = orgs) %>%
+      is_orgunituid4ou(df_orgs = orgs) %>%
+      mutate(
+        valid_age = ifelse(is.na(agecoarse) | agecoarse %in% valid_age, TRUE, FALSE),
+        valid_sex = ifelse(is.na(sex) | sex %in% valid_sex, TRUE, FALSE),
+        valid_value = ifelse(is.na(val) | is.integer(val) | val >= 0, TRUE, FALSE)
+      ) %>%
+      dplyr::mutate(errors = rowSums(.[-c(1:14)] == FALSE))
+
+    errors <- df %>%
+      dplyr::filter(errors > 0) %>%
+      dplyr::distinct(mech_code) %>%
+      dplyr::pull()
+
+    n_errors <- length(errors)
+
+    if( n_errors > 0 ) {
+      msg_errors <- paint_red('Yes')
+    } else {
+      msg_errors <- paint_green('No')
+    }
+
+    cat("\nAre there any mechanism with invalid data?", msg_errors)
+
+    if (n_errors > 0) {
+
+      cat("\nList of mechanisms with errros: ", paint_red(paste(errors, collapse = ", ")))
+
+      df %>%
+        dplyr::group_by(mech_code) %>%
+        dplyr::mutate(row_id = dplyr::row_number()) %>%
+        dplyr::ungroup() %>%
+        dplyr::filter(errors > 0) %>%
+        dplyr::select(mech_code, valid_ou:row_id) %>%
+        readr::write_csv(path = paste0(datim_path, "/HFR_ERRORS_", format(Sys.Date(),"%Y%m%d"), ".csv"), na="")
+
+      cat("\nThe errors file is located here: ", paint_blue(datim_path))
+    }
+
+    df <- df %>%
+      dplyr::select(1:14, errors) %>%
+      dplyr::mutate(errors = ifelse(errors > 0, TRUE, FALSE))
+
+    return(df)
+}

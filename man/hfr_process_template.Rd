@@ -8,16 +8,20 @@ hfr_process_template(
   filepath,
   round_hfrdate = FALSE,
   hfr_pd_sel = NULL,
-  folderpath_output = NULL
+  folderpath_output = NULL,
+  datim_path = NULL
 )
 }
 \arguments{
 \item{filepath}{filepath to sumbitted template}
 
-\item{round_hfrdate}{rounds date to the nearest HFRweek start (for non-compliance), default = FALSE
-@param hfr_pd_sel filter for HFR reporting period, 1-13, no filter when NULL, default = NULL}
+\item{round_hfrdate}{rounds date to the nearest HFRweek start (for non-compliance), default = FALSE}
+
+\item{hfr_pd_sel}{filter for HFR reporting period, 1-13, no filter when NULL, default = NULL}
 
 \item{folderpath_output}{if a csv output is desired, provide the full path to the folder}
+
+\item{datim_path}{path to datim lookup files}
 }
 \description{
 Import and Munge HFR Standard Templates

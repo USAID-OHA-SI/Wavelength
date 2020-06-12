@@ -1,5 +1,7 @@
 # Wavelength 2.3.3
 * Resolve bug that converted NAs to zeros when wide formats were used
+* Restricts output value to integer (rounding any decimal values to the nearest integer)
+* Fixes UIDs issues that may have hidden line break in cell
 
 # Wavelength 2.3.2
 * Add additional template option, Wide - Limited, for optional use during COVID Response

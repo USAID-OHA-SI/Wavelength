@@ -3,7 +3,7 @@
 #' @export
 #' @return Current Fiscal Year
 #'
-  curr_fy <- function() { 2020 }
+  curr_fy <- function() { 2020L }
 
 
 
@@ -190,3 +190,43 @@ count_missing <- function(df, var){
     return(extra)
   }
 
+
+#' Paint console text in red
+#'
+#' @param txt text to be printed
+#' @export
+#'
+paint_red <- function(txt) {
+  msg <- crayon::red(txt)
+  return(msg)
+}
+
+#' Paint console text in green
+#'
+#' @param txt text to be printed
+#' @export
+#'
+paint_green <- function(txt) {
+  msg <- crayon::green(txt)
+  return(msg)
+}
+
+#' Paint console text in blue
+#'
+#' @param txt text to be printed
+#' @export
+#'
+paint_blue <- function(txt) {
+  msg <- crayon::blue(txt)
+  return(msg)
+}
+
+#' Paint console text in yellow
+#'
+#' @param txt text to be printed
+#' @export
+#'
+paint_yellow <- function(txt) {
+  msg <- rayon::yellow(txt)
+  return(msg)
+}

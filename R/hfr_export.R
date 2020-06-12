@@ -14,8 +14,11 @@
 #'  #write output
 #'    hfr_export(df_tza, "~/WeeklyData") }
 
-hfr_export <- function(df, folderpath_output = NULL,
-                       type = "processed", by_mech = FALSE, quarters_complete = NULL){
+hfr_export <- function(df,
+                       folderpath_output = NULL,
+                       type = "processed",
+                       by_mech = FALSE,
+                       quarters_complete = NULL){
 
   if(!is.null(folderpath_output)){
 

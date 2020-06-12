@@ -7,8 +7,11 @@
 #'
 #' @export
 
-
-hfr_process_template <- function(filepath, round_hfrdate = FALSE, hfr_pd_sel = NULL, folderpath_output = NULL){
+hfr_process_template <- function(filepath,
+                                 round_hfrdate = FALSE,
+                                 hfr_pd_sel = NULL,
+                                 folderpath_output = NULL,
+                                 datim_path = NULL){
 
   #validation checks
     validate_initial(filepath)
@@ -42,8 +45,12 @@ hfr_process_template <- function(filepath, round_hfrdate = FALSE, hfr_pd_sel = N
   #aggregate to combine rows where needed (minimize row count)
     df <- hfr_aggr(df)
 
-  #validation checks
+  #validation checks: full checks if datim_path provided
+  if (!is.null(datim_path)) {
+    df <- validate_output(df, datim_path = datim_path)
+  } else {
     df <- validate_output(df)
+  }
 
   #export
     hfr_export(df, folderpath_output, by_mech = TRUE)

@@ -8,7 +8,8 @@ hfr_process_template(
   filepath,
   round_hfrdate = FALSE,
   hfr_pd_sel = NULL,
-  folderpath_output = NULL
+  folderpath_output = NULL,
+  datim_path = NULL
 )
 }
 \arguments{

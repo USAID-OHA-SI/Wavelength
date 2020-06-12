@@ -4,7 +4,7 @@
 #'
 #' @export
 
-validate_output <- function(df){
+validate_output <- function(df, content=FALSE, datimpath=NULL){
 
     check_output_cols(df)
     check_dates(df)
@@ -13,6 +13,11 @@ validate_output <- function(df){
     check_inds(df)
     check_disaggs(df)
 
+    if (content & !is.null(datim_path)) {
+        df <- check_content(df, datimpath)
+    }
+
+    return(df)
 }
 
 
@@ -157,3 +162,87 @@ check_disaggs <-function(df){
        "\nAre there any extra other disaggs?", extra_otherdisagg, "\n")
 }
 
+
+#' Validate output content
+#'
+#' @param df HFR DataFrame
+#' @param datim_path path of datim lookup files
+#' @export
+#' @return df updated HFR dataframe
+#'
+check_content <- function(df, datim_path) {
+
+  # Load lookup tables
+    load_lookups(datim_path)
+
+  # Check and update operatingunits
+    err_ou <- df %>%
+      is_ou_valid() %>%
+      dplyr::filter(!valid_ou) %>%
+      dplyr::select(-valid_ou) %>%
+      dplyr::distinct(operatingunit) %>%
+      dplyr::pull()
+
+    if ( length(err_ou) > 0 ) {
+
+      cat("\nAre there any invalid operatingunits?", length(err_ou) > 0,
+          "\nList of invalid operatingunits: ", err_ou)
+
+      cat("\nUpdating operatingunits from mech_code ...")
+
+      df <- df %>%
+        update_operatingunits(levels=orglevels, orgs=orgs, ims=ims)
+
+      err_ou <- df %>%
+        is_ou_valid() %>%
+        dplyr::filter(!valid_ou) %>%
+        dplyr::select(-valid_ou) %>%
+        dplyr::distinct(operatingunit) %>%
+        dplyr::pull()
+
+      cat("\nAre there still any invalid operatingunits?", length(err_ou) > 0)
+    }
+
+  # Check the rest of the data
+    cat("\nValidating the rest of the content ...")
+
+    df <- df %>%
+      is_ou_valid(df_orgs = orgs) %>%
+      is_mech_valid(df_mechs = ims) %>%
+      is_mech4ou(df_mechs = ims) %>%
+      is_orgunituid_valid(df_orgs = orgs) %>%
+      is_orgunituid4ou(df_orgs = orgs) %>%
+      mutate(
+        valid_age = ifelse(is.na(agecoarse) | agecoarse %in% valid_age, TRUE, FALSE),
+        valid_sex = ifelse(is.na(sex) | sex %in% valid_sex, TRUE, FALSE),
+        valid_value = ifelse(is.na(val) | is.integer(val) | val >= 0, TRUE, FALSE)
+      ) %>%
+      dplyr::mutate(errors = rowSums(.[-c(1:14)] == FALSE))
+
+    errors <- df %>%
+      dplyr::filter(errors > 0) %>%
+      dplyr::distinct(mech_code) %>%
+      dplyr::pull()
+
+    if (errors > 0) {
+
+      cat("\nAre there any mechanism with invalid data?", length(errors) > 0,
+          "\nList of invalid operatingunits: ", errors)
+
+      df <- df %>%
+        dplyr::group_by(mech_code) %>%
+        dplyr::mutate(row_id = dplyr::row_number(.)) %>%
+        dplyr::ungroup() %>%
+        dplyr::filter(errors > 0) %>%
+        dplyr::select(mech_code, valid_ou:row_id) %>%
+        readr::write_csv(path = paste0(datim_path, "/HFR_ERRORS_", Sys.Date(), ".csv"))
+
+      cat("\nThe errors file is located here: ", datim_path)
+    }
+
+    df <- df %>%
+      dplyr::select(1:14, errors) %>%
+      dplyr::mutate(errors == ifelse(errors > 0, TRUE, FALSE))
+
+    return(df)
+}

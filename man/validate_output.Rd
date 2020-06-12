@@ -4,7 +4,7 @@
 \alias{validate_output}
 \title{Validation Checks}
 \usage{
-validate_output(df)
+validate_output(df, content = FALSE, datimpath = NULL)
 }
 \arguments{
 \item{df}{HFR data framed created by \code{hfr_process_template()}}

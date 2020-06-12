@@ -43,7 +43,7 @@ hfr_process_template <- function(filepath, round_hfrdate = FALSE, hfr_pd_sel = N
     df <- hfr_aggr(df)
 
   #validation checks
-    validate_output(df)
+    df <- validate_output(df)
 
   #export
     hfr_export(df, folderpath_output, by_mech = TRUE)

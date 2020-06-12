@@ -146,6 +146,9 @@
       filter(indicator == "TX_CURR") %>%
       dplyr::mutate(tx_curr_tgts = case_when(indicator == "TX_CURR" ~ mer_targets))
 
+   #remove OPU
+   df_viz <- df_viz %>%
+     filter(mech_code != "16784")
 
    df_avgcomp <-  df_viz %>%
       filter(hfr_pd %in% c("2020.05", "2020.06")) %>%

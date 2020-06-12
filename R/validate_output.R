@@ -13,7 +13,7 @@ validate_output <- function(df){
     check_inds(df)
     check_disaggs(df)
 
-    }
+}
 
 
 #' Validate columns for export

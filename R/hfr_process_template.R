@@ -55,7 +55,10 @@ hfr_process_template <- function(filepath,
       path_files <- NULL
     }
 
-    df <- validate_output(df, content=check_cnt, datim_path = path_files)
+    df <- validate_output(df,
+                          output_path=folderpath_output,
+                          content=check_cnt,
+                          datim_path = path_files)
 
   #export
     hfr_export(df, folderpath_output, by_mech = TRUE)

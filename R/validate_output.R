@@ -6,7 +6,7 @@
 #'
 #' @export
 
-validate_output <- function(df, content=FALSE, datim_path=NULL){
+validate_output <- function(df, output_path, content=FALSE, datim_path=NULL){
 
     check_output_cols(df)
     check_dates(df)
@@ -17,7 +17,7 @@ validate_output <- function(df, content=FALSE, datim_path=NULL){
 
     #optional check
     if (content & !is.null(datim_path)) {
-        df <- check_content(df, datim_path)
+        df <- check_content(df, output_path, datim_path)
     }
 
     return(df)
@@ -173,12 +173,12 @@ check_disaggs <-function(df){
 #' @export
 #' @return df updated HFR dataframe
 #'
-check_content <- function(df, datim_path) {
+check_content <- function(df, output_path, datim_path) {
 
   cat("\nLoading lookup tables ...")
 
   # Load lookup tables: load only once
-  if ( !exists("orgs") ) {
+  if ( !exists("orgs") | !exists("ims") ) {
     load_lookups(datim_path)
   }
 
@@ -265,7 +265,7 @@ check_content <- function(df, datim_path) {
         dplyr::ungroup() %>%
         dplyr::filter(errors > 0) %>%
         dplyr::select(mech_code, valid_ou:row_id) %>%
-        readr::write_csv(path = paste0(datim_path, "/HFR_ERRORS_", format(Sys.Date(),"%Y%m%d"), ".csv"), na="")
+        readr::write_csv(path = paste0(output_path, "/HFR_ERRORS_", paste(errors, collapse = "_"), "_", format(Sys.Date(),"%Y%m%d"), ".csv"), na="")
 
       cat("\nThe errors file is located here: ", paint_blue(datim_path))
     }

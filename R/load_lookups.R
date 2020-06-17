@@ -15,8 +15,8 @@ load_lookups <- function(datim_path = "../datim") {
                          full.names = TRUE)
 
   #Folder should contain valid files
-    if ( !exists("lfiles") | length(lfiles) < 3 ) {
-      stop("There are not enough look up files. Make sure you have orglevels, orghierarchy and mechanisms files in your datim folder.")
+    if ( !exists("lfiles") | length(lfiles) < 2 ) {
+      stop("There are not enough look up files [HFR_FY20_GLOBAL...]. Make sure you have orghierarchy and mechanisms files in your datim folder.")
     }
 
   #HFR Periods
@@ -28,21 +28,24 @@ load_lookups <- function(datim_path = "../datim") {
   #Age
     valid_age <<- c("<15", "15+", NA)
 
-  #ORG Levels
-    file_orglevels <- lfiles %>%
-      stringr::str_subset("orglevels.*.csv$")
-
-    orglevels <<- readr::read_csv(file = file_orglevels)
 
   #ORG Hirarchy
     file_orgs <- lfiles %>%
-      stringr::str_subset("orghierarchy_.*.csv$")
+      stringr::str_subset("._orghierarchy_\\d{8}.csv$")
 
     orgs <<- readr::read_csv(file = file_orgs)
 
+    if (is.null(orgs) | !is.data.frame(orgs)) {
+      stop("Orghierarchy file does not seems to have valid content")
+    }
+
   #Mechanisms
     file_mechanisms <- lfiles %>%
-      stringr::str_subset("mechanisms_.*.csv$")
+      stringr::str_subset("._mechanisms_\\d{8}.csv$")
 
     ims <<- readr::read_csv(file = file_mechanisms)
+
+    if (is.null(orgs) | !is.data.frame(orgs)) {
+      stop("Mechanisms file does not seems to have valid content")
+    }
 }

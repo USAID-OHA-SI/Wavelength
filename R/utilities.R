@@ -230,3 +230,29 @@ paint_yellow <- function(txt) {
   msg <- rayon::yellow(txt)
   return(msg)
 }
+
+
+
+#' Search Org Hierarchy for Org Unit
+#'
+#' @param df org hierarchy, created in pull_hierarchy()
+#' @param orgunit_name full or partial orgunit name for matching
+#' @param ou operating unit; if added searches only that OU default = NULL
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # orgunit - Kewot
+#' org <- pull_hierarchy(myusername, mypass)
+#' hfr_orgunit_search(org, "Kew", "Ethiopia") }
+
+hfr_orgunit_search <- function(df, orgunit_name, ou = NULL){
+
+  if(!is.null(ou))
+    df <- dplyr::filter(df, operatingunit == ou)
+
+  df %>%
+    dplyr::filter(stringr::str_detect(orgunit, orgunit_name)) %>%
+    dplyr::select(orgunit, orgunituid, psnu, operatingunit, level)
+}

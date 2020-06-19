@@ -4,7 +4,7 @@
 \alias{check_content}
 \title{Validate output content}
 \usage{
-check_content(df, datim_path)
+check_content(df, output_path, datim_path)
 }
 \arguments{
 \item{df}{HFR DataFrame}

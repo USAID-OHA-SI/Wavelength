@@ -71,7 +71,7 @@ is_orgunituid_valid <- function(.data, df_orgs) {
     dplyr::mutate(valid_uid = TRUE)
 
   .data %>%
-    dplyr::mutate(orgunituid = str_remove_all(str_trim(orgunituid, side="both"), pattern = "\r\n")) %>%
+    dplyr::mutate(orgunituid = stringr::str_remove_all(stringr::str_trim(orgunituid, side="both"), pattern = "\r\n")) %>%
     dplyr::left_join(orgs, by = "orgunituid") %>%
     dplyr::mutate(valid_uid = ifelse(is.na(valid_uid), FALSE, valid_uid))
 }

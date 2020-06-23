@@ -19,7 +19,7 @@ Report files validation
 }
 \examples{
 \dontrun{
-  report_file_errors(ims, processed)
+  report_file_errors(files, ims, processed)
 }
 
 }

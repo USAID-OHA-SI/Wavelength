@@ -20,6 +20,7 @@ validate_initial <- function(filepath){
 #'
 #' @param filepath filepath to sumbitted template
 #'
+#' @export
 
 is_hfrtab <- function(filepath){
 

@@ -233,7 +233,7 @@ check_content <- function(df, output_path, datim_path) {
       is_mech4ou(df_mechs = ims) %>%
       is_orgunituid_valid(df_orgs = orgs) %>%
       is_orgunituid4ou(df_orgs = orgs) %>%
-      mutate(
+      dplyr::mutate(
         valid_age = ifelse(is.na(agecoarse) | agecoarse %in% valid_age, TRUE, FALSE),
         valid_sex = ifelse(is.na(sex) | sex %in% valid_sex, TRUE, FALSE),
         valid_value = ifelse(is.na(val) | is.integer(val) | val >= 0, TRUE, FALSE)

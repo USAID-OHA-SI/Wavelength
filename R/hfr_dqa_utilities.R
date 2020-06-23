@@ -247,13 +247,13 @@ validate_submissions <- function(pfolder, levels, ims, pattern=NULL) {
 
 #' Report files validation
 #'
-#' @param mechanisms mechs
 #' @param df_files df of filename validation
+#' @param mechanisms mechs
 #' @return void
 #' @export
 #' @examples
 #' \dontrun{
-#'   report_file_errors(ims, processed)
+#'   report_file_errors(files, ims, processed)
 #' }
 #'
 report_submissions_errors <- function(df_files, mechanisms, export = FALSE) {

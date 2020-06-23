@@ -175,7 +175,7 @@ check_disaggs <-function(df){
 #'
 check_content <- function(df, output_path, datim_path) {
 
-  cat("\nLoading lookup tables ...")
+  cat("\nLoading lookup tables ...\n")
 
   # Load lookup tables: load only once
   if ( !exists("orgs") | !exists("ims") ) {

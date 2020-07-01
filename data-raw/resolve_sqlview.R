@@ -8,7 +8,7 @@ library(tidyverse)
 library(vroom)
 library(lubridate)
 
-filename <- "C:/Users/achafetz/Downloads/HFR_2020.08_Tableau_20200604.csv"
+filename <- "C:/Users/achafetz/Downloads/HFR_2020.08_Tableau_20200625.csv"
 df_twbx <- hfr_read(filename)
 
 glimpse(df_twbx)

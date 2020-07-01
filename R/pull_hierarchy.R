@@ -25,7 +25,7 @@ hierarchy_extract <- function(ou_uid, username, password, baseurl = "https://fin
   #compile url
   url <- paste0(baseurl,
                 "api/organisationUnits?filter=path:like:", ou_uid,
-                "&fields=id,name,path,level,coordinates&paging=false")
+                "&fields=id,name,path,level,geometry&paging=false")
 
   #pull data from DATIM
   df <- url %>%

@@ -74,13 +74,28 @@ hierarchy_clean <- function(df){
     df <- dplyr::left_join(df, df_uids, by = c("name", "id"))
 
   #clean up coordinates, removing polygons and separating into lat-long
-    if(var_exists(df, "coordinates")) {
-      df <- df %>%
-        dplyr::mutate(coordinates = ifelse(stringr::str_detect(coordinates, "\\[{2,}"), NA, coordinates)) %>%
-        dplyr::mutate(coordinates = stringr::str_remove_all(coordinates, '\\[|]|"|[:space:]|\\t')) %>%
-        tidyr::separate(coordinates, c("longitude", "latitude"), sep = ",", extra = "drop") %>%
-        dplyr::mutate_at(dplyr::vars("longitude", "latitude"), as.double) %>%
-        dplyr::select(-latitude, -longitude, dplyr::everything())
+    if(var_exists(df, "geometry")) {
+
+      #extract coordinates from nested df
+        df <- df %>%
+          dplyr::mutate(geom_type = geometry$type,
+                        coordinates = geometry$coordinates) %>%
+          dplyr::select(-geometry)
+
+      #for point data, unness coordinate from list
+        sites <- df %>%
+          dplyr::filter(geom_type == "Point" | is.na(geom_type)) %>%
+          dplyr::select(-geom_type) %>%
+          tidyr::unnest_wider(coordinates, names_sep = "_") %>%
+          dplyr::rename(longitude = "coordinates_1", latitude = "coordinates_2") %>%
+          dplyr::mutate_at(dplyr::vars("longitude", "latitude"), as.double) %>%
+          dplyr::select(id, latitude, longitude)
+
+      #bind coordinates onto hierarchy table
+        df <- df %>%
+          dplyr::select(-geom_type, -coordinates) %>%
+          dplyr::left_join(sites, by = "id")
+
     }
 
   return(df)

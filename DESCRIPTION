@@ -18,7 +18,7 @@ Depends:
     R (>= 3.1.2)
 Imports: 
     crayon,
-    dplyr,
+    dplyr(>= 1.0.0),
     lubridate,
     magrittr,
     purrr,

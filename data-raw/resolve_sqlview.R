@@ -7,8 +7,19 @@ devtools::load_all()
 library(tidyverse)
 library(vroom)
 library(lubridate)
+library(glamr)
+library(googledrive)
 
-filename <- "C:/Users/achafetz/Downloads/HFR_2020.08_Tableau_20200625.csv"
+drive_auth()
+
+file <- drive_ls(as_id("1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"), "2020.09")
+
+path <- "C:/Users/achafetz/Downloads/"
+
+filename <- drive_download(as_id(file$id), file.path(path, file$name))
+
+filename <- pull(filename, local_path)
+
 df_twbx <- hfr_read(filename)
 
 glimpse(df_twbx)

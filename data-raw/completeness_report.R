@@ -2,7 +2,7 @@
 ## AUTHOR:   A.CHAFETZ | USAID
 ## PURPOSE:  OU completeness report
 ## DATE:     2019-10-03
-## UPDATED:  2020-06-04
+## UPDATED:  2020-07-14
 
 
 # DEPENDENCIES ------------------------------------------------------------
@@ -20,7 +20,7 @@
 # VARIABLES ---------------------------------------------------------------
 
   #global file path
-    path <- "out/joint/HFR_2020.07_Tableau_20200518_adj.csv"
+    path <- "out/joint/HFR_Tableau_SQLview.csv"
     # path_new <- "out/joint/HFR_GLOBAL_2020.02_output_20200107.0838.csv"
 
   #red
@@ -151,14 +151,14 @@
      filter(mech_code != "16784")
 
    df_avgcomp <-  df_viz %>%
-      filter(hfr_pd %in% c("2020.05", "2020.06")) %>%
+      filter(hfr_pd != max(hfr_pd)) %>%
       group_by(mech_code) %>%
       summarise(avg_comp_2prior = mean(completeness, na.rm = TRUE)) %>%
       ungroup() %>%
       filter(!is.na(avg_comp_2prior))
 
    df_viz <- df_viz %>%
-     filter(hfr_pd == "2020.07") %>%
+     filter(hfr_pd == max(hfr_pd)) %>%
      left_join(df_avgcomp) %>%
      mutate(comp_prior_bin = case_when(is.na(avg_comp_2prior) ~ NA_character_,
                                        avg_comp_2prior == 0 ~ "0%",
@@ -213,7 +213,8 @@
                                     "THE LUKE COMMISSION SWAZILAND",                          "The Luke Commission",
                 "UNAIDS JOINT UNITED NATIONS PROGRAMME ON HIV/AIDS",                                       "UNAIDS",
                                      "University Research Co., LLC",                                          "URC",
-                                 "WITS HEALTH CONSORTIUM (PTY) LTD",                                         "Wits"
+                                 "WITS HEALTH CONSORTIUM (PTY) LTD",                                         "Wits",
+                                     "Jamaica Aids Support Limited",                    "Jamaica AIDS Support Ltd."
      ) %>%
      left_join(df_viz, .)
 
@@ -226,6 +227,7 @@
    #plot completeness pd 7
    target_max <- df_viz %>% filter(completeness < 0.01) %>% summarise(max = max(mer_targets, na.rm = TRUE)) %>% pull()
 
+   pd <- max(df_viz$hfr_pd)
    v1 <- df_viz %>%
      mutate(completeness = ifelse(completeness > 1, 1, completeness),
             filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.3 & mer_targets>= 1e5, "#CB181D", grey40k)) %>%
@@ -242,9 +244,9 @@
      scale_y_continuous(label = percent) +
      scale_fill_identity() +
      labs(x = "FY20 TX_CURR MER TARGETS", y = "HFR Site Reporting Completeness",
-          subtitle = "HFR 2020.07 | TX_CURR",
-          caption = "completeness capped at 100%
-           HFR Data [2020-05-20]") +
+          subtitle = paste0("HFR", pd, "| TX_CURR"),
+          caption = paste0("completeness capped at 100%
+           HFR Data [", Sys.Date(),"]")) +
      si_style() +
      theme(strip.text = element_text(face = "bold"),
            legend.title = element_text(family = "Source Sans Pro", color = "gray30"))
@@ -290,7 +292,7 @@
 
 
   #export
-    ggsave("out/CompletenessMechs07.png", dpi = 600, height = 4.78, width = 9.59)
+    ggsave("out/CompletenessMechs09.png", dpi = 600, height = 4.78, width = 9.59)
 
   #share of tx target portfolio with no targets
    df_viz %>%
@@ -298,40 +300,145 @@
      count(no_rep, wt = mer_targets) %>%
      mutate(cum_share = n / sum(n))
 
+
+   df_viz %>%
+     filter(!is.na(comp_prior_bin),
+            completeness <= .3,
+            mer_targets >= 100000) %>%
+     select(iso, partner_shortname, mer_targets) %>%
+     arrange(mer_targets)
+
    #completeness by partner
    df_viz %>%
      mutate(completeness = ifelse(completeness > 1, 1, completeness),
+            # filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.3, "#CB181D", grey40k),
             filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.3 & mer_targets>= 1e5, "#CB181D", grey40k),
             facet_lab = paste0(toupper(partner_shortname), "\n",
                                ifelse(prtnr_comp > 1, "+100%",
                                percent(prtnr_comp,1)))
             ) %>%
      filter(!is.na(comp_prior_bin)) %>%
-     ggplot() +
+     ggplot(aes(mer_targets, completeness, label = iso)) +
      annotate(geom = "rect",
               xmin = 1e5, ymin = -0.03,
               xmax = target_max + 1000000, ymax = 0.3,
               fill = grey30k, alpha = 0.25,
               color = grey50k, linetype = "dashed"
               ) +
-     geom_point(aes(mer_targets, completeness, fill = filter_greys),
+     geom_point(aes(fill = filter_greys),
                 size = 4, alpha = .75, shape = 21, stroke = 1, color = "white") +
+     # geom_text_repel(size = 2.5, family = "Source Sans Pro", color = "gray30") +
+     # geom_text(size = 2.5, family = "Source Sans Pro", color = "gray30") +
      facet_wrap(~ fct_reorder(facet_lab, prtnr_comp, .desc = TRUE)) +
      scale_x_log10(label = comma) +
      scale_y_continuous(label = percent) +
      scale_fill_identity() +
      labs(x = "FY20 TX_CURR MER TARGETS", y = "HFR Site Reporting Completeness",
-          subtitle = "HFR 2020.07 | TX_CURR",
+          subtitle = paste0("HFR", pd, " | TX_CURR"),
           caption = "completeness capped at 100%; ordered by FY20 MER Targets
-           HFR Data [2020-05-20]") +
+           HFR Data [2020-07-08]") +
      si_style() +
      theme(strip.text = element_text(face = "bold"),
            legend.title = element_text(family = "Source Sans Pro", color = "gray30"))
 
+
+
    #export
    h <- 10
    w <- (16/9) * h
-   ggsave("out/CompletenessMechs07_sm.png", dpi = 330,
+   ggsave("out/CompletenessMechs09_sm.png", dpi = 330,
           height = h,
           width = w)
+
+
+
+   df_viz %>%
+     mutate(completeness = ifelse(completeness > 1, 1, completeness),
+            filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.3, "#CB181D", grey40k),
+            # filter_greys = if_else(!is.na(comp_prior_bin) & completeness <= 0.3 & mer_targets>= 1e5, "#CB181D", grey40k),
+            facet_lab = paste0(toupper(partner_shortname), "\n",
+                               ifelse(prtnr_comp > 1, "+100%",
+                                      percent(prtnr_comp,1)))
+     ) %>%
+     geom_col(aes(fill = filter_greys),
+                alpha = .75) +
+     # geom_text_repel(size = 2.5, family = "Source Sans Pro", color = "gray30") +
+     geom_text(size = 2.5, family = "Source Sans Pro", color = "gray30") +
+     facet_wrap(~ fct_reorder(facet_lab, prtnr_comp, .desc = TRUE)) +
+     scale_x_log10(label = comma) +
+     scale_y_continuous(label = percent) +
+     scale_fill_identity() +
+     labs(x = "FY20 TX_CURR MER TARGETS", y = "HFR Site Reporting Completeness",
+          subtitle = paste0("HFR", pd, " | TX_CURR"),
+          caption = "completeness capped at 100%; ordered by FY20 MER Targets
+           HFR Data [2020-07-08]") +
+     si_style() +
+     theme(strip.text = element_text(face = "bold"),
+           legend.title = element_text(family = "Source Sans Pro", color = "gray30"))
+
+
+
+
+
+
+
+# NEW STUFF ---------------------------------------------------------------
+
+
+   df_viz %>%
+     mutate(iso_label = case_when(mer_targets > 150000 ~ iso)) %>%
+     ggplot(aes(completeness, fct_reorder(partner_shortname, prtnr_comp, mean))) +
+     geom_vline(xintercept = 1) +
+     geom_jitter(aes(size = log(mer_targets)), alpha = .8) +
+     geom_text_repel(aes(completeness, fct_reorder(partner_shortname, prtnr_comp, mean), label = iso_label), size = 2, family = "Source Sans Pro", color = "gray30") +
+     scale_x_continuous(label = percent) +
+     si_style()
+
+
+   df_noreporting <- df_viz %>%
+     filter(completeness == 0) %>%
+     distinct(partner_shortname, iso) %>%
+     group_by(partner_shortname) %>%
+     summarise(non_reporoting_ous = paste(iso, collapse = ",")) %>%
+     ungroup()
+
+   df_viz %>%
+     left_join(df_noreporting, by = "partner_shortname") %>%
+     mutate(iso_label = case_when(mer_targets > 150000 ~ iso),
+            completeness = ifelse(completeness > 2, 2, completeness),
+            comp_bins = case_when(prtnr_comp >= .9 ~ "+90%",
+                                  prtnr_comp >= .5 ~ "50-89%",
+                                  TRUE ~ "<50%"),
+            comp_bins = factor(comp_bins, c("+90%", "50-89%", "<50%"))
+            ) %>%
+     ggplot(aes(completeness, fct_reorder(partner_shortname, prtnr_comp, mean), fill = completeness)) +
+     geom_vline(xintercept = 1) +
+     geom_point(aes(size = log(mer_targets)),
+                 alpha = .75, shape = 21, stroke = 1, color = "white") +
+     geom_text(aes(label = iso_label), size = 3, vjust = -.5, hjust = -.5,
+               family = "Source Sans Pro", color = "gray30", na.rm = TRUE) +
+     facet_grid(comp_bins ~ ., scales = "free_y", space = "free_y", switch = "y") +
+     scale_x_continuous(label = percent, expand = c(0.01, 0.01)) +
+     scale_fill_viridis_c(end = .9) +
+     labs(x = "HFR Site Reporting Completeness", y = NULL,
+          # title = "IMPROVED HFR TX_CURR REPORTING ESPECIALLY FOR LARGER PARTNERS",
+          subtitle = paste0("HFR ", pd, " | TX_CURR"),
+          caption = "completeness capped at 200%; ordered by overall completeness; sized by MER targets
+           HFR Data [2020-07-08]") +
+     si_style() +
+     theme(legend.position = "none",
+           strip.placement = "outside",
+           axis.text.y = element_text(size = 8),
+           strip.text = element_text(face = "bold", hjust = .5, color = "gray20"),
+           strip.background = element_rect(fill = "gray90", colour = "gray90"),
+           panel.spacing=unit(.5, "lines"))
+
+
+   #export
+   ggsave("out/CompletenessMechs09_scatter.png", dpi = 330,
+          height = 6,
+          width = 10)
+
+
+
 

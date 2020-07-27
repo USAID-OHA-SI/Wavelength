@@ -244,7 +244,7 @@
      scale_y_continuous(label = percent) +
      scale_fill_identity() +
      labs(x = "FY20 TX_CURR MER TARGETS", y = "HFR Site Reporting Completeness",
-          subtitle = paste0("HFR", pd, "| TX_CURR"),
+          subtitle = paste0("HFR", pd, " | TX_CURR"),
           caption = paste0("completeness capped at 100%
            HFR Data [", Sys.Date(),"]")) +
      si_style() +

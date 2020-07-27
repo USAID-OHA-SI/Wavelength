@@ -52,7 +52,7 @@ hfr_export <- function(df,
 
         #get period for naming
           if(var_exists(df, "hfr_pd")) {
-            pd <- median(df$fy) + median(df$hfr_pd)/100
+            pd <- paste(median(df$fy), stringr::str_pad(median(df$hfr_pd), 2, pad = "0"), sep = ".")
           } else if (!is.null(quarters_complete)) {
             pd <- paste0("FY",curr_fy()-2000, "Q", quarters_complete)
           } else {
@@ -118,7 +118,7 @@ hfr_export_mech <- function(df, mech, type, folderpath_output, quarters_complete
 
   #get period for naming
     if(var_exists(df, "hfr_pd")) {
-      pd <- median(df$fy) + median(df$hfr_pd)/100
+      pd <- paste(median(df$fy), stringr::str_pad(median(df$hfr_pd), 2, pad = "0"), sep = ".")
     } else if (!is.null(quarters_complete)) {
       pd <- paste0("FY",curr_fy()-2000, "Q", quarters_complete)
     } else {

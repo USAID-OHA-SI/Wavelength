@@ -12,7 +12,7 @@ library(googledrive)
 
 drive_auth()
 
-file <- drive_ls(as_id("1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"), "2020.09")
+file <- drive_ls(as_id("1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"), "2020.10")
 
 path <- "C:/Users/achafetz/Downloads/"
 
@@ -65,7 +65,7 @@ df_twbx %>%
 
 df_adj <- df_twbx %>%
   mutate(primepartner = str_remove(primepartner, "\r$"),
-         sex = ifelse(sex %in% c("nan", "Unspeficied"), "Unspecified", sex),
+         sex = ifelse(!sex %in% c("Male", "Female"), "Unspecified", sex),
          agecoarse = ifelse(!agecoarse %in% c("<15", "15+"), "Unknown", agecoarse),
          otherdisaggregate = ifelse(otherdisaggregate == "< 3 months", "<3 months", otherdisaggregate),
          otherdisaggregate = str_replace(otherdisaggregate, "Months", "months"),
@@ -75,6 +75,7 @@ df_adj <- df_twbx %>%
          otherdisaggregate = na_if(otherdisaggregate, "nan"),
          otherdisaggregate = na_if(otherdisaggregate, "\\N"),
          otherdisaggregate = na_if(otherdisaggregate, "Positivo"),
+         otherdisaggregate = na_if(otherdisaggregate, "Total"),
          psnuuid = NA_character_) %>%
   filter(date != "2109-11-25",
          fy != 2110)
@@ -90,9 +91,12 @@ distinct(df_adj, otherdisaggregate)
 distinct(df_adj, indicator,otherdisaggregate) %>% filter(!otherdisaggregate %in% c("\\N", "nan"))
 
 
-new_filename <- filename %>%
-  basename() %>%
-  str_replace(".(csv|zip)$", "_adj.csv") %>%
-  file.path("out", "joint", .)
+# new_filename <- filename %>%
+#   basename() %>%
+#   str_replace(".(csv|zip)$", "_adj.csv") %>%
+#   file.path("out", "joint", .)
+
+new_filename <- "HFR_Tableau_SQLview.csv"
+
 write_csv(df_adj, new_filename, na = "")
 

@@ -4,18 +4,18 @@
 \alias{validate_hfr_data}
 \title{Validate processed hfr data}
 \usage{
-validate_hfr_data(hfr_data, levels, orgs, ims, dates)
+validate_hfr_data(hfr_data, orgs, ims, dates, keep_values = FALSE)
 }
 \arguments{
 \item{hfr_data}{processed hfr data}
-
-\item{levels}{datim org levels}
 
 \item{orgs}{datim org hierarchy}
 
 \item{ims}{datim mechanisms}
 
 \item{dates}{hfr valid dates}
+
+\item{keep_values}{Keep values along the error flags}
 }
 \value{
 errors data frame
@@ -25,6 +25,7 @@ Validate processed hfr data
 }
 \examples{
 \dontrun{
-  validate_hfr_data(hfr_df, levels=org_levels, orgs=org_hierarchy, ims=mechanis, dates=hfr_dates)
+  validate_hfr_data(df_hfr_data, orgs=org_hierarchy, ims=df_mechanisms, dates=df_hfr_dates)
+  validate_hfr_data(df_hfr_data, orgs=org_hierarchy, ims=df_mechanisms, dates=df_hfr_dates, keep_values = TRUE)
 }
 }

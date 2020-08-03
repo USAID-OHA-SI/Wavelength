@@ -264,7 +264,7 @@ report_submissions_errors <- function(df_files, mechanisms, export = FALSE) {
   file_errors <- df_files %>%
     dplyr::filter(is.na(operatingunit) | mech_valid == 0 | is.na(mech_name))
 
-  file_errors %>% glimpse()
+  #file_errors %>% glimpse()
 
   # ISO Errors
   iso_errors <- file_errors %>%
@@ -442,7 +442,8 @@ validate_hfr_data <- function(hfr_data, levels, orgs, ims, dates){
     ) %>%
     select(source:valid_value) %>%
     distinct() %>%
-    mutate(errors = rowSums(.[3:11] == FALSE)) %>%
+    #mutate(errors = rowSums(.[3:11] == FALSE)) %>%
+    mutate(errors = rowSums(select(., valid_date:valid_value) == FALSE)) %>%
     filter(errors > 0)
 
   return(errors)

@@ -408,22 +408,25 @@ validate_orgunit <- function(df_orgs, ou, uid) {
 #' Validate processed hfr data
 #'
 #' @param hfr_data processed hfr data
-#' @param levels datim org levels
 #' @param orgs datim org hierarchy
 #' @param ims datim mechanisms
 #' @param dates hfr valid dates
+#' @param keep_values Keep values along the error flags
 #' @return errors data frame
 #' @export
 #' @examples
 #' \dontrun{
-#'   validate_hfr_data(hfr_df, levels=org_levels, orgs=org_hierarchy, ims=mechanis, dates=hfr_dates)
+#'   validate_hfr_data(df_hfr_data, orgs=org_hierarchy, ims=df_mechanisms, dates=df_hfr_dates)
+#'   validate_hfr_data(df_hfr_data, orgs=org_hierarchy, ims=df_mechanisms, dates=df_hfr_dates, keep_values = TRUE)
 #' }
 
-validate_hfr_data <- function(hfr_data, levels, orgs, ims, dates){
+validate_hfr_data <- function(hfr_data, orgs, ims, dates, keep_values = FALSE){
 
-  valid_age <- c("<15", "15+")
-  valid_sex <- c("Female", "Male")
+  # Valid age and sex values
+  valid_age <- c("<15", "15+", NA)
+  valid_sex <- c("Female", "Male", NA)
 
+  # Flag all errors
   errors <- hfr_data %>%
     group_by(source) %>%
     mutate(row_id = row_number()) %>%
@@ -439,10 +442,17 @@ validate_hfr_data <- function(hfr_data, levels, orgs, ims, dates){
       valid_age = ifelse(is.na(agecoarse) | agecoarse %in% valid_age, TRUE, FALSE),
       valid_sex = ifelse(is.na(sex) | sex %in% valid_sex, TRUE, FALSE),
       valid_value = ifelse(is.na(val) | val >= 0, TRUE, FALSE)
-    ) %>%
-    select(source:valid_value) %>%
-    distinct() %>%
-    #mutate(errors = rowSums(.[3:11] == FALSE)) %>%
+    )
+
+  # Exclude data
+  if (keep_values != TRUE) {
+    errors <- errors %>%
+      select(source:valid_value) %>%
+      distinct()
+  }
+
+  # Filter rows with errors
+  errors <- errors %>%
     mutate(errors = rowSums(select(., valid_date:valid_value) == FALSE)) %>%
     filter(errors > 0)
 

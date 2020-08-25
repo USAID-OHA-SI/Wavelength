@@ -96,7 +96,8 @@ distinct(df_adj, indicator,otherdisaggregate) %>% filter(!otherdisaggregate %in%
 #   str_replace(".(csv|zip)$", "_adj.csv") %>%
 #   file.path("out", "joint", .)
 
-new_filename <- "HFR_Tableau_SQLview.csv"
+new_filename <- "out/joint/HFR_Tableau_SQLview.csv"
 
 write_csv(df_adj, new_filename, na = "")
 
+# drive_put(new_filename, as_id("1onKyOQv3V6H4UPaDCQhH1Y9i8fnOU3HS"))

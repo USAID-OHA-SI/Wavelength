@@ -40,6 +40,7 @@ identify_ouuids <- function(username, password, baseurl = "https://final.datim.o
 
 
   uids <- ous %>%
+    dplyr::filter(stringr::str_detect(displayName, "Region", negate = TRUE)) %>%
     dplyr::bind_rows(ctrys) %>%
     dplyr::arrange(displayName)
 

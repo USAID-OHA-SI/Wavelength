@@ -82,20 +82,25 @@ hierarchy_clean <- function(df){
                         coordinates = geometry$coordinates) %>%
           dplyr::select(-geometry)
 
-      #for point data, unness coordinate from list
+      #for point data, unnest coordinate from list
         sites <- df %>%
-          dplyr::filter(geom_type == "Point" | is.na(geom_type)) %>%
+          dplyr::mutate(coordinates = dplyr::na_if(coordinates, "NULL")) %>%
+          dplyr::filter((geom_type == "Point" | is.na(geom_type)) & !is.na(coordinates))  %>%
           dplyr::select(-geom_type) %>%
-          tidyr::unnest_wider(coordinates, names_sep = "_") %>%
-          dplyr::rename(longitude = "coordinates_1", latitude = "coordinates_2") %>%
-          dplyr::mutate_at(dplyr::vars("longitude", "latitude"), as.double) %>%
-          dplyr::select(id, latitude, longitude)
+          tidyr::unnest_wider(coordinates, names_sep = "_")
 
-      #bind coordinates onto hierarchy table
+        if(nrow(sites) > 0){
+          sites <- sites %>%
+            dplyr::rename(longitude = "coordinates_1", latitude = "coordinates_2") %>%
+            dplyr::mutate_at(dplyr::vars("longitude", "latitude"), as.double) %>%
+            dplyr::select(id, latitude, longitude)
+          #bind coordinates onto hierarchy table
+          df <- dplyr::left_join(df, sites, by = "id")
+        }
+
+      #remove unnecessary columns
         df <- df %>%
-          dplyr::select(-geom_type, -coordinates) %>%
-          dplyr::left_join(sites, by = "id")
-
+          dplyr::select(-geom_type, -coordinates)
     }
 
   return(df)

@@ -1,3 +1,5 @@
+# Wavelength 2.3.6
+
 # Wavelength 2.3.3
 * Resolve bug that converted NAs to zeros when wide formats were used
 * Restricts output value to integer (rounding any decimal values to the nearest integer)

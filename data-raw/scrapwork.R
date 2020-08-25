@@ -6,7 +6,7 @@
     myuser <- ""
 
   #quarters with results in DATIM
-    qtr <- 2
+    qtr <- 3
 
   #folderpath output
     savefolder <- "out/DATIM"
@@ -18,10 +18,13 @@
                                     password = mypwd(myuser),
                                     quarters_complete = qtr,
                                     folderpath_output = savefolder))
-  #pull hierarchy
-    ouuids <- identify_ouuids(myuser, mypwd(myuser)) %>% dplyr::pull(id)
+   #pull hierarchy
+    ouuids <- identify_ouuids(myuser, mypwd(myuser)) %>%
+      dplyr::filter(is.na(regional)) %>%
+      dplyr::pull(id)
     df_orgs <- purrr::map_dfr(.x = ouuids,
                               .f = ~ pull_hierarchy(.x, myuser, mypwd(myuser)))
+
     hfr_export(df_orgs, savefolder, type = "orghierarchy")
 
   #pull mechanism info

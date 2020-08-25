@@ -35,6 +35,7 @@ identify_ouuids <- function(username, password, baseurl = "https://final.datim.o
                             httr::content("text") %>%
                             jsonlite::fromJSON(flatten=TRUE) %>%
                             purrr::pluck("organisationUnits") %>%
+                            dplyr::filter(stringr::str_detect(displayName, "Region", negate = TRUE)) %>%
                             dplyr::mutate(regional = TRUE))
 
 

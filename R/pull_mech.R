@@ -26,7 +26,7 @@ pull_mech <- function(usaid_only = TRUE, ou_sel = NULL, folderpath_output = NULL
 
   #fitler for OU
     if(!is.null(ou_sel))
-      df <- dplyr::filter(df, ou_sel %in% c(ou_sel))
+      df <- dplyr::filter(df, ou %in% c(ou_sel))
 
   #filter for USAID mechs if specified
     if(usaid_only == TRUE)

@@ -4,6 +4,11 @@
   myuser <- ""
   iso_map <- identify_levels(username = myuser, password = mypwd(myuser))
 
+#fix Ghana
+  iso_map <- iso_map %>%
+    dplyr::mutate(iso4 = ifelse(iso3 == "GHA", "GHA", iso4),
+                  iso3 = ifelse(iso3 == "GHA", "XWA", iso3))
+
 #list of distinct OUs + ISO codes
   iso_distinct_ous <- dplyr::distinct(iso_map, operatingunit = name3, iso = iso3)
 

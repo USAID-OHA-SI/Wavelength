@@ -12,9 +12,9 @@ library(googledrive)
 
 drive_auth()
 
-file <- drive_ls(as_id("1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"), "2020.10")
+file <- drive_ls(as_id("1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"), "HFR_2020.11_Tableau_20200916")
 
-path <- "C:/Users/achafetz/Downloads/"
+path <- "C:/Users/achafetz/Downloads"
 
 filename <- drive_download(as_id(file$id), file.path(path, file$name))
 

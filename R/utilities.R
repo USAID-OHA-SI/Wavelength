@@ -3,7 +3,7 @@
 #' @export
 #' @return Current Fiscal Year
 #'
-  curr_fy <- function() { 2020L }
+  curr_fy <- function() { 2021L }
 
 
 

@@ -39,7 +39,7 @@
 # MUNGE -------------------------------------------------------------------
 
   #adjust period
-    df_glob <- mutate(df_glob, hfr_pd = fy + (hfr_pd/100))
+    # df_glob <- mutate(df_glob, hfr_pd = fy + (hfr_pd/100))
 
   #add iso codes before adjusting OU name
     df_glob <- left_join(df_glob, iso_map)
@@ -58,7 +58,7 @@
 
   #aggregate sites total (agg age/sex or months) to preserve distinct sites
     df_glob_site_agg <- df_glob %>%
-      group_by(operatingunit, iso, orgunituid, mech_code, hfr_pd, date, indicator) %>%
+      group_by(operatingunit, iso, orgunituid, hfr_pd, date, indicator) %>%
       summarise_at(vars(mer_targets, val), sum, na.rm = TRUE) %>%
       ungroup()
 
@@ -67,14 +67,14 @@
       filter(!indicator %in% c("TX_CURR", "TX_MMD")) %>%
       mutate(target_sitecnt = ifelse(mer_targets > 0, 1, 0),
              hfr_sitecnt = ifelse(val > 0, 1, 0)) %>%
-      group_by(operatingunit, iso, mech_code, indicator, hfr_pd) %>%
+      group_by(operatingunit, iso, indicator, hfr_pd) %>%
       summarise_at(vars(mer_targets, val, target_sitecnt, hfr_sitecnt), sum, na.rm = TRUE) %>%
       ungroup()
 
   #agg max site value for cumulative indicators
     df_glob_site_txcurr_agg <- df_glob_site_agg %>%
       filter(indicator %in% c("TX_CURR", "TX_MMD")) %>%
-      group_by(operatingunit, iso, orgunituid, mech_code, hfr_pd, indicator) %>%
+      group_by(operatingunit, iso, orgunituid, hfr_pd, indicator) %>%
       summarise_at(vars(mer_targets, val), max, na.rm = TRUE) %>%
       ungroup()
 
@@ -89,7 +89,7 @@
       bind_rows(df_glob_site_mmdtarg) %>%
       mutate(target_sitecnt = ifelse(mer_targets > 0, 1, 0),
              hfr_sitecnt = ifelse(val > 0, 1, 0)) %>%
-      group_by(operatingunit, iso, mech_code, indicator, hfr_pd) %>%
+      group_by(operatingunit, iso, indicator, hfr_pd) %>%
       summarise_at(vars(mer_targets, val, target_sitecnt, hfr_sitecnt), sum, na.rm = TRUE) %>%
       ungroup()
 
@@ -106,40 +106,40 @@
              completeness = ifelse(is.infinite(completeness), NA, completeness))
 
   #heatmap by country x indicator
-    # df_glob_agg %>%
-    #   dplyr::mutate(tx_curr_tgts = case_when(indicator == "TX_CURR" ~ mer_targets),
-    #                 operatingunit = fct_reorder(operatingunit, tx_curr_tgts, sum, na.rm = TRUE),
-    #                 hfr_pd = str_sub(hfr_pd, -2),
-    #                 indicator = factor(indicator, c("TX_CURR", "TX_MMD",
-    #                                                 "HTS_TST", "HTS_TST_POS",
-    #                                                 "TX_NEW", "VMMC_CIRC", "PrEP_NEW"
-    #                                                 )),
-    #                 completeness = ifelse(is.infinite(completeness), NA, completeness),
-    #                 comp_bin = case_when(is.na(completeness) ~ NA_character_,
-    #                                      completeness == 0 ~ "1",
-    #                                      completeness <= .25 ~ "2",
-    #                                      completeness <= .5 ~ "3",
-    #                                      completeness <= .75 ~ "4",
-    #                                      TRUE ~ "5"
-    #                                      )) %>%
-    #   ggplot(aes(hfr_pd, operatingunit, fill = comp_bin)) +
-    #   geom_tile(color = "white") +
-    #   geom_text(aes(label = percent(completeness,1), color = completeness > .75),
-    #             family = "Source Sans Pro", size = 2.5) +
-    #   facet_grid(~ indicator) +
-    #   scale_fill_brewer(palette = "OrRd", direction = -1) +
-    #   scale_color_manual(values = c("gray10", "gray50")) +
-    #   labs(x = NULL, y = NULL,
-    #        title = "LARGE REPORTING GAPS STILL EXISTS FOR KEY INDICATORS LIKE TX_CURR AND MMD",
-    #        subtitle = "mechanism x site completeness of reporting by period",
-    #        caption = "data as of HFR 2020.07 [2020-05-18]") +
-    #   si_style_nolines() +
-    #   #coord_fixed(ratio = 1) +
-    #   theme(legend.position = "none",
-    #         #panel.spacing = unit(.5, "lines"),
-    #         strip.text = element_text(face = "bold"))
-    #
-    # ggsave("out/Completeness050607.png", dpi = 330, height = 5.625, width = 10)
+    df_glob_agg %>%
+      dplyr::mutate(tx_curr_tgts = case_when(indicator == "TX_CURR" ~ mer_targets),
+                    operatingunit = fct_reorder(operatingunit, tx_curr_tgts, sum, na.rm = TRUE),
+                    # hfr_pd = str_sub(hfr_pd, -2),
+                    indicator = factor(indicator, c("TX_CURR", "TX_MMD",
+                                                    "HTS_TST", "HTS_TST_POS",
+                                                    "TX_NEW", "VMMC_CIRC", "PrEP_NEW"
+                                                    )),
+                    completeness = ifelse(is.infinite(completeness), NA, completeness),
+                    comp_bin = case_when(is.na(completeness) ~ NA_character_,
+                                         completeness == 0 ~ "1",
+                                         completeness <= .25 ~ "2",
+                                         completeness <= .5 ~ "3",
+                                         completeness <= .75 ~ "4",
+                                         TRUE ~ "5"
+                                         )) %>%
+      ggplot(aes(hfr_pd, operatingunit, fill = comp_bin)) +
+      geom_tile(color = "white") +
+      geom_text(aes(label = percent(completeness,1), color = completeness > .75),
+                family = "Source Sans Pro", size = 2.5) +
+      facet_grid(~ indicator) +
+      scale_fill_brewer(palette = "OrRd", direction = -1) +
+      scale_color_manual(values = c("gray10", "gray50")) +
+      labs(x = NULL, y = NULL,
+           title = "LARGE REPORTING GAPS STILL EXISTS FOR KEY INDICATORS LIKE TX_CURR AND MMD",
+           subtitle = "mechanism x site completeness of reporting by period",
+           caption = "data as of HFR 2020.07 [2020-05-18]") +
+      si_style_nolines() +
+      #coord_fixed(ratio = 1) +
+      theme(legend.position = "none",
+            #panel.spacing = unit(.5, "lines"),
+            strip.text = element_text(face = "bold"))
+
+    ggsave("out/Completeness091011.png", dpi = 330, height = 5.625, width = 10)
 
 
    df_viz <- df_glob_agg %>%

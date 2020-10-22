@@ -36,6 +36,7 @@ hfr_fix_noncompliance <- function(df){
                   #South Sudan
                   val = dplyr::na_if(val, "N/A"),
                   val = dplyr::na_if(val, "M/A"),
+                  val = dplyr::na_if(val, "na"),
                   #Thailand
                   indicator = dplyr::case_when(indicator == "HTS_TST ALL" ~ "HTS_TST",
                                                indicator == "HTS_TST.POS" ~ "HTS_TST",

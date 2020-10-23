@@ -12,10 +12,9 @@ library(googledrive)
 
 drive_auth()
 
-# gfldr <- "1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"
-gfldr <- "1zIVfA19f8xXC0318TBzcGsYo3VDgSiAY"
+gfldr <- "1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"
 
-file <- drive_ls(as_id(gfldr), "Viewforperiods")
+(file <- drive_ls(as_id(gfldr), "2020\\.13"))
 
 path <- "C:/Users/achafetz/Downloads"
 

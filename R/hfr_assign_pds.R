@@ -6,16 +6,27 @@
 
 hfr_identify_pds <- function(fy = NULL){
 
-  if(is.null(fy))
-    stop("Supply fiscal year, eg 2019")
+  if(is.null(fy)){
+    fy <- curr_fy
+    print(paste("No fy provided; using", curr_fy))
+  }
 
   fy_start <- paste0(fy-1, "-10-01") %>%
-    as.Date() %>%
-    lubridate::floor_date(unit = "week", week_start = 1)
+    as.Date()
 
-  date <- seq(fy_start, by = 7, length.out = 52)
+  if(fy == 2020){
+    fy_start <- lubridate::floor_date(fy_start, unit = "week", week_start = 1)
 
-  hfr_pd <- rep(1:13, each = 4)
+    date <- seq(fy_start, by = 7, length.out = 52)
+
+    hfr_pd <- rep(1:13, each = 4)
+
+  } else {
+    date <- seq(fy_start, by = "month", length.out = 12)
+
+    hfr_pd <- seq(1:12)
+
+  }
 
   df_dates <- dplyr::bind_cols(date = date, hfr_pd = hfr_pd) %>%
     dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%

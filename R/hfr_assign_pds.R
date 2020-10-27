@@ -47,23 +47,36 @@ hfr_assign_pds <- function(df){
     lubridate::quarter(with_year = TRUE, fiscal_start = 10) %>%
     stringr::str_sub(1, 4) %>%
     as.numeric()
-  fy_end   <- (max(df$date, na.rm = TRUE) + 7) %>%
-    lubridate::quarter(with_year = TRUE, fiscal_start = 10) %>%
-    stringr::str_sub(1, 4) %>%
-    as.numeric()
 
-  pds <- purrr::map_dfr(c(fy_start:fy_end), hfr_identify_pds) %>%
-    dplyr::rename_at(dplyr::vars(fy, hfr_pd), ~ paste0(., "_drop"))
+  if(fy_start == 2020){
 
-  df <- df %>%
-    dplyr::select(-dplyr::matches("fy|hfr_pd")) %>%
-    tibble::add_column(fy = NA, hfr_pd = NA, .after = "date")
+    fy_end   <- (max(df$date, na.rm = TRUE) + 7) %>%
+      lubridate::quarter(with_year = TRUE, fiscal_start = 10) %>%
+      stringr::str_sub(1, 4) %>%
+      as.numeric()
 
-  df <- df %>%
-    dplyr::left_join(pds, by = "date") %>%
-    dplyr::mutate(fy = fy_drop,
-                  hfr_pd = hfr_pd_drop) %>%
-    dplyr::select(-dplyr::ends_with("drop"))
+    pds <- purrr::map_dfr(c(fy_start:fy_end), hfr_identify_pds) %>%
+      dplyr::rename_at(dplyr::vars(fy, hfr_pd), ~ paste0(., "_drop"))
+
+    df <- df %>%
+      dplyr::select(-dplyr::matches("fy|hfr_pd")) %>%
+      tibble::add_column(fy = NA, hfr_pd = NA, .after = "date")
+
+    df <- df %>%
+      dplyr::left_join(pds, by = "date") %>%
+      dplyr::mutate(fy = fy_drop,
+                    hfr_pd = hfr_pd_drop) %>%
+      dplyr::select(-dplyr::ends_with("drop"))
+
+  } else {
+
+    df <- df %>%
+      dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
+                      stringr::str_sub(., 1, 4) %>% as.numeric,
+                    fy = ifelse(hfr_pd == 1 & lubridate::month(date) == 9, fy + 1, fy)) %>%
+      dplyr::select(date, fy, hfr_pd, dplyr::everything())
+  }
+
 
   return(df)
 }

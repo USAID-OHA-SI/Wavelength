@@ -1,10 +1,10 @@
 #' Create a data frame of HFR weeks and periods
 #'
 #' @param fy fiscal year
-#'
+#' @param week are periods weekly? default = FALSE
 #' @export
 
-hfr_identify_pds <- function(fy = NULL){
+hfr_identify_pds <- function(fy = NULL, week = FALSE){
 
   if(is.null(fy)){
     fy <- curr_fy
@@ -21,11 +21,20 @@ hfr_identify_pds <- function(fy = NULL){
 
     hfr_pd <- rep(1:13, each = 4)
 
+  } else if (week == TRUE) {
+    fy_start <- lubridate::ceiling_date(fy_start, unit = "week", week_start = 1)
+    date <- seq(fy_start, by = 7, length.out = 52)
+
+    hfr_pd <- date %>%
+      tibble::tibble() %>%
+      dplyr::mutate(date_adj = lubridate::floor_date(date, unit = "month") - months(9),
+                    hfr_pd = lubridate::month(date_adj)) %>%
+      dplyr::pull(hfr_pd)
+
   } else {
     date <- seq(fy_start, by = "month", length.out = 12)
 
     hfr_pd <- seq(1:12)
-
   }
 
   df_dates <- dplyr::bind_cols(date = date, hfr_pd = hfr_pd) %>%

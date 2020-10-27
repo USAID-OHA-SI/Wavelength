@@ -12,7 +12,9 @@ library(googledrive)
 
 drive_auth()
 
-file <- drive_ls(as_id("1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"), "HFR_2020.11_Tableau_20200916")
+gfldr <- "1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"
+
+(file <- drive_ls(as_id(gfldr), "2020\\.13"))
 
 path <- "C:/Users/achafetz/Downloads"
 
@@ -76,7 +78,8 @@ df_adj <- df_twbx %>%
          otherdisaggregate = na_if(otherdisaggregate, "\\N"),
          otherdisaggregate = na_if(otherdisaggregate, "Positivo"),
          otherdisaggregate = na_if(otherdisaggregate, "Total"),
-         psnuuid = NA_character_) %>%
+         # psnuuid = NA_character_
+         ) %>%
   filter(date != "2109-11-25",
          fy != 2110)
 

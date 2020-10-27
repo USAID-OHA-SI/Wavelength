@@ -1,6 +1,7 @@
 # Wavelength 2.3.6
 * Resolve bug in Q3 where hierarchy in DATIM was adjusted
 * Update `iso_map` due to new hierarchy
+* add "na" to `fix_noncompliance()`
 
 # Wavelength 2.3.3
 * Resolve bug that converted NAs to zeros when wide formats were used

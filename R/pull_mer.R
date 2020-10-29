@@ -183,7 +183,7 @@ get_datim_targets <- function(url,username,password) {
 
 gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = NULL, baseurl = "https://final.datim.org/"){
 
-  fy_pd <- paste0(curr_fy()-1, "Oct")
+  fy_pd <- paste0(curr_fy-1, "Oct")
 
   core_url <-
     paste0(baseurl,"api/29/analytics?",

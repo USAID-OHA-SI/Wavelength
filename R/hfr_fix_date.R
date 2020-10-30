@@ -58,7 +58,7 @@ hfr_identify_freq <- function(df){
 
     #identify period type for mapping back on df
     df_pd_type <- df_week_tally %>%
-      dplyr::mutate(hfr_pd_freq = ifelse(dates_reported == 1, "month", "week")) %>%
+      dplyr::mutate(hfr_freq = ifelse(dates_reported == 1, "month", "week")) %>%
       dplyr::select(-dates_reported)
 
     #merge onto df
@@ -69,7 +69,7 @@ hfr_identify_freq <- function(df){
   } else {
     #for FY20, assign weekly reporting frequency
     df <- df %>%
-      dplyr::mutate(hfr_pd_freq == "week") %>%
+      dplyr::mutate(hfr_freq == "week") %>%
       dplyr::relocate(hfr_pd_freq, .after = date)
   }
 

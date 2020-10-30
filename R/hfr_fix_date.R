@@ -63,14 +63,14 @@ hfr_identify_freq <- function(df){
 
     #merge onto df
     df <- df %>%
-      dplyr::left_join(df, df_pd_type, by = c("orgunituid", "mech_code", "indicator")) %>%
-      dplyr::relocate(hfr_pd_freq, .after = date)
+      dplyr::left_join(df_pd_type, by = c("orgunituid", "mech_code", "indicator")) %>%
+      dplyr::relocate(hfr_freq, .after = date)
 
   } else {
     #for FY20, assign weekly reporting frequency
     df <- df %>%
       dplyr::mutate(hfr_freq == "week") %>%
-      dplyr::relocate(hfr_pd_freq, .after = date)
+      dplyr::relocate(hfr_freq, .after = date)
   }
 
     return(df)

@@ -12,8 +12,11 @@
 
 tidy_sitelist <- function(filepath, folderpath_output = NULL){
 
+  # print(filepath)
+
   #read in Site template
-    df <- readxl::read_excel(filepath, sheet = "Site List")
+    df <- readxl::read_excel(filepath, sheet = "Site List",
+                             col_types = c(.default = "text"))
 
   #remove ending mechanism rows
     df_keep <- df %>%
@@ -29,7 +32,7 @@ tidy_sitelist <- function(filepath, folderpath_output = NULL){
 
   #breakout mech info
     df_keep <- df_keep %>%
-      tidyr::separate(mech_partner, c("mech_code", "mech_name", "primepartner"), sep = "(: | \\[)")
+      tidyr::separate(mech_partner, c("mech_code", "mech_name", "primepartner"), sep = "([[:digit:]]: | \\[)")
 
   #create HTS_TST_POS and TX_MMD from HTS_TST and TX_CURR
     df_addtl <- df_keep %>%

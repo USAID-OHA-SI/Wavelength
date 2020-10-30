@@ -30,12 +30,53 @@ hfr_fix_date <- function(df, round_hfrdate = FALSE){
   #bind all types together
     df_date_fixed <- dplyr::bind_rows(df_date_excel, df_date_iso, df_date_mdy, df_date_other)
 
+  #identify reporting frequency
+    df_date_fixed <- hfr_identify_freq(df_date_fixed)
+
   #round date (fixes non-compliance)
    if(round_hfrdate == TRUE)
      df_date_fixed <- hfr_round_date(df_date_fixed)
 
   return(df_date_fixed)
 }
+
+
+#' Identify reporting frequency
+#'
+#' @param df HFR data frame from `hfr_fix_date()`
+#'
+#' @export
+
+hfr_identify_freq <- function(df){
+
+  if(curr_fy > 2020){
+    #tally weeks of reporting by orgunituid x mech_code x indicator)
+    df_week_tally <- df %>%
+      dplyr::filter(!is.na(val)) %>%
+      dplyr::distinct(date, orgunituid, mech_code, indicator) %>%
+      dplyr::count(orgunituid, mech_code, indicator, name = "dates_reported")
+
+    #identify period type for mapping back on df
+    df_pd_type <- df_week_tally %>%
+      dplyr::mutate(hfr_freq = ifelse(dates_reported == 1, "month", "week")) %>%
+      dplyr::select(-dates_reported)
+
+    #merge onto df
+    df <- df %>%
+      dplyr::left_join(df_pd_type, by = c("orgunituid", "mech_code", "indicator")) %>%
+      dplyr::relocate(hfr_freq, .after = date)
+
+  } else {
+    #for FY20, assign weekly reporting frequency
+    df <- df %>%
+      dplyr::mutate(hfr_freq == "week") %>%
+      dplyr::relocate(hfr_freq, .after = date)
+  }
+
+    return(df)
+
+}
+
 
 #' Round to nearest HFR date
 #'
@@ -44,15 +85,27 @@ hfr_fix_date <- function(df, round_hfrdate = FALSE){
 #' @export
 
 hfr_round_date <- function(df){
-  if(var_exists(df, "date")){
-    df <- df %>%
-      dplyr::mutate(date = dplyr::case_when(lubridate::wday(date) == 1 ~
-                                              lubridate::ceiling_date(date, unit = "week",
-                                                                      week_start = 1),
-                                            lubridate::wday(date)  > 1 ~
-                                              lubridate::floor_date(date, unit = "week",
-                                                                    week_start = 1)))
-  }
+
+    #round weekly data to Monday (down for Tues-Sat, up for Sun)
+      df_wk <- df %>%
+        dplyr::filter(hfr_freq == "week") %>%
+        dplyr::mutate(date = dplyr::case_when(lubridate::wday(date) == 1 ~
+                                                lubridate::ceiling_date(date, unit = "week",
+                                                                        week_start = 1),
+                                              lubridate::wday(date)  > 1 ~
+                                                lubridate::floor_date(date, unit = "week",
+                                                                      week_start = 1)))
+    #round monthly/monthly agg (down to 1st of month)
+      df_mo <- df %>%
+        dplyr::filter(hfr_freq %in% c("month", "month agg")) %>%
+        dplyr::mutate(date = lubridate::floor_date(date, unit = "month"))
+
+    #no reporting across pd (will get filtered out later)
+      df_na <- df %>%
+        dplyr::filter(is.na(hfr_freq))
+
+    #bind full set back together
+      df <- dplyr::bind_rows(df_wk, df_mo, df_na)
 
   return(df)
 }

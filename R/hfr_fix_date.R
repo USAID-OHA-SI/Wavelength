@@ -30,12 +30,53 @@ hfr_fix_date <- function(df, round_hfrdate = FALSE){
   #bind all types together
     df_date_fixed <- dplyr::bind_rows(df_date_excel, df_date_iso, df_date_mdy, df_date_other)
 
+  #identify reporting frequency
+    df_date_fixed <- hfr_identify_freq(df_date_fixed)
+
   #round date (fixes non-compliance)
    if(round_hfrdate == TRUE)
      df_date_fixed <- hfr_round_date(df_date_fixed)
 
   return(df_date_fixed)
 }
+
+
+#' Identify reporting frequency
+#'
+#' @param df HFR data frame from `hfr_fix_date()`
+#'
+#' @export
+
+hfr_identify_freq <- function(df){
+
+  if(curr_fy > 2020){
+    #tally weeks of reporting by orgunituid x mech_code x indicator)
+    df_week_tally <- df %>%
+      dplyr::filter(!is.na(val)) %>%
+      dplyr::distinct(date, orgunituid, mech_code, indicator) %>%
+      dplyr::count(orgunituid, mech_code, indicator, name = "dates_reported")
+
+    #identify period type for mapping back on df
+    df_pd_type <- df_week_tally %>%
+      dplyr::mutate(hfr_pd_freq = ifelse(dates_reported == 1, "month", "week")) %>%
+      dplyr::select(-dates_reported)
+
+    #merge onto df
+    df <- df %>%
+      dplyr::left_join(df, df_pd_type, by = c("orgunituid", "mech_code", "indicator")) %>%
+      dplyr::relocate(hfr_pd_freq, .after = date)
+
+  } else {
+    #for FY20, assign weekly reporting frequency
+    df <- df %>%
+      dplyr::mutate(hfr_pd_freq == "week") %>%
+      dplyr::relocate(hfr_pd_freq, .after = date)
+  }
+
+    return(df)
+
+}
+
 
 #' Round to nearest HFR date
 #'

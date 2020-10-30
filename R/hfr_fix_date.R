@@ -105,7 +105,7 @@ hfr_round_date <- function(df){
         dplyr::filter(is.na(hfr_freq))
 
     #bind full set back together
-      df <- dplyr::bind_cols(df_wk, df_mo, df_na)
+      df <- dplyr::bind_rows(df_wk, df_mo, df_na)
 
   return(df)
 }

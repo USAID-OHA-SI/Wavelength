@@ -91,10 +91,11 @@ hfr_assign_pds <- function(df){
   } else {
 
     df <- df %>%
-      dplyr::mutate(fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
+      dplyr::mutate(hfr_pd = lubridate::month((date - months(9))),
+                    fy = lubridate::quarter(date, with_year = TRUE, fiscal_start = 10) %>%
                       stringr::str_sub(., 1, 4) %>% as.numeric,
                     fy = ifelse(hfr_pd == 1 & lubridate::month(date) == 9, fy + 1, fy)) %>%
-      dplyr::select(date, fy, hfr_pd, dplyr::everything())
+      dplyr::select(date, fy, hfr_pd, hfr_freq, dplyr::everything())
   }
 
 

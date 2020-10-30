@@ -9,6 +9,9 @@ hfr_aggr <-function(df){
   #convert to values numeric and then convert to integers
   df <- dplyr::mutate(df, val = val %>% as.double %>% round %>% as.integer)
 
+  #remove lines with NA values
+  df <- dplyr::filter(df, !is.na(val))
+
   #create month aggregate for weekly data
   df <- hfr_group_wkly(df)
 

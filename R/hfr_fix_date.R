@@ -85,15 +85,27 @@ hfr_identify_freq <- function(df){
 #' @export
 
 hfr_round_date <- function(df){
-  if(var_exists(df, "date")){
-    df <- df %>%
-      dplyr::mutate(date = dplyr::case_when(lubridate::wday(date) == 1 ~
-                                              lubridate::ceiling_date(date, unit = "week",
-                                                                      week_start = 1),
-                                            lubridate::wday(date)  > 1 ~
-                                              lubridate::floor_date(date, unit = "week",
-                                                                    week_start = 1)))
-  }
+
+    #round weekly data to Monday (down for Tues-Sat, up for Sun)
+      df_wk <- df %>%
+        dplyr::filter(hfr_freq == "week") %>%
+        dplyr::mutate(date = dplyr::case_when(lubridate::wday(date) == 1 ~
+                                                lubridate::ceiling_date(date, unit = "week",
+                                                                        week_start = 1),
+                                              lubridate::wday(date)  > 1 ~
+                                                lubridate::floor_date(date, unit = "week",
+                                                                      week_start = 1)))
+    #round monthly/monthly agg (down to 1st of month)
+      df_mo <- df %>%
+        dplyr::filter(hfr_freq %in% c("month", "month agg")) %>%
+        dplyr::mutate(date = lubridate::floor_date(date, unit = "month"))
+
+    #no reporting across pd (will get filtered out later)
+      df_na <- df %>%
+        dplyr::filter(is.na(hfr_freq))
+
+    #bind full set back together
+      df <- dplyr::bind_cols(df_wk, df_mo, df_na)
 
   return(df)
 }

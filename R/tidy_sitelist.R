@@ -22,6 +22,9 @@ tidy_sitelist <- function(filepath, folderpath_output = NULL){
     df_keep <- df %>%
       dplyr::filter(stringr::str_detect(mech_partner, "!", negate = TRUE))
 
+  #remove any sites that are missing UIDs
+    df_keep <- dplyr::filter(df_keep, !is.na(orgunit))
+
   #reshape, and only keep reporting indicators
     df_keep <- df_keep %>%
       tidyr::pivot_longer(HTS_TST:VMMC_CIRC,

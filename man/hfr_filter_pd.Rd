@@ -4,14 +4,14 @@
 \alias{hfr_filter_pd}
 \title{Filter to Select HFR Period}
 \usage{
-hfr_filter_pd(df, hfr_pd_sel = NULL, hfr_fy_sel = 2020)
+hfr_filter_pd(df, hfr_pd_sel = NULL, hfr_fy_sel = NULL)
 }
 \arguments{
 \item{df}{HFR data frame imported via \code{hfr_import()}}
 
 \item{hfr_pd_sel}{HFR reporting period, 1-13, no filter when NULL, default = NULL}
 
-\item{hfr_fy_sel}{fiscal year, default = 2020}
+\item{hfr_fy_sel}{fiscal year, default = NULL}
 }
 \description{
 Filter to Select HFR Period

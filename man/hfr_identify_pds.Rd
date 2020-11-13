@@ -4,10 +4,12 @@
 \alias{hfr_identify_pds}
 \title{Create a data frame of HFR weeks and periods}
 \usage{
-hfr_identify_pds(fy = NULL)
+hfr_identify_pds(fy = NULL, week = FALSE)
 }
 \arguments{
 \item{fy}{fiscal year}
+
+\item{week}{are periods weekly? default = FALSE}
 }
 \description{
 Create a data frame of HFR weeks and periods

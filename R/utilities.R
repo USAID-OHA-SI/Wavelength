@@ -3,7 +3,7 @@
 #' @export
 #' @return Current Fiscal Year
 #'
-  curr_fy <- function() { 2020L }
+  curr_fy <- 2021
 
 
 
@@ -117,7 +117,7 @@ hfr_extract_meta <- function(filepath, meta_type = "type"){
     meta <- metatable %>%
       dplyr::mutate(mtype =
                       stringr::str_remove_all(mtype,
-                                              "Template|HFR FY and|, eg 2020.1|perating|nit| ")
+                                              "Template|HFR FY and|, eg 2020.1|perating|nit|\\/Country| ")
                     %>% tolower) %>%
       dplyr::filter(mtype == meta_type) %>%
       dplyr::pull()

@@ -24,6 +24,8 @@ validate_import <- function(df){
       "\nAre there any extra columns on import?", extra)
 
   check_distinct_ous(df)
+
+  check_frequency(df)
 }
 
 
@@ -46,6 +48,58 @@ check_distinct_ous <- function(df){
 
   #print validation
   cat("\nIs there just one OU (for non regional OUs)?", ou_out)
+}
 
 
+#' Check OUs listed in operatingunit
+#'
+#' @param df df create during `hfr_import()`
+#'
+#' @export
+
+check_frequency <- function(df){
+
+  # Identify frequency(ies)
+  freqs <- df %>%
+    dplyr::count(
+      orgunituid,
+      mech_code,
+      indicator,
+      sex,
+      agecoarse,
+      otherdisaggregate) %>%
+    dplyr::distinct(n) %>%
+    dplyr::pull(n)
+
+  # Flag multiple frequencies
+  multi_freqs <- length(freqs) > 1
+
+  # Labels
+  pd_freq <- dplyr::if_else(
+    multi_freqs == FALSE & freqs[1] == 1,
+    "Monthly data",
+    dplyr::if_else(multi_freqs == FALSE & freqs[1] == 4,
+                   "Weekly data",
+                   dplyr::if_else(multi_freqs == FALSE & freqs[1] == 5,
+                                  "Monthly along with weekly data",
+                                  "Mixed frequencies")))
+
+  # Sub-labels
+  pd_freqs <- dplyr::if_else(
+    multi_freqs == TRUE & dplyr::setequal(c(1, 4), freqs),
+    "Monthly and Weekly data",
+    if_else(multi_freqs == TRUE & dplyr::setequal(c(1, 5), freqs),
+            "Monthly and/or Weekly",
+            if_else(multi_freqs == TRUE & dplyr::setequal(c(1, 4, 5), freqs),
+                    "Weekly, Monthly, and Monthly along with weekly",
+                    "Unknown frequency ...")))
+
+  flag_freqs <- dplyr::if_else(
+    multi_freqs == FALSE,
+    crayon::blue(pd_freq),
+    crayon::blue(paste0(pd_freq, ": ", pd_freqs))
+  )
+
+  #print validation
+  cat("\nWhat are the frequencies being submitted?", flag_freqs)
 }

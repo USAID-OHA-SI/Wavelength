@@ -4,10 +4,14 @@
 \alias{load_lookups}
 \title{Load DATIM Look up tables}
 \usage{
-load_lookups(datim_path = "../datim")
+load_lookups(datim_path = "./Data/", local = TRUE, user = NULL)
 }
 \arguments{
-\item{datim_path}{location of datim look up tables files}
+\item{datim_path}{HFR Data folder ID}
+
+\item{local}{Read data from local directory?}
+
+\item{user}{User email address}
 }
 \description{
 Load DATIM Look up tables
@@ -15,5 +19,7 @@ Load DATIM Look up tables
 \examples{
 \dontrun{
  #load look up data
- load_lookups(datim_path = "./Data/datim")}
+ load_lookups(datim_path = "./Data/datim")
+ load_lookups(datim_path = "999#1aw####")
+ }
 }

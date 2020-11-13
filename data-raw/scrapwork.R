@@ -18,6 +18,30 @@
                                     password = mypwd(myuser),
                                     quarters_complete = qtr,
                                     folderpath_output = savefolder))
+
+  #FY21 MER PSNU data from MSD
+    df_msd <- list.files("~/Data", "PSNU_IM", full.names = TRUE) %>% readr::read_rds()
+
+    df_msd_agg <- df_msd %>%
+      dplyr::filter(fiscal_year == 2021,
+                    fundingagency == "USAID",
+                    indicator %in% c("HTS_TST", "HTS_TST_POS", "TX_NEW", "TX_CURR", "PrEP_NEW", "VMMC_CIRC"),
+                    standardizeddisaggregate %in% c("Modality/Age/Sex/Result", "Modality/Age Aggregated/Sex/Result","Age/Sex", "Age Aggregated/Sex/HIVStatus" ,"Age/Sex/HIVStatus"),
+                    !(indicator == "VMMC_CIRC" & standardizeddisaggregate == "Age/Sex")) %>%
+      dplyr::group_by(psnu, psnuuid,
+                      fiscal_year, fundingagency, mech_code,	mech_name,
+                      indicator, sex,	trendscoarse,
+                      operatingunit, countryname, snu1) %>%
+      dplyr::summarise(mer_targets = sum(targets, na.rm = TRUE)) %>%
+      dplyr::ungroup()
+
+    df_msd_agg <- df_msd_agg %>%
+      dplyr::rename(fy = fiscal_year,
+                    agecoarse = trendscoarse)
+
+
+    hfr_export(df_msd_agg, "out/DATIM", type = "DATIM_targets")
+
    #pull hierarchy
     ouuids <- identify_ouuids(myuser, mypwd(myuser)) %>%
       dplyr::filter(is.na(regional)) %>%

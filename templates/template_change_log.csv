@@ -7,3 +7,6 @@ version,type,date,note
 1.03,Wide - Limited,4/6/2020,** NEW ** added template to allow for wide reporting with relaxed age/sex reporting
 1.03,Wide,4/6/2020,added note about alternative template
 1.03,Long,4/6/2020,added note about relaxed guidance
+1.04,Wide - Limited,10/2/2020,"update guidance to reflect FY21 changes, add OU and period dropdowns, and add new calendar to meta tab"
+1.04,Wide,10/2/2020,"update guidance to reflect FY21 changes, add OU and period dropdowns, and add new calendar to meta tab"
+1.04,Long,10/2/2020,"update guidance to reflect FY21 changes, add OU and period dropdowns, and add new calendar to meta tab"

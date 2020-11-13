@@ -265,7 +265,7 @@ check_content <- function(df, output_path, datim_path) {
         dplyr::ungroup() %>%
         dplyr::filter(errors > 0) %>%
         readr::write_csv(path = paste0(output_path,
-                                       "/HFR_ERRORS_", curr_fy(), ".", stringr::str_pad(dplyr::first(df$hfr_pd), 2, pad="0"), "_",
+                                       "/HFR_ERRORS_", curr_fy, ".", stringr::str_pad(dplyr::first(df$hfr_pd), 2, pad="0"), "_",
                                        paste(errors, collapse = "_"), "_",
                                        format(Sys.Date(),"%Y%m%d"), ".csv"), na="")
 

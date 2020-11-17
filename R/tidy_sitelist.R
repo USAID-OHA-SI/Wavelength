@@ -35,7 +35,8 @@ tidy_sitelist <- function(filepath, folderpath_output = NULL){
 
   #breakout mech info
     df_keep <- df_keep %>%
-      tidyr::separate(mech_partner, c("mech_code", "mech_name", "primepartner"), sep = "([[:digit:]]: | \\[)")
+      tidyr::separate(mech_partner, c("mech_code", "mech_name", "primepartner"),
+                      sep = "((?<=[[:digit:]]): | \\[)")
 
   #create HTS_TST_POS and TX_MMD from HTS_TST and TX_CURR
     df_addtl <- df_keep %>%

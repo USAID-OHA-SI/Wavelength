@@ -33,7 +33,7 @@ load_lookups <- function(datim_path = "./Data/",
 
     #Lookup files
     lfiles <- list.files(path = dir,
-                         pattern = "^HFR_FY20_GLOBAL",
+                         pattern = "^HFR_FY21_GLOBAL",
                          full.names = TRUE)
 
     #Folder should contain valid files

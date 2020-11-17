@@ -88,9 +88,9 @@ check_frequency <- function(df){
   pd_freqs <- dplyr::if_else(
     multi_freqs == TRUE & dplyr::setequal(c(1, 4), freqs),
     "Monthly and Weekly data",
-    if_else(multi_freqs == TRUE & dplyr::setequal(c(1, 5), freqs),
+    dplyr::if_else(multi_freqs == TRUE & dplyr::setequal(c(1, 5), freqs),
             "Monthly and/or Weekly",
-            if_else(multi_freqs == TRUE & dplyr::setequal(c(1, 4, 5), freqs),
+            dplyr::if_else(multi_freqs == TRUE & dplyr::setequal(c(1, 4, 5), freqs),
                     "Weekly, Monthly, and Monthly along with weekly",
                     "Unknown frequency ...")))
 

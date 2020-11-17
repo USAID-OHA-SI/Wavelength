@@ -225,7 +225,7 @@ check_content <- function(df, output_path, datim_path) {
     }
 
   # Check the rest of the data
-    cat("\nChecking the entire dataset ... XXXX")
+    cat("\nChecking the entire dataset ...")
 
     df <- df %>%
       is_ou_valid(df_orgs = orgs) %>%
@@ -245,9 +245,9 @@ check_content <- function(df, output_path, datim_path) {
       names()
 
     df <- df %>%
-      rowwise() %>%
-      mutate(errors = sum(all_of(grp) == FALSE)) %>%
-      ungroup()
+      dplyr::rowwise() %>%
+      dplyr::mutate(errors = sum(tidyselect::all_of(grp) == FALSE)) %>%
+      dplyr::ungroup()
 
     # Errors count
     n_errors <- df %>%

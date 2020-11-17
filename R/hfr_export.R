@@ -63,9 +63,9 @@ hfr_export <- function(df,
           filename <- paste("HFR", pd, iso, type, date, sep = "_") %>%
             paste0(".csv") %>%
             stringr::str_replace_all("_{2,}", "_")
-
-          readr::write_csv(df, file = file.path(folderpath_output, filename), na = "")
-
+          suppressWarnings(
+            readr::write_csv(df, file = file.path(folderpath_output, filename), na = "")
+          )
           cat(crayon::blue("         ",file.path(filename), "\n"))
       }
   }
@@ -131,7 +131,9 @@ hfr_export_mech <- function(df, mech, type, folderpath_output, quarters_complete
       stringr::str_replace_all("_{2,}", "_")
 
   #export data
-    readr::write_csv(df_mech, file = file.path(folderpath_output, filename), na = "")
+    suppressWarnings(
+      readr::write_csv(df_mech, file = file.path(folderpath_output, filename), na = "")
+    )
 
   #print file name
     cat(crayon::blue("         ",file.path(filename), "\n"))

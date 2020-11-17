@@ -25,7 +25,6 @@ validate_import <- function(df){
 
   check_distinct_ous(df)
 
-  check_frequency(df)
 }
 
 

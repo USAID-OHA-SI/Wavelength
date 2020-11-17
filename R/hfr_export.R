@@ -131,7 +131,9 @@ hfr_export_mech <- function(df, mech, type, folderpath_output, quarters_complete
       stringr::str_replace_all("_{2,}", "_")
 
   #export data
-    readr::write_csv(df_mech, file.path(folderpath_output, filename), na = "")
+    suppressWarnings(
+      readr::write_csv(df_mech, file = file.path(folderpath_output, filename), na = "")
+    )
 
   #print file name
     cat(crayon::blue("         ",file.path(filename), "\n"))

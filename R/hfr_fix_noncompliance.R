@@ -58,7 +58,8 @@ hfr_fix_noncompliance <- function(df){
                   #Tanzania
                   orgunituid = stringr::str_remove_all(orgunituid, "\\r|\\n")
                   ) %>%
-    dplyr::mutate_at(dplyr::vars(agecoarse, sex), ~ dplyr::na_if(., "NA"))
+    dplyr::mutate_at(dplyr::vars(agecoarse, sex), ~ dplyr::na_if(., "NA")) %>%
+    dplyr::mutate_at(dplyr::vars(agecoarse, sex), ~ dplyr::na_if(., "Total"))
 
 
   return(df)

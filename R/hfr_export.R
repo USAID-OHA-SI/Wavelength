@@ -64,9 +64,9 @@ hfr_export <- function(df,
             paste0(".csv") %>%
             stringr::str_replace_all("_{2,}", "_")
 
-          readr::write_csv(df, file.path(folderpath_output, filename), na = "")
+          readr::write_csv(x = df, path = file.path(folderpath_output, filename), na = "")
 
-          cat(crayon::blue("         ",file.path(filename), "\n"))
+          cat(crayon::blue("         ", file.path(filename), "\n"))
       }
   }
 }

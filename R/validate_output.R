@@ -28,7 +28,7 @@ validate_output <- function(df, output_path, content=FALSE, datim_path=NULL){
 #'
 #' @param df HFR data framed created by `hfr_process_template()`
 
-check_output_cols <-function(df){
+check_output_cols <- function(df){
 
   #check headers
     req_cols <- c("date", "fy", "hfr_pd", "hfr_freq","orgunit",
@@ -140,7 +140,7 @@ check_inds <-function(df){
 #'
 #' @param df HFR data framed created by `hfr_process_template()`
 
-check_disaggs <-function(df){
+check_disaggs <- function(df){
 
   #age/sex
     req <- c("Female <15", "Female 15+", "Male <15", "Male 15+")
@@ -225,7 +225,7 @@ check_content <- function(df, output_path, datim_path) {
     }
 
   # Check the rest of the data
-    cat("\nChecking the entire dataset ...")
+    cat("\nChecking the entire dataset ... XXXX")
 
     df <- df %>%
       is_ou_valid(df_orgs = orgs) %>%
@@ -237,17 +237,26 @@ check_content <- function(df, output_path, datim_path) {
         valid_age = ifelse(is.na(agecoarse) | agecoarse %in% valid_age, TRUE, FALSE),
         valid_sex = ifelse(is.na(sex) | sex %in% valid_sex, TRUE, FALSE),
         valid_value = ifelse(is.na(val) | is.integer(val) | val >= 0, TRUE, FALSE)
-      ) %>%
-      dplyr::mutate(errors = rowSums(.[-c(1:14)] == FALSE))
+      )
 
-    errors <- df %>%
+    # Sum up invalid columns
+    grp <- df %>%
+      dplyr::select(-c(date:val)) %>%
+      names()
+
+    df <- df %>%
+      rowwise() %>%
+      mutate(errors = sum(all_of(grp) == FALSE)) %>%
+      ungroup()
+
+    # Errors count
+    n_errors <- df %>%
       dplyr::filter(errors > 0) %>%
       dplyr::distinct(mech_code) %>%
-      dplyr::pull()
+      dplyr::pull() %>%
+      length()
 
-    n_errors <- length(errors)
-
-    if( n_errors > 0 ) {
+    if ( n_errors > 0 ) {
       msg_errors <- paint_red('Yes')
     } else {
       msg_errors <- paint_green('No')
@@ -273,7 +282,7 @@ check_content <- function(df, output_path, datim_path) {
     }
 
     df <- df %>%
-      dplyr::select(1:14, errors) %>%
+      dplyr::select(date:val, errors) %>%
       dplyr::mutate(errors = ifelse(errors > 0, TRUE, FALSE))
 
     return(df)

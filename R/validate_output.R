@@ -273,10 +273,10 @@ check_content <- function(df, output_path, datim_path) {
         dplyr::mutate(row_id = dplyr::row_number()) %>%
         dplyr::ungroup() %>%
         dplyr::filter(errors > 0) %>%
-        readr::write_csv(path = paste0(output_path,
-                                       "/HFR_ERRORS_", curr_fy, ".", stringr::str_pad(dplyr::first(df$hfr_pd), 2, pad="0"), "_",
-                                       paste(errors, collapse = "_"), "_",
-                                       format(Sys.Date(),"%Y%m%d"), ".csv"), na="")
+        readr::write_csv(., paste0(output_path,
+                                   "/HFR_ERRORS_", curr_fy, ".", stringr::str_pad(dplyr::first(df$hfr_pd), 2, pad="0"), "_",
+                                   paste(errors, collapse = "_"), "_",
+                                   format(Sys.Date(),"%Y%m%d"), ".csv"), na="")
 
       cat("\nThe errors file is located here: ", paint_blue(datim_path))
     }

@@ -31,7 +31,7 @@ validate_output <- function(df, output_path, content=FALSE, datim_path=NULL){
 check_output_cols <-function(df){
 
   #check headers
-    req_cols <- c("date", "fy", "hfr_pd", "orgunit",
+    req_cols <- c("date", "fy", "hfr_pd", "hfr_freq","orgunit",
                   "orgunituid", "mech_code", "partner",
                   "operatingunit", "psnu", "indicator",
                   "agecoarse", "sex", "otherdisaggregate", "val")

@@ -47,13 +47,13 @@ load_lookups <- function(datim_path = "./Data/",
     orgs <<- lfiles %>%
       stringr::str_subset(string = .,
                           pattern = "._orghierarchy_\\d{8}.csv$") %>%
-      vroom::vroom()
+      vroom::vroom(col_types = c(.default = "c"))
 
     # Mechanisms
     ims <<- lfiles %>%
       stringr::str_subset(string = .,
                           pattern = "._mechanisms_\\d{8}.csv$") %>%
-      vroom::vroom()
+      vroom::vroom(col_types = c(.default = "c"))
 
     if (is.null(orgs) | is.null(ims)) {
       cat("Orgs or Mechanisms file does not seems to have valid content")

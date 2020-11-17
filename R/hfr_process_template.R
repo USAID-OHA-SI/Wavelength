@@ -29,6 +29,9 @@ hfr_process_template <- function(filepath,
   #reshape wide to match long df (only affects wide format)
     df <- hfr_gather(df)
 
+  #validation on reporting type
+    check_frequency(df)
+
   #clean up string variables
     df <- hfr_munge_string(df)
 

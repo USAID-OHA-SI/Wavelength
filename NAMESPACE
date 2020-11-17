@@ -3,6 +3,7 @@
 export("%>%")
 export(check_content)
 export(check_distinct_ous)
+export(check_frequency)
 export(confirm_validations)
 export(count_missing)
 export(curr_fy)

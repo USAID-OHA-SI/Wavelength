@@ -19,10 +19,10 @@ load_lookups <- function(datim_path = "./Data/",
   valid_dates <<- Wavelength::hfr_identify_pds(fy = 2021)
 
   # Sex
-  valid_sex <<- c("Female", "Male", NA)
+  valid_sex <<- c("Female", "Male", "Unknown", NA)
 
   # Age
-  valid_age <<- c("<15", "15+", NA)
+  valid_age <<- c("<15", "15+", "Unknown", NA)
 
   # Read from local directory
   if (local == TRUE) {
@@ -45,15 +45,23 @@ load_lookups <- function(datim_path = "./Data/",
 
     # ORG Hirarchy
     orgs <<- lfiles %>%
-      stringr::str_subset(string = .,
-                          pattern = "._orghierarchy_\\d{8}.csv$") %>%
-      vroom::vroom(col_types = c(.default = "c"))
+      stringr::str_subset(
+        string = .,
+        pattern = "._orghierarchy_\\d{8}.csv$",
+      ) %>%
+      sort() %>%
+      last() %>%
+      vroom::vroom(., col_types = c(.default = "c"))
 
     # Mechanisms
     ims <<- lfiles %>%
-      stringr::str_subset(string = .,
-                          pattern = "._mechanisms_\\d{8}.csv$") %>%
-      vroom::vroom(col_types = c(.default = "c"))
+      stringr::str_subset(
+        string = .,
+        pattern = "._mechanisms_\\d{8}.csv$"
+      ) %>%
+      sort() %>%
+      last() %>%
+      vroom::vroom(., col_types = c(.default = "c"))
 
     if (is.null(orgs) | is.null(ims)) {
       cat("Orgs or Mechanisms file does not seems to have valid content")
@@ -95,7 +103,7 @@ load_lookups <- function(datim_path = "./Data/",
     googledrive::as_id() %>%
     googledrive::drive_ls(
       path = .,
-      pattern = "^HFR_FY20_GLOBAL_orghierarchy_\\d{8}$"
+      pattern = "^HFR_FY21_GLOBAL_orghierarchy_\\d{8}$"
     ) %>%
     dplyr::pull(id) %>%   #=> File id
     googledrive::as_id() %>%
@@ -111,7 +119,7 @@ load_lookups <- function(datim_path = "./Data/",
     googledrive::as_id() %>%
     googledrive::drive_ls(
       path = .,
-      pattern = "^HFR_FY20_GLOBAL_mechanisms_\\d{8}$"
+      pattern = "^HFR_FY21_GLOBAL_mechanisms_\\d{8}$"
     ) %>%
     dplyr::pull(id) %>%   #==> File id
     googledrive::as_id() %>%

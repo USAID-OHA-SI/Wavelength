@@ -201,14 +201,14 @@ check_content <- function(df, output_path, datim_path) {
 
       # transform & extract unique mech codes
       ims_ou <- ims %>%
-        dplyr::mutate(mech_code = as.character(mech_code)) %>%
+        dplyr::mutate(mech_code = mech_code) %>%
         dplyr::select(mech_code , ou = operatingunit) %>%
         dplyr::distinct(mech_code, ou)
 
       df <- df %>%
         is_ou_valid(df_orgs = orgs) %>%
-        dplyr::mutate(mech_code = as.character(mech_code)) %>%
-        dplyr::left_join(ims_ou, by=c("mech_code" = "mech_code")) %>%
+        dplyr::mutate(mech_code = mech_code) %>%
+        dplyr::left_join(ims_ou, by = c("mech_code" = "mech_code")) %>%
         dplyr::mutate(operatingunit = ifelse(valid_ou == FALSE, ou, operatingunit)) %>%
         dplyr::select(-c(valid_ou, ou))
 
@@ -266,7 +266,8 @@ check_content <- function(df, output_path, datim_path) {
 
     if (n_errors > 0) {
 
-      cat("\nList of mechanisms with errros: ", paint_red(paste(errors, collapse = ", ")))
+      cat("\nList of mechanisms with errros: ",
+          paint_red(paste(errors, collapse = ", ")))
 
       df %>%
         dplyr::group_by(mech_code) %>%
@@ -274,9 +275,10 @@ check_content <- function(df, output_path, datim_path) {
         dplyr::ungroup() %>%
         dplyr::filter(errors > 0) %>%
         readr::write_csv(., paste0(output_path,
-                                   "/HFR_ERRORS_", curr_fy, ".", stringr::str_pad(dplyr::first(df$hfr_pd), 2, pad="0"), "_",
+                                   "/HFR_ERRORS_", curr_fy, ".",
+                                   stringr::str_pad(dplyr::first(df$hfr_pd), 2, pad = "0"), "_",
                                    paste(errors, collapse = "_"), "_",
-                                   format(Sys.Date(),"%Y%m%d"), ".csv"), na="")
+                                   format(Sys.Date(),"%Y%m%d"), ".csv"), na = "")
 
       cat("\nThe errors file is located here: ", paint_blue(datim_path))
     }

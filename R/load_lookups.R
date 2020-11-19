@@ -50,7 +50,7 @@ load_lookups <- function(datim_path = "./Data/",
         pattern = "._orghierarchy_\\d{8}.csv$",
       ) %>%
       sort() %>%
-      last() %>%
+      dplyr::last() %>%
       vroom::vroom(., col_types = c(.default = "c"))
 
     # Mechanisms
@@ -60,7 +60,7 @@ load_lookups <- function(datim_path = "./Data/",
         pattern = "._mechanisms_\\d{8}.csv$"
       ) %>%
       sort() %>%
-      last() %>%
+      dplyr::last() %>%
       vroom::vroom(., col_types = c(.default = "c"))
 
     if (is.null(orgs) | is.null(ims)) {

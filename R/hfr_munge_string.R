@@ -23,7 +23,8 @@ hfr_munge_string <- function(df){
                                                     "o6mo" = "6 months or more"
                                                     #.default = as.character(NA)
                                                     ),
-                  mech_code = stringr::str_remove(mech_code, "\\.0")
+                  mech_code = stringr::str_remove(mech_code, "\\.0"),
+                  mech_code = stringr::str_trim(mech_code)
                   )
   return(df)
 }

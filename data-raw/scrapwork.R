@@ -51,8 +51,25 @@
 
     hfr_export(df_orgs, savefolder, type = "orghierarchy")
 
+
+
   #pull mechanism info
     pull_mech(folderpath_output = "out/DATIM")
+
+  #upload to Google Drive
+    googledrive::drive_auth()
+
+    file <- list.files("out/DATIM", "org", full.names = TRUE) %>% dplyr::last()
+    googledrive::drive_upload(file,
+                              googledrive::as_id("1enffr2NUZAz5eabUAGmfdXKoKWnLlWZ5"),
+                              name = stringr::str_remove(basename(file), ".csv"),
+                              type = "spreadsheet")
+
+    file <- list.files("out/DATIM", "mechanisms", full.names = TRUE) %>% dplyr::last()
+    googledrive::drive_upload(file,
+                              googledrive::as_id("1wMvvO1x8OgVU3aGej4kdAw3F2NbeY-eM"),
+                              name = stringr::str_remove(basename(file), ".csv"),
+                              type = "spreadsheet")
 
 # Process HFR submissions -------------------------------------------------
 

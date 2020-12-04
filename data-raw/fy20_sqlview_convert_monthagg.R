@@ -3,13 +3,14 @@
 ## AUTHOR:   convert to FY20 to months
 ## LICENSE:  MIT
 ## DATE:     2020-11-11
-## UPDATED:  2020-11-12
+## UPDATED:  2020-12-04
 
 # DEPENDENCIES ------------------------------------------------------------
 
 library(tidyverse)
 library(vroom)
 library(Wavelength)
+library(lubridate)
 
 
 
@@ -33,7 +34,7 @@ df_hfr_1113 <- vroom("out/joint/HFR_Tableau_SQLview_ORIGINAL.csv", col_types = c
   #cleaning from R/resolve_sqlview
   df_hfr_clean <- df_hfr %>%
     mutate(primepartner = str_remove(primepartner, "\r$"),
-           sex = ifelse(!sex %in% c("Male", "Female"), "Unspecified", sex),
+           sex = ifelse(!sex %in% c("Male", "Female"), "Unknown", sex),
            agecoarse = ifelse(otherdisaggregate %in% c("15+", "<15"), otherdisaggregate, agecoarse),
            agecoarse = ifelse(!agecoarse %in% c("<15", "15+"), "Unknown", agecoarse),
            otherdisaggregate = ifelse(otherdisaggregate == "< 3 months", "<3 months", otherdisaggregate),
@@ -53,15 +54,15 @@ df_hfr_1113 <- vroom("out/joint/HFR_Tableau_SQLview_ORIGINAL.csv", col_types = c
            hfr_pd = ifelse(date == "2020-09-28", "13", hfr_pd)
            # psnuuid = NA_character_
     ) %>%
+    mutate(across(c(val, mer_results, mer_targets), as.numeric)) %>%
     filter(fy != 2110)
 
   #reshape long to preserve NAs for non reporting
     df_hfr_lng <- df_hfr_clean %>%
       rename(hfr_results = val) %>%
-      gather(type, value, hfr_results, mer_results, mer_targets, na.rm = TRUE) %>%
-      mutate(value = as.double(value))
+      gather(type, value, hfr_results, mer_results, mer_targets, na.rm = TRUE)
 
-    rm(df_hfr,df_hfr_clean)
+    rm(df_hfr)
 
   #remove date for aggregation
     df_hfr_lng <- select(df_hfr_lng, -date)
@@ -103,7 +104,7 @@ df_hfr_1113 <- vroom("out/joint/HFR_Tableau_SQLview_ORIGINAL.csv", col_types = c
 
   #add the period type and expect_reporting to match FY21
     df_pds <- df_pds %>%
-      mutate(period_type = "month agg",
+      mutate(hfr_freq = "month agg",
              expect_reporting = mer_results > 0 | mer_targets > 0,
              expect_reporting = ifelse(is.na(expect_reporting), FALSE, expect_reporting))
 
@@ -116,4 +117,31 @@ df_hfr_1113 <- vroom("out/joint/HFR_Tableau_SQLview_ORIGINAL.csv", col_types = c
     # write_csv(df_pds, "out/joint/HFR_Tableau_SQLview.csv", na = "")
 
 
+  #append monthly agg data to full dataset
+    df_hfr_clean_extra <- df_hfr_clean %>%
+      mutate(date = as_date(date),
+             hfr_freq = "week",
+             expect_reporting = mer_results > 0 | mer_targets > 0,
+             expect_reporting = ifelse(is.na(expect_reporting), FALSE, expect_reporting))
+
+    df_full <- bind_rows(df_hfr_clean_extra, df_pds)
+
+    df_full %>%
+      filter(hfr_pd %in% c("1", "2", "3")) %>%
+      write_csv("out/fy20_archive/HFR_Tableau_SQLview_FY20_01-03.csv", na = "")
+
+    df_full %>%
+      filter(hfr_pd %in% c("4", "5", "6")) %>%
+      write_csv("out/fy20_archive/HFR_Tableau_SQLview_FY20_04-06.csv", na = "")
+
+    df_full %>%
+      filter(hfr_pd %in% c("7", "8", "9")) %>%
+      write_csv("out/fy20_archive/HFR_Tableau_SQLview_FY20_07-09.csv", na = "")
+
+    df_full %>%
+      filter(hfr_pd %in% c("10", "11", "12", "13")) %>%
+      write_csv("out/fy20_archive/HFR_Tableau_SQLview_FY20_10-13.csv", na = "")
+
+    "out/fy20_archive/HFR_Tableau_SQLview_FY20_01-03.csv" %>%
+      zip(str_replace(., "csv", "zip"), .)
 

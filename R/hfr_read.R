@@ -26,6 +26,10 @@ hfr_read <- function(filepath){
                                            dplyr::starts_with("weekly"),
                                            dplyr::starts_with("targets")), as.double)
 
+  #FY21 expect reporting var to logical
+    if("expect_reporting" %in% names(df))
+      df <- dplyr::mutate(df, expect_reporting = as.logical(expect_reporting))
+
   #convert blanks to NAs
     df <- dplyr::mutate_if(df, is.character, ~ dplyr::na_if(., "(NA|)"))
 }

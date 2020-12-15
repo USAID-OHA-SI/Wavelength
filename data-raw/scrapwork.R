@@ -3,10 +3,12 @@
   ## NOTE: Needs to be updated each quarter for updated Results/Targets/Gap Target
 
   #DATIM username
-    myuser <- ""
+    glamr::load_secrets()
+    myuser <- glamr::datim_user()
+
 
   #quarters with results in DATIM
-    qtr <- 3
+    qtr <- 4
 
   #folderpath output
     savefolder <- "out/DATIM"
@@ -57,14 +59,21 @@
     pull_mech(folderpath_output = "out/DATIM")
 
   #upload to Google Drive
-    googledrive::drive_auth()
+    gdrive_fldr_orgs <- googledrive::as_id("1enffr2NUZAz5eabUAGmfdXKoKWnLlWZ5")
+    gdrive_fldr_orgs_archv <- googledrive::drive_ls(gdrive_fldr__orgs, "Archive") %>% dplyr::pull(id) %>% googledrive::as_id()
+    gdrive_fldr_orgs_old <- googledrive::drive_ls(gdrive_fldr__orgs, "HFR_FY21_GLOBAL") %>% dplyr::pull(id) %>% googledrive::as_id()
+    googledrive::drive_mv(gdrive_fldr_orgs_old, gdrive_fldr_orgs_archv)
 
     file <- list.files("out/DATIM", "org", full.names = TRUE) %>% dplyr::last()
     googledrive::drive_upload(file,
-                              googledrive::as_id("1enffr2NUZAz5eabUAGmfdXKoKWnLlWZ5"),
+                              gdrive_fldr__orgs,
                               name = stringr::str_remove(basename(file), ".csv"),
                               type = "spreadsheet")
 
+    gdrive_fldr_mech <- googledrive::as_id("1wMvvO1x8OgVU3aGej4kdAw3F2NbeY-eM")
+    gdrive_fldr_mech_archv <- googledrive::drive_ls(gdrive_fldr_mech, "Archive") %>% dplyr::pull(id) %>% googledrive::as_id()
+    gdrive_fldr_mech_old <- googledrive::drive_ls(gdrive_fldr_mech, "HFR_FY21_GLOBAL") %>% dplyr::pull(id) %>% googledrive::as_id()
+    googledrive::drive_mv(gdrive_fldr_mech_old, gdrive_fldr_mech_archv)
     file <- list.files("out/DATIM", "mechanisms", full.names = TRUE) %>% dplyr::last()
     googledrive::drive_upload(file,
                               googledrive::as_id("1wMvvO1x8OgVU3aGej4kdAw3F2NbeY-eM"),

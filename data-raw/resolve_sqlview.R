@@ -10,17 +10,19 @@ library(lubridate)
 library(glamr)
 library(googledrive)
 
-drive_auth()
+# drive_auth()
+#
+# gfldr <- "1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"
+#
+# (file <- drive_ls(as_id(gfldr), "2020\\.13"))
 
-gfldr <- "1SgZkdG5uu-Syy6DYsNbTrzDqUmK4fSgF"
+path <- "out/joint"
 
-(file <- drive_ls(as_id(gfldr), "2020\\.13"))
+(filename <- list.files(path, "HFR_2021.*Tableau", full.names = TRUE) %>% last())
 
-path <- "C:/Users/achafetz/Downloads"
-
-filename <- drive_download(as_id(file$id), file.path(path, file$name))
-
-filename <- pull(filename, local_path)
+# filename <- drive_download(as_id(file$id), file.path(path, file$name))
+#
+# filename <- pull(filename, local_path)
 
 df_twbx <- hfr_read(filename)
 
@@ -55,15 +57,6 @@ df_twbx %>%
          !otherdisaggregate %in% c("\\N", "nan", NA)) %>%
   distinct(hfr_pd, operatingunit, otherdisaggregate)
 
-df_twbx %>%
-  filter(operatingunit == "Mozambique") %>%
-  count(hfr_pd, indicator, wt = val)
-
-df_twbx %>%
-  filter(operatingunit == "Mozambique",
-         indicator == "TX_CURR") %>%
-  count(hfr_pd, indicator, otherdisaggregate, wt = val)
-
 
 df_adj <- df_twbx %>%
   mutate(primepartner = str_remove(primepartner, "\r$"),
@@ -78,7 +71,7 @@ df_adj <- df_twbx %>%
          otherdisaggregate = na_if(otherdisaggregate, "\\N"),
          otherdisaggregate = na_if(otherdisaggregate, "Positivo"),
          otherdisaggregate = na_if(otherdisaggregate, "Total"),
-         # psnuuid = NA_character_
+         hfr_freq = tolower(hfr_freq)
          ) %>%
   filter(date != "2109-11-25",
          fy != 2110)
@@ -92,6 +85,7 @@ distinct(df_adj, agecoarse)
 distinct(df_adj, sex)
 distinct(df_adj, otherdisaggregate)
 distinct(df_adj, indicator,otherdisaggregate) %>% filter(!otherdisaggregate %in% c("\\N", "nan"))
+distinct(df_adj, hfr_freq)
 
 
 # new_filename <- filename %>%
@@ -99,8 +93,28 @@ distinct(df_adj, indicator,otherdisaggregate) %>% filter(!otherdisaggregate %in%
 #   str_replace(".(csv|zip)$", "_adj.csv") %>%
 #   file.path("out", "joint", .)
 
+(filename <- list.files(path, "HFR_Tableau_SQLview_FY20", full.names = TRUE))
+
+df_twbx_fy20 <- hfr_read(filename)
+
+df_twbx_fy20 <- df_twbx_fy20 %>%
+  rename(hfr_freq = period_type)
+df_adj2 <- bind_rows(df_adj, df_twbx_fy20)
+
+
+df_adj2 %>%
+  count(fy, hfr_pd, date)
+
+distinct(df_adj2, indicator)
+distinct(df_adj2, agecoarse)
+distinct(df_adj2, sex)
+distinct(df_adj2, otherdisaggregate)
+distinct(df_adj2, indicator,otherdisaggregate) %>% filter(!otherdisaggregate %in% c("\\N", "nan"))
+count(df_adj2, hfr_freq)
+
+
 new_filename <- "out/joint/HFR_Tableau_SQLview.csv"
 
-write_csv(df_adj, new_filename, na = "")
+write_csv(df_adj2, new_filename, na = "")
 
 # drive_put(new_filename, as_id("1onKyOQv3V6H4UPaDCQhH1Y9i8fnOU3HS"))

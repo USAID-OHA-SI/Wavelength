@@ -60,13 +60,13 @@
 
   #upload to Google Drive
     gdrive_fldr_orgs <- googledrive::as_id("1enffr2NUZAz5eabUAGmfdXKoKWnLlWZ5")
-    gdrive_fldr_orgs_archv <- googledrive::drive_ls(gdrive_fldr__orgs, "Archive") %>% dplyr::pull(id) %>% googledrive::as_id()
-    gdrive_fldr_orgs_old <- googledrive::drive_ls(gdrive_fldr__orgs, "HFR_FY21_GLOBAL") %>% dplyr::pull(id) %>% googledrive::as_id()
+    gdrive_fldr_orgs_archv <- googledrive::drive_ls(gdrive_fldr_orgs, "Archive") %>% dplyr::pull(id) %>% googledrive::as_id()
+    gdrive_fldr_orgs_old <- googledrive::drive_ls(gdrive_fldr_orgs, "HFR_FY21_GLOBAL") %>% dplyr::pull(id) %>% googledrive::as_id()
     googledrive::drive_mv(gdrive_fldr_orgs_old, gdrive_fldr_orgs_archv)
 
     file <- list.files("out/DATIM", "org", full.names = TRUE) %>% dplyr::last()
     googledrive::drive_upload(file,
-                              gdrive_fldr__orgs,
+                              gdrive_fldr_orgs,
                               name = stringr::str_remove(basename(file), ".csv"),
                               type = "spreadsheet")
 
@@ -76,7 +76,7 @@
     googledrive::drive_mv(gdrive_fldr_mech_old, gdrive_fldr_mech_archv)
     file <- list.files("out/DATIM", "mechanisms", full.names = TRUE) %>% dplyr::last()
     googledrive::drive_upload(file,
-                              googledrive::as_id("1wMvvO1x8OgVU3aGej4kdAw3F2NbeY-eM"),
+                              gdrive_fldr_mech,
                               name = stringr::str_remove(basename(file), ".csv"),
                               type = "spreadsheet")
 

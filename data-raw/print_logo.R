@@ -7,7 +7,9 @@
 
   package_check("ggplot2")
   package_check("extrafont")
+  package_check("svglite")
   library(extrafont)
+  library(svglite)
 
   folderpath_output <- "out/"
 
@@ -34,3 +36,4 @@
     ggplot2::theme(axis.text = ggplot2::element_blank(), panel.grid = ggplot2::element_blank())
 
     ggplot2::ggsave(file.path(folderpath_output, "hfr_logo.png"), dpi = 600, height = 5, width = 10)
+    ggplot2::ggsave(file.path(folderpath_output, "hfr_logo.svg"), dpi = 600, height = 5, width = 10)

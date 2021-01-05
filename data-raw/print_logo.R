@@ -15,9 +15,9 @@
 
   df_abbr <- tibble::tribble(
     ~lab, ~abbr_x, ~abbr_y, ~abbr_col,
-    "h",    pi/6,       0,   "#0067B9", #USAID Med Blue
-    "f",    pi/2,       0,   "#0067B9", #USAID Med Blue
-    "r",  5*pi/6,       0,   "#A7C6ED") #USAID Light Blue
+    "h",    pi/6,       0,   "#2057a7", #USAID Med Blue #0067B9
+    "f",    pi/2,       0,   "#2057a7", #USAID Med Blue #0067B9
+    "r",  5*pi/6,       0,   "#1e87a5") #USAID Light Blue #A7C6ED
 
   df_wave <- dplyr::bind_cols(x = seq(0,pi,len=100)) %>%
     dplyr::mutate(y = sin(3*x))

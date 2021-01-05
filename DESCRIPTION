@@ -34,4 +34,5 @@ Suggests:
     httr,
     jsonlite,
     keyringr,
-    plyr
+    plyr,
+    covr

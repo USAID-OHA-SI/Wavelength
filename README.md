@@ -1,6 +1,10 @@
-# Wavelength
+ <!-- badges: start -->
+  [![R-CMD-check](https://github.com/USAID-OHA-SI/Wavelength/workflows/R-CMD-check/badge.svg)](https://github.com/USAID-OHA-SI/Wavelength/actions)
+  <!-- badges: end -->
 
-[![Travis build status](https://travis-ci.org/USAID-OHA-SI/Wavelength.svg?branch=master)](https://travis-ci.org/USAID-OHA-SI/Wavelength)
+<img src='man/figures/logo.png' align="right" height="60" />
+
+# Wavelength
 
 ### OHA High Frequency Reporting Munging
 

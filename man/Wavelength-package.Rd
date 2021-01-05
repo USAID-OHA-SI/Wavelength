@@ -6,6 +6,8 @@
 \alias{Wavelength-package}
 \title{Wavelength: Wavelength}
 \description{
+\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+
 USAID OHA Office. Munging of mission weekly HFR data.
 }
 \seealso{

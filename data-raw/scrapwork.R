@@ -4,6 +4,11 @@
 ## LICENSE: MIT
 ## UPDATED: 2021-01-14
 
+# LIBRARIES ---------------------------------------------------------------
+
+library(tidyverse)
+library(Wavelength)
+library(glamr)
 
 # GLOBAL VARIABLES --------------------------------------------------------
 
@@ -23,20 +28,25 @@
 # PULL MER DATA -----------------------------------------------------------
 
   #identify OU uids to then pull each OU's results/targets
-    ous <- identify_levels(username = myuser, password = mypwd(myuser)) %>% dplyr::pull(country_name)
+    ous <- Wavelength::identify_levels(
+      username = myuser,
+      password = glamr::datim_pwd()
+    ) %>%
+    dplyr::pull(country_name)
 
   #pull & export MER site result/targets
     purrr::walk(ous, ~pull_mer(ou_name = .x,
-                                    username = myuser,
-                                    password = mypwd(myuser),
-                                    quarters_complete = qtr,
-                                    folderpath_output = savefolder))
+                               username = myuser,
+                               password = glamr::datim_pwd(),
+                               quarters_complete = qtr,
+                               folderpath_output = savefolder))
 
 
 # STORE FY21 MER TARGETS (PSNU LEVEL) -------------------------------------
 
   #latest PSNU MSD (from Panorama)
-    df_msd <- list.files("~/Data", "PSNU_IM", full.names = TRUE) %>% readr::read_rds()
+    df_msd <- list.files("~/Data", "PSNU_IM", full.names = TRUE) %>%
+      readr::read_rds()
 
   #aggregate FY21 targets for USAID
     df_msd_agg <- df_msd %>%
@@ -63,11 +73,13 @@
 # PULL HIERARCHY ----------------------------------------------------------
 
    #pull hierarchy
-    ouuids <- identify_ouuids(myuser, mypwd(myuser)) %>%
+    ouuids <- identify_ouuids(myuser, glamr::datim_pwd()) %>%
       dplyr::filter(is.na(regional)) %>%
       dplyr::pull(id)
+
     df_orgs <- purrr::map_dfr(.x = ouuids,
-                              .f = ~ pull_hierarchy(.x, myuser, mypwd(myuser),
+                              .f = ~ pull_hierarchy(.x, myuser,
+                                                    glamr::datim_pwd(),
                                                     baseurl = "https://datim.org/"))
 
   #save hierarchy
@@ -104,6 +116,37 @@
                               gdrive_fldr_mech,
                               name = stringr::str_remove(basename(file), ".csv"),
                               type = "spreadsheet")
+
+
+# UPLOAD TABLES to S3: setup S3 Access keys first
+
+  # Mechanisms
+  list.files(
+      path = savefolder,
+      pattern = "^HFR_FY\\d{2}_GLOBAL_mechanisms_\\d{8}.csv$",
+      full.names = TRUE
+    ) %>%
+    sort() %>%
+    last() %>%
+    glamr::s3_upload(
+      file = .,
+      bucket = "gov-usaid",
+      prefix = "ddc/uat/processed/hfr/receiving"
+    )
+
+  # Org hierarchy
+  list.files(
+    path = savefolder,
+    pattern = "^HFR_FY\\d{2}_GLOBAL_orghierarchy_\\d{8}.csv$",
+    full.names = TRUE
+  ) %>%
+    sort() %>%
+    last() %>%
+    glamr::s3_upload(
+      file = .,
+      bucket = "gov-usaid",
+      prefix = "ddc/uat/processed/hfr/receiving"
+    )
 
 
 # APPEND TABLEAU FILE -----------------------------------------------------

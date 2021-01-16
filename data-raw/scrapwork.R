@@ -24,6 +24,9 @@ library(glamr)
   #folderpath output
     savefolder <- "out/DATIM"
 
+  #DDC Buckets
+    hfr_bucket <- "gov-usaid"
+
 
 # PULL MER DATA -----------------------------------------------------------
 
@@ -130,7 +133,7 @@ library(glamr)
     last() %>%
     glamr::s3_upload(
       file = .,
-      bucket = "gov-usaid",
+      bucket = hfr_bucket,
       prefix = "ddc/uat/processed/hfr/receiving"
     )
 
@@ -144,9 +147,34 @@ library(glamr)
     last() %>%
     glamr::s3_upload(
       file = .,
-      bucket = "gov-usaid",
+      bucket = hfr_bucket,
       prefix = "ddc/uat/processed/hfr/receiving"
     )
+
+
+# DOWNLAOD TABLEAU OUTPUTS
+
+  # HFR Data Process dates
+    proc_dates <- "2021-01-15" %>% as.Date()
+
+  #FY21 HFR Outputs
+    s3_objects(
+        bucket = "gov-usaid",
+        prefix = "ddc/uat/processed/hfr/outgoing/hfr"
+      ) %>%
+      s3_unpack_keys() %>%
+      filter(
+        str_detect(
+          sys_data_object,
+          pattern = "^hfr_2021_\\d{2}_Tableau_\\d{4}-\\d{2}-\\d{2}.csv$"),
+        last_modified %in% proc_dates
+      ) %>%
+      pull(key) %>%
+      map(.x, .f = ~ s3_download(
+        bucket = hfr_bucket,
+        object = .x,
+        filepath = file.path("./out/DDC", basename(.x))
+      ))
 
 
 # APPEND TABLEAU FILE -----------------------------------------------------

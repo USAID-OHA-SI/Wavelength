@@ -121,7 +121,7 @@ library(glamr)
                               type = "spreadsheet")
 
 
-# UPLOAD TABLES to S3: setup S3 Access keys first
+# UPLOAD REFERENCE TABLES to S3: setup S3 Access keys first
 
   # Mechanisms
   list.files(
@@ -139,10 +139,10 @@ library(glamr)
 
   # Org hierarchy
   list.files(
-    path = savefolder,
-    pattern = "^HFR_FY\\d{2}_GLOBAL_orghierarchy_\\d{8}.csv$",
-    full.names = TRUE
-  ) %>%
+      path = savefolder,
+      pattern = "^HFR_FY\\d{2}_GLOBAL_orghierarchy_\\d{8}.csv$",
+      full.names = TRUE
+    ) %>%
     sort() %>%
     last() %>%
     glamr::s3_upload(
@@ -155,11 +155,11 @@ library(glamr)
 # DOWNLAOD TABLEAU OUTPUTS
 
   # HFR Data Process dates
-    proc_dates <- "2021-01-15" %>% as.Date()
+    proc_dates <- "2021-01-16" %>% as.Date()
 
   #FY21 HFR Outputs
     s3_objects(
-        bucket = "gov-usaid",
+        bucket = hfr_bucket,
         prefix = "ddc/uat/processed/hfr/outgoing/hfr"
       ) %>%
       s3_unpack_keys() %>%
@@ -170,6 +170,79 @@ library(glamr)
         last_modified %in% proc_dates
       ) %>%
       pull(key) %>%
+      map(.x, .f = ~ s3_download(
+        bucket = hfr_bucket,
+        object = .x,
+        filepath = file.path("./out/DDC", basename(.x))
+      ))
+
+# DOWNLAOD ERROR REPORTS
+
+  # HFR Reporting Period
+    proc_dates <- "2021-01-17" %>% as.Date()
+    from_pd <- "202101"
+    curr_pd <- "202103"
+
+    #pds <- glue::glue("{from_pd}_{curr_pd}")
+    pds <- glue::glue("{curr_pd}_{curr_pd}")
+
+  #HFR Submissions status
+    s3_objects(
+        bucket = hfr_bucket,
+        prefix = "ddc/uat/processed/hfr/outgoing/HFR_Submission"
+      ) %>%
+      s3_unpack_keys() %>%
+      filter(
+        str_detect(
+          str_to_lower(sys_data_object),
+          pattern = paste0("^hfr_submission_status_", pds, "_\\d{4}-\\d{2}-\\d{2}.csv$"))
+      ) %>%
+      pull(key) %>%
+      sort() %>%
+      last() %>%
+      map(.x, .f = ~ s3_download(
+        bucket = hfr_bucket,
+        object = .x,
+        filepath = file.path("./out/DDC", basename(.x))
+      ))
+
+  #HFR Mechanisms Status:
+  #DO NOT RUN (missing file)
+    s3_objects(
+        bucket = hfr_bucket,
+        prefix = "ddc/uat/processed/hfr/outgoing/Mechanism"
+      ) %>%
+      s3_unpack_keys() %>%
+      filter(
+        str_detect(
+          str_to_lower(sys_data_object),
+          pattern = "^mechanism_detail_output_\\d{4}-\\d{2}-\\d{2}.csv$"),
+        last_modified %in% proc_dates
+      ) %>% View()
+      pull(key) %>%
+      sort() %>%
+      last() %>%
+      map(.x, .f = ~ s3_download(
+        bucket = hfr_bucket,
+        object = .x,
+        filepath = file.path("./out/DDC", basename(.x))
+      ))
+
+  #HFR Detailed Errros
+    s3_objects(
+      bucket = hfr_bucket,
+      prefix = "ddc/uat/processed/hfr/outgoing/Detailed"
+    ) %>%
+      s3_unpack_keys() %>%
+      filter(
+        str_detect(
+          str_to_lower(sys_data_object),
+          pattern = "^detailed_error_output_\\d{4}-\\d{2}-\\d{2}.csv$"),
+        last_modified %in% proc_dates
+      ) %>%
+      pull(key) %>%
+      sort() %>%
+      last() %>%
       map(.x, .f = ~ s3_download(
         bucket = hfr_bucket,
         object = .x,

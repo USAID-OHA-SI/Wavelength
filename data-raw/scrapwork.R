@@ -90,7 +90,7 @@ library(glamr)
 
 
 
-# PUL MECHANISM INFO ------------------------------------------------------
+# PULL MECHANISM INFO ------------------------------------------------------
 
     pull_mech(folderpath_output = "out/DATIM")
 
@@ -150,6 +150,16 @@ library(glamr)
       bucket = hfr_bucket,
       prefix = "ddc/uat/processed/hfr/receiving"
     )
+
+
+# TODO - DOWNLAOD SUBMISSIONS FROM GOOGLE DRIVE
+# Note: Make sure to update "Send to DDC for processing" column
+
+
+# TODO - UPLOAD SUBMISSION FILES to S3
+
+
+# TODO - SCHEDULE CRON JOBS TO PROCESSIONS DATA
 
 
 # DOWNLAOD TABLEAU OUTPUTS

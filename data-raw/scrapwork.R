@@ -217,18 +217,17 @@ library(glamr)
       ))
 
   #HFR Mechanisms Status:
-  #DO NOT RUN (missing file)
     s3_objects(
         bucket = hfr_bucket,
-        prefix = "ddc/uat/processed/hfr/outgoing/Mechanism"
+        prefix = "uat/processed/hfr/outgoing/Mechanism", # This path has changed
+        n = 10000
       ) %>%
       s3_unpack_keys() %>%
-      filter(
-        str_detect(
-          str_to_lower(sys_data_object),
-          pattern = "^mechanism_detail_output_\\d{4}-\\d{2}-\\d{2}.csv$"),
-        last_modified %in% proc_dates
-      ) %>% View()
+      # filter(
+      #   str_detect(
+      #     str_to_lower(sys_data_object),
+      #     pattern = "^mechanism_detail_output_\\d{4}-\\d{2}-\\d{2}.csv$")
+      # ) %>%
       pull(key) %>%
       sort() %>%
       last() %>%

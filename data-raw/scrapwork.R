@@ -76,7 +76,7 @@ library(glamr)
 # PULL HIERARCHY ----------------------------------------------------------
 
    #pull hierarchy
-    ouuids <- identify_ouuids(myuser, glamr::datim_pwd()) %>%
+    ouuids <- Wavelength::identify_ouuids(myuser, glamr::datim_pwd()) %>%
       dplyr::filter(is.na(regional)) %>%
       dplyr::pull(id)
 

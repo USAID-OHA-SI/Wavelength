@@ -1,14 +1,15 @@
 ## PROJECT: WAVELENGTH
-## AUTHOR:  A.Chafetz | USAID
+## AUTHOR:  A.Chafetz, B.Kagniniwa, T.Essam | USAID
 ## PURPOSE: Update DATIM Tables and Upload to S3 Buckets
 ## LICENSE: MIT
-## UPDATED: 2021-01-14
+## UPDATED: 2021-01-27
 
 # LIBRARIES ---------------------------------------------------------------
 
 library(tidyverse)
 library(Wavelength)
 library(glamr)
+library(fs)
 
 # GLOBAL VARIABLES --------------------------------------------------------
 
@@ -152,11 +153,57 @@ library(glamr)
     )
 
 
-# TODO - DOWNLAOD SUBMISSIONS FROM GOOGLE DRIVE
+# DOWNLOAD SUBMISSIONS FROM GOOGLE DRIVE
 # Note: Make sure to update "Send to DDC for processing" column
 
+  #identify all files in Google Drive directory to compare
+    gdrive_submissions <- googledrive::as_id("0B9c20El0HKU1fldGdnQ3enBfQlFhSW9rQ21XUzdKT2tLdkNRSFlWNnladllLOGY3em5OdWs")
 
-# TODO - UPLOAD SUBMISSION FILES to S3
+    df_submissions <- googledrive::drive_ls(gdrive_submissions) %>%
+      dplyr::select(name, id) %>%
+      dplyr::mutate(exists_gdrive = TRUE)
+
+  #identify all files in s3 bucket to compare
+    df_incoming <- glamr::s3_objects(
+      bucket = 'gov-usaid',
+      prefix = "ddc/uat/raw/hfr/incoming/",
+      n = Inf) %>%
+      glamr::s3_unpack_keys() %>%
+      dplyr::filter(nchar(sys_data_object) > 1) %>%
+      dplyr::select(sys_data_object) %>%
+      dplyr::mutate(exist_s3 = TRUE)
+
+  #filter for files needed to add to s3 bucket
+    df_missing <- df_submissions %>%
+      dplyr::full_join(df_incoming, by = c("name" = "sys_data_object")) %>%
+      dplyr::filter(is.na(exist_s3))
+
+    df_missing$name
+
+  #create a temp folder for storing downloads
+    tmp <- fs::dir_create(fs::file_temp())
+    cat("downloaded files saved to", tmp)
+
+  #download all files missing from s3 locally
+    purrr::walk2(.x = df_missing$id[1:2],
+                 .y = df_missing$name[1:2],
+                 .f = ~googledrive::drive_download(as_id(.x),
+                                                   file.path(tmp, .y),
+                                                   overwrite = TRUE))
+
+# UPLOAD SUBMISSION FILES to S3
+
+    ## NOT TESTED ##
+
+    #identify file paths downloaded from Gdrive to push to s3 bucket
+      upload_files <- list.files(tmp, full.names = TRUE)
+
+    #push local files to s3
+      purrr::walk(upload_files,
+                  glamr::s3_upload(
+                    file = .,
+                    bucket = hfr_bucket,
+                    prefix = "ddc/uat/raw/hfr/incoming"))
 
 
 # TODO - SCHEDULE CRON JOBS TO PROCESSIONS DATA

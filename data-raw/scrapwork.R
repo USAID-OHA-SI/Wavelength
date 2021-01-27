@@ -208,6 +208,13 @@ library(fs)
 
 # TODO - SCHEDULE CRON JOBS TO PROCESSIONS DATA
 
+    #identify how many trifacta runs are needed (30 tabs per run)
+      tabs <- purrr::map_dfr(upload_files,
+                             ~ readxl::excel_sheets(.) %>%
+                               tibble::as_tibble() %>%
+                               dplyr::filter(str_detect(value, "HFR")))
+
+      cat("Trifacta runs needed:", ceiling(tabs/30))
 
 # DOWNLAOD TABLEAU OUTPUTS
 

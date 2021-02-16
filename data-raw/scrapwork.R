@@ -17,7 +17,7 @@ library(fs)
     glamr::load_secrets()
 
   #quarters with results in DATIM (Needs to be updated each quarter for updated Results/Targets/Gap Target)
-    qtr <- 4
+    qtr <- 1
 
   #DATIM username
     myuser <- glamr::datim_user()
@@ -135,7 +135,7 @@ library(fs)
     glamr::s3_upload(
       file = .,
       bucket = hfr_bucket,
-      prefix = "ddc/uat/processed/hfr/receiving"
+      prefix = "ddc/uat/raw/hfr/receiving"
     )
 
   # Org hierarchy
@@ -149,7 +149,7 @@ library(fs)
     glamr::s3_upload(
       file = .,
       bucket = hfr_bucket,
-      prefix = "ddc/uat/processed/hfr/receiving"
+      prefix = "ddc/uat/raw/hfr/receiving"
     )
 
 
@@ -185,9 +185,9 @@ library(fs)
     cat("downloaded files saved to", tmp)
 
   #download all files missing from s3 locally
-    purrr::walk2(.x = df_missing$id[1:2],
-                 .y = df_missing$name[1:2],
-                 .f = ~googledrive::drive_download(as_id(.x),
+    purrr::walk2(.x = df_missing$id,
+                 .y = df_missing$name,
+                 .f = ~googledrive::drive_download(googledrive::as_id(.x),
                                                    file.path(tmp, .y),
                                                    overwrite = TRUE))
 
@@ -198,9 +198,15 @@ library(fs)
     #identify file paths downloaded from Gdrive to push to s3 bucket
       upload_files <- list.files(tmp, full.names = TRUE)
 
+    #upload one file to kick off
+      glamr::s3_upload(
+        file = upload_files[59],
+        bucket = hfr_bucket,
+        prefix = "ddc/uat/raw/hfr/incoming")
+
     #push local files to s3
-      purrr::walk(upload_files,
-                  glamr::s3_upload(
+      purrr::walk(upload_files[1:58],
+                  ~ glamr::s3_upload(
                     file = .,
                     bucket = hfr_bucket,
                     prefix = "ddc/uat/raw/hfr/incoming"))
@@ -216,24 +222,27 @@ library(fs)
 
       cat("Trifacta runs needed:", ceiling(tabs/30))
 
-# DOWNLAOD TABLEAU OUTPUTS
+# DOWNLOAD TABLEAU OUTPUTS
 
   # HFR Data Process dates
-    proc_dates <- "2021-01-16" %>% as.Date()
+    # proc_dates <- "2021-02-01" %>% as.Date()
 
   #FY21 HFR Outputs
-    s3_objects(
+    files_twbx <- s3_objects(
         bucket = hfr_bucket,
         prefix = "ddc/uat/processed/hfr/outgoing/hfr"
       ) %>%
       s3_unpack_keys() %>%
-      filter(
-        str_detect(
-          sys_data_object,
-          pattern = "^hfr_2021_\\d{2}_Tableau_\\d{4}-\\d{2}-\\d{2}.csv$"),
-        last_modified %in% proc_dates
-      ) %>%
-      pull(key) %>%
+      # filter(
+      #   str_detect(
+      #     sys_data_object,
+      #     pattern = "^hfr_2021_\\d{2}_Tableau_\\d{4}-\\d{2}-\\d{2}.csv$"),
+      #   last_modified %in% proc_dates
+      # ) %>%
+      filter(last_modified == max(last_modified)) %>%
+      pull(key)
+
+    files_twbx %>%
       map(.x, .f = ~ s3_download(
         bucket = hfr_bucket,
         object = .x,
@@ -256,11 +265,11 @@ library(fs)
         prefix = "ddc/uat/processed/hfr/outgoing/HFR_Submission"
       ) %>%
       s3_unpack_keys() %>%
-      filter(
-        str_detect(
-          str_to_lower(sys_data_object),
-          pattern = paste0("^hfr_submission_status_", pds, "_\\d{4}-\\d{2}-\\d{2}.csv$"))
-      ) %>%
+      # filter(
+      #   str_detect(
+      #     str_to_lower(sys_data_object),
+      #     pattern = paste0("^hfr_submission_status_", pds, "_\\d{4}-\\d{2}-\\d{2}.csv$"))
+      # ) %>%
       pull(key) %>%
       sort() %>%
       last() %>%
@@ -316,8 +325,10 @@ library(fs)
 # APPEND TABLEAU FILE -----------------------------------------------------
 
   #FY21 HFR DDC files (outputs from Trifecta)
-    ddc_path <- list.files("C:/Users/achafetz/Downloads",
-                           glue::glue("hfr_2021.*{Sys.Date()}"), full.names = TRUE)
+    # ddc_path <- list.files("C:/Users/achafetz/Downloads",
+    #                        glue::glue("hfr_2021.*{Sys.Date()}"), full.names = TRUE)
+
+    ddc_path <- file.path("out", "DDC", basename(files_twbx))
 
   #historic FY20 HFR data path
     fy20_path <- "out/fy20_archive/HFR_Tableau_SQLview_FY20.zip"

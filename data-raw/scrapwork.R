@@ -200,12 +200,12 @@ library(fs)
 
     #upload one file to kick off
       glamr::s3_upload(
-        file = upload_files[59],
+        file = tail(upload_files, n=1),
         bucket = hfr_bucket,
         prefix = "ddc/uat/raw/hfr/incoming")
 
     #push local files to s3
-      purrr::walk(upload_files[1:58],
+      purrr::walk(head(upload_files, -1),
                   ~ glamr::s3_upload(
                     file = .,
                     bucket = hfr_bucket,

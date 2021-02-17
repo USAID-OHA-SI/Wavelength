@@ -193,8 +193,6 @@ library(fs)
 
 # UPLOAD SUBMISSION FILES to S3
 
-    ## NOT TESTED ##
-
     #identify file paths downloaded from Gdrive to push to s3 bucket
       upload_files <- list.files(tmp, full.names = TRUE)
 
@@ -249,12 +247,12 @@ library(fs)
         filepath = file.path("./out/DDC", basename(.x))
       ))
 
-# DOWNLAOD ERROR REPORTS
+# DOWNLOAD ERROR REPORTS
 
   # HFR Reporting Period
-    proc_dates <- "2021-01-17" %>% as.Date()
+    proc_dates <- "2021-02-16" %>% as.Date()
     from_pd <- "202101"
-    curr_pd <- "202103"
+    curr_pd <- "202104"
 
     #pds <- glue::glue("{from_pd}_{curr_pd}")
     pds <- glue::glue("{curr_pd}_{curr_pd}")
@@ -265,11 +263,12 @@ library(fs)
         prefix = "ddc/uat/processed/hfr/outgoing/HFR_Submission"
       ) %>%
       s3_unpack_keys() %>%
-      # filter(
-      #   str_detect(
-      #     str_to_lower(sys_data_object),
-      #     pattern = paste0("^hfr_submission_status_", pds, "_\\d{4}-\\d{2}-\\d{2}.csv$"))
-      # ) %>%
+      filter(
+        str_detect(
+          str_to_lower(sys_data_object),
+          # pattern = paste0("^hfr_submission_status_", pds, "_\\d{4}-\\d{2}-\\d{2}.csv$"))
+          pattern = "^hfr_submission_status_2021-")
+      ) %>%
       pull(key) %>%
       sort() %>%
       last() %>%
@@ -282,7 +281,7 @@ library(fs)
   #HFR Mechanisms Status:
     s3_objects(
         bucket = hfr_bucket,
-        prefix = "uat/processed/hfr/outgoing/Mechanism", # This path has changed
+        prefix = "ddc/uat/processed/hfr/outgoing/Mechanism", # This path has changed
         n = 10000
       ) %>%
       s3_unpack_keys() %>%
@@ -306,12 +305,12 @@ library(fs)
       prefix = "ddc/uat/processed/hfr/outgoing/Detailed"
     ) %>%
       s3_unpack_keys() %>%
-      filter(
-        str_detect(
-          str_to_lower(sys_data_object),
-          pattern = "^detailed_error_output_\\d{4}-\\d{2}-\\d{2}.csv$"),
-        last_modified %in% proc_dates
-      ) %>%
+      # filter(
+      #   str_detect(
+      #     str_to_lower(sys_data_object),
+      #     pattern = "^detailed_error_output_\\d{4}-\\d{2}-\\d{2}.csv$"),
+      #   last_modified %in% proc_dates
+      # ) %>%
       pull(key) %>%
       sort() %>%
       last() %>%

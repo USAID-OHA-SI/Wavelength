@@ -122,7 +122,8 @@ library(fs)
                               type = "spreadsheet")
 
 
-# UPLOAD REFERENCE TABLES to S3: setup S3 Access keys first
+
+# UPLOAD REFERENCE TABLES to S3 -------------------------------------------
 
   # Mechanisms
   list.files(
@@ -153,6 +154,9 @@ library(fs)
     )
 
 
+
+# ADD NEW SUBMISSIONS TO S3 -----------------------------------------------
+
 # DOWNLOAD SUBMISSIONS FROM GOOGLE DRIVE
 # Note: Make sure to update "Send to DDC for processing" column
 
@@ -169,7 +173,9 @@ library(fs)
       prefix = "ddc/uat/raw/hfr/incoming/",
       n = Inf) %>%
       glamr::s3_unpack_keys() %>%
-      dplyr::filter(nchar(sys_data_object) > 1) %>%
+      dplyr::filter(nchar(sys_data_object) > 1,
+                    # last_modified <= as.Date("2021-02-16")
+                    ) %>%
       dplyr::select(sys_data_object) %>%
       dplyr::mutate(exist_s3 = TRUE)
 
@@ -218,9 +224,10 @@ library(fs)
                                tibble::as_tibble() %>%
                                dplyr::filter(str_detect(value, "HFR")))
 
-      cat("Trifacta runs needed:", ceiling(tabs/30))
+      cat("Trifacta runs needed:", ceiling(nrow(tabs)/30))
 
-# DOWNLOAD TABLEAU OUTPUTS
+
+# DOWNLOAD TABLEAU OUTPUTS ------------------------------------------------
 
   # HFR Data Process dates
     # proc_dates <- "2021-02-01" %>% as.Date()
@@ -250,7 +257,7 @@ library(fs)
 # DOWNLOAD ERROR REPORTS
 
   # HFR Reporting Period
-    proc_dates <- "2021-02-16" %>% as.Date()
+    proc_dates <- "2021-02-18" %>% as.Date()
     from_pd <- "202101"
     curr_pd <- "202104"
 
@@ -345,7 +352,7 @@ library(fs)
     readr::write_csv(twbx, "out/joint/HFR_Tableau_SQLview.csv", na = "")
 
 
-# Process HFR submissions -------------------------------------------------
+# RETIRED - PROCESS HFR SUBMISSIONS (WAVELENGTH) --------------------------
 
   #hfr submission period
     submission_pd <- 5

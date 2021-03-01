@@ -161,7 +161,6 @@ get_datim_targets <- function(url,username,password) {
 
 #' Generate a API URL
 #'
-#' @param mech_uid UID for a specific mechanism, recommend using `identify_mechs()`
 #' @param ou_uid UID for the country, recommend using `identify_ouuids()`
 #' @param org_lvl org hierarchy level, eg facility is level 7 in country X, recommend using `identify_levels()`
 #' @param org_type organization type, either facility (default) or community
@@ -172,16 +171,14 @@ get_datim_targets <- function(url,username,password) {
 #'
 #' @examples
 #' \dontrun{
-#'  #get mech UID
-#'   mechuid <- identify_mechs(mechid = 00001, extract = "uid")
 #'  #get OU UID
 #'   ouuid <- identify_ouuids() %>% dplyr::filter(ou == "Ghana")
 #'  #get facility level
 #'   faclvl <- identify_levels("Ghana", "facility", username = myuser, password = mypwd())
 #'  #gen url
-#'   myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts = NULL) }
+#'   myurl <- gen_url(ouuid, faclvl, org_type = facility, type_hts = NULL) }
 
-gen_url <- function(mech_uid, ou_uid, org_lvl, org_type = "facility", type_hts = NULL, baseurl = "https://final.datim.org/"){
+gen_url <- function(ou_uid, org_lvl, org_type = "facility", type_hts = NULL, baseurl = "https://final.datim.org/"){
 
   fy_pd <- paste0(curr_fy-1, "Oct")
 
@@ -262,7 +259,7 @@ pull_mer <- function(ou_name = NULL,
 
   #pull non-HTS data (vars only facility)
   df_nonhts <-
-    gen_url(mech_uid, ou_uid, ou_fac, type_hts = NULL, baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_fac, type_hts = NULL, baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex/HIVStatus
@@ -271,22 +268,22 @@ pull_mer <- function(ou_name = NULL,
 
   #pull PrEP targets (some at community)
   df_prep_comm_targets <-
-    gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_comm, org_type = "community", baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #pull HTS data (facility) results
   df_hts_fac_results <-
-    gen_url(mech_uid, ou_uid, ou_fac, type_hts = "results", baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_fac, type_hts = "results", baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #pull HTS data (facility) targets
   df_hts_fac_targets <-
-    gen_url(mech_uid, ou_uid, ou_fac, type_hts = "targets", baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_fac, type_hts = "targets", baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #pull HTS data (community) results
   df_hts_comm_results <-
-    gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = "results", baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_comm, org_type = "community", type_hts = "results", baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #add community level if same as psnu, otherwise will be missing
@@ -295,7 +292,7 @@ pull_mer <- function(ou_name = NULL,
 
   #pull HTS data (community) targets
   df_hts_comm_targets <-
-    gen_url(mech_uid, ou_uid, ou_comm, org_type = "community", type_hts = "targets", baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_comm, org_type = "community", type_hts = "targets", baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #add community level if same as psnu, otherwise will be missing

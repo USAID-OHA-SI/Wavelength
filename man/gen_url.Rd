@@ -5,7 +5,6 @@
 \title{Generate a API URL}
 \usage{
 gen_url(
-  mech_uid,
   ou_uid,
   org_lvl,
   org_type = "facility",
@@ -14,8 +13,6 @@ gen_url(
 )
 }
 \arguments{
-\item{mech_uid}{UID for a specific mechanism, recommend using \code{identify_mechs()}}
-
 \item{ou_uid}{UID for the country, recommend using \code{identify_ouuids()}}
 
 \item{org_lvl}{org hierarchy level, eg facility is level 7 in country X, recommend using \code{identify_levels()}}
@@ -31,12 +28,10 @@ Generate a API URL
 }
 \examples{
 \dontrun{
- #get mech UID
-  mechuid <- identify_mechs(mechid = 00001, extract = "uid")
  #get OU UID
   ouuid <- identify_ouuids() \%>\% dplyr::filter(ou == "Ghana")
  #get facility level
   faclvl <- identify_levels("Ghana", "facility", username = myuser, password = mypwd())
  #gen url
-  myurl <- gen_url(mechuid, ouuid, faclvl, org_type = facility, type_hts = NULL) }
+  myurl <- gen_url(ouuid, faclvl, org_type = facility, type_hts = NULL) }
 }

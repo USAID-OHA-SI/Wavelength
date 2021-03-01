@@ -196,7 +196,7 @@ gen_url <- function(ou_uid, org_lvl, org_type = "facility",
            "dimension=IeMmjHyBUpi:", #Targets / Results ->
            ifelse(value_type == "results", "Jh0jDM5yQ2E", "W8imnja2Owd"))  # targets = W8imnja2Owd, results = Jh0jDM5yQ2E
 
-  if(is_hts = TRUE){
+  if(is_hts == TRUE){
     tech_url <-
       paste0(core_url,
              "dimension=LxhLO68FcXm:f5IPTM7mieH;wdoUps1qb3V;BTIqHnjeG7l;rI3JlpiuwEK;CUblPgOMGaT&", #technical area

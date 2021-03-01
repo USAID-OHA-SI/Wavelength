@@ -164,7 +164,8 @@ get_datim_targets <- function(url,username,password) {
 #' @param ou_uid UID for the country, recommend using `identify_ouuids()`
 #' @param org_lvl org hierarchy level, eg facility is level 7 in country X, recommend using `identify_levels()`
 #' @param org_type organization type, either facility (default) or community
-#' @param type_hts is the API call for HTS indicators ("results", "targets"), default = NULL
+#' @param value_type results (default) or targets
+#' @param is_hts is the API for HTS indicators (HTS_TST or HTS_TST_POS), default = FALSE
 #' @param baseurl API base url, default = https://final.datim.org/
 #'
 #' @export
@@ -176,9 +177,11 @@ get_datim_targets <- function(url,username,password) {
 #'  #get facility level
 #'   faclvl <- identify_levels("Ghana", "facility", username = myuser, password = mypwd())
 #'  #gen url
-#'   myurl <- gen_url(ouuid, faclvl, org_type = facility, type_hts = NULL) }
+#'   myurl <- gen_url(ouuid, faclvl, org_type = facility) }
 
-gen_url <- function(ou_uid, org_lvl, org_type = "facility", type_hts = NULL, baseurl = "https://final.datim.org/"){
+gen_url <- function(ou_uid, org_lvl, org_type = "facility",
+                    value_type = "results", is_hts = FALSE,
+                    baseurl = "https://final.datim.org/"){
 
   fy_pd <- paste0(curr_fy-1, "Oct")
 
@@ -189,19 +192,19 @@ gen_url <- function(ou_uid, org_lvl, org_type = "facility", type_hts = NULL, bas
            "dimension=bw8KHXzxd9i:NLV6dy7BE2O&", #Funding Agency -> USAID
            "dimension=SH885jaRe0o&", #Funding Mechanism
            "dimension=xRo1uG2KJHk&", #Age: <15/15+ (Coarse)
-           "dimension=jyUTj5YC3OK&") #Cascade sex
+           "dimension=jyUTj5YC3OK&", #Cascade sex
+           "dimension=IeMmjHyBUpi:", #Targets / Results ->
+           ifelse(value_type == "results", "Jh0jDM5yQ2E", "W8imnja2Owd"))  # targets = W8imnja2Owd, results = Jh0jDM5yQ2E
 
-  if(!is.null(type_hts)){
+  if(is_hts = TRUE){
     tech_url <-
       paste0(core_url,
-             "dimension=IeMmjHyBUpi:", ifelse(type_hts == "results", "Jh0jDM5yQ2E", "W8imnja2Owd"), "&", #Targets / Results -> targets = W8imnja2Owd, results = Jh0jDM5yQ2E
              "dimension=LxhLO68FcXm:f5IPTM7mieH;wdoUps1qb3V;BTIqHnjeG7l;rI3JlpiuwEK;CUblPgOMGaT&", #technical area
              "dimension=", ifelse(type_hts == "results", "ra9ZqrTtSQn", "Jm6OwL9IqEa"), "&", #HTS Modality (USE ONLY for FY20 Results/FY21 Targets) or HTS Modality (USE ONLY for FY19 Results/FY20 Targets)
              "dimension=bDWsPYyXgWP:awSDzziN3Dn;EvyNJHbQ7ZE;mSBg9AZx1lV;viYXyEy7wKi&") #HIV Test Status (Specific)) - Pos/Neg + New Pos/Neg
   } else {
     tech_url <-
       paste0(core_url,
-             "dimension=IeMmjHyBUpi&", #Targets / Results -> targets W8imnja2Owd
              "dimension=LxhLO68FcXm:", ifelse(org_type == "community", "gma5vVZgK49","udCop657yzi;MvszPTQrUhy;gma5vVZgK49;wdoUps1qb3V"), "&", #technical areas, prep targets at community
              "dimension=HWPJnUTMjEq:Qbz6SrpmJ1y;h0pvSVe1TYf;pxz2gGSIQhG&") #Disaggregation Type -> Age/Sex, Age/Sex/HIVStatus, Age Aggregated/Sex/HIVStatus
   }

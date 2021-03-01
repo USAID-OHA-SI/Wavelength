@@ -205,14 +205,15 @@ gen_url <- function(ou_uid, org_lvl, org_type = "facility",
   } else {
     tech_url <-
       paste0(core_url,
-             "dimension=LxhLO68FcXm:", ifelse(org_type == "community", "gma5vVZgK49","udCop657yzi;MvszPTQrUhy;gma5vVZgK49;wdoUps1qb3V"), "&", #technical areas, prep targets at community
+             # "dimension=LxhLO68FcXm:", ifelse(org_type == "community", "gma5vVZgK49","udCop657yzi;MvszPTQrUhy;gma5vVZgK49;wdoUps1qb3V"), "&", #technical areas, prep targets at community
+             "dimension=LxhLO68FcXm:udCop657yzi;MvszPTQrUhy;gma5vVZgK49;wdoUps1qb3V&", #technical areas
              "dimension=HWPJnUTMjEq:Qbz6SrpmJ1y;h0pvSVe1TYf;pxz2gGSIQhG&") #Disaggregation Type -> Age/Sex, Age/Sex/HIVStatus, Age Aggregated/Sex/HIVStatus
   }
 
-  if(org_type == "community")
-    tech_url <-
-    paste0(tech_url,
-           "dimension=mINJi7rR1a6:PvuaP6YALSA;AookYR4ECPH&") #Type of organisational unit -> Community & Other organisation unit type
+  # if(org_type == "community")
+  #   tech_url <-
+  #   paste0(tech_url,
+  #          "dimension=mINJi7rR1a6:PvuaP6YALSA;AookYR4ECPH&") #Type of organisational unit -> Community & Other organisation unit type
 
   final_url <-
     paste0(tech_url,

@@ -344,7 +344,7 @@ pull_mer <- function(ou_name = NULL,
 
 
     #combine non HTS and HTS dfs
-      df_combo <- dplyr::bind_rows(df_nonhts, df_prep_comm_targets, df_combo_hts)
+      df_combo <- dplyr::bind_rows(df_nonhts_results, df_nonhts_targets, df_combo_hts)
 
     #clean up orgunits, keeping just OU, PSNU, Community and Facility
       country_name <- unique(df_combo$orglvl_3)

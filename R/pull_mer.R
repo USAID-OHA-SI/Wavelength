@@ -266,7 +266,7 @@ pull_mer <- function(ou_name = NULL,
     gen_url(ou_uid, ou_fac, baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
-  #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex in FY21
+  #remove VMMC_CIRC Age/Sex/HIVStatus results since targets and results reported under Age/Sex in FY21
   if(!is.null(df_nonhts_results))
     df_nonhts_results <- dplyr::filter(df_nonhts_results, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex/HIVStatus"))
 
@@ -275,9 +275,9 @@ pull_mer <- function(ou_name = NULL,
     gen_url(ou_uid, ou_psnu, value_type = "targets", baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
-  #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex in FY21
+  #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex/HIVStatus in FY21
   if(!is.null(df_nonhts_targets))
-    df_nonhts_targets <- dplyr::filter(df_nonhts_targets, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex/HIVStatus"))
+    df_nonhts_targets <- dplyr::filter(df_nonhts_targets, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex"))
 
   #pull HTS data (facility) results
   df_hts_fac_results <-

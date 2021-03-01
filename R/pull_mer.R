@@ -193,8 +193,8 @@ gen_url <- function(ou_uid, org_lvl, org_type = "facility",
            "dimension=SH885jaRe0o&", #Funding Mechanism
            "dimension=xRo1uG2KJHk&", #Age: <15/15+ (Coarse)
            "dimension=jyUTj5YC3OK&", #Cascade sex
-           "dimension=IeMmjHyBUpi:", #Targets / Results ->
-           ifelse(value_type == "results", "Jh0jDM5yQ2E", "W8imnja2Owd"))  # targets = W8imnja2Owd, results = Jh0jDM5yQ2E
+           "dimension=IeMmjHyBUpi:",
+             ifelse(value_type == "results", "Jh0jDM5yQ2E", "W8imnja2Owd"), "&")  #Targets / Results -># targets = W8imnja2Owd, results = Jh0jDM5yQ2E
 
   if(is_hts == TRUE){
     tech_url <-
@@ -266,9 +266,9 @@ pull_mer <- function(ou_name = NULL,
     gen_url(ou_uid, ou_fac, baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
-  #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex/HIVStatus
+  #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex in FY21
   if(!is.null(df_nonhts_results))
-    df_nonhts_results <- dplyr::filter(df_nonhts_results, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex"))
+    df_nonhts_results <- dplyr::filter(df_nonhts_results, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex/HIVStatus"))
 
   #pull non-HTS data results (vars only facility)
   df_nonhts_targets <-
@@ -295,7 +295,7 @@ pull_mer <- function(ou_name = NULL,
 
   #pull HTS data targets
   df_hts_targets <-
-    gen_url(ou_uid, ou_psnu, type_hts = "targets", is_hts = TRUE, baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_psnu, value_type = "targets", is_hts = TRUE, baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #ensure data exists before continuing

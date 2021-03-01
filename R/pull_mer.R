@@ -261,61 +261,55 @@ pull_mer <- function(ou_name = NULL,
   ou_psnu <- ou_info$prioritization
   ou_uid <- ou_info$id
 
-  #pull non-HTS data (vars only facility)
-  df_nonhts <-
-    gen_url(ou_uid, ou_fac, type_hts = NULL, baseurl = baseurl) %>%
+  #pull non-HTS data results (vars only facility)
+  df_nonhts_results <-
+    gen_url(ou_uid, ou_fac, baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex/HIVStatus
-  if(!is.null(df_nonhts))
-    df_nonhts <- dplyr::filter(df_nonhts, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex"))
+  if(!is.null(df_nonhts_results))
+    df_nonhts_results <- dplyr::filter(df_nonhts_results, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex"))
 
-  #pull PrEP targets (some at community)
-  df_prep_comm_targets <-
-    gen_url(ou_uid, ou_comm, org_type = "community", baseurl = baseurl) %>%
+  #pull non-HTS data results (vars only facility)
+  df_nonhts_targets <-
+    gen_url(ou_uid, ou_psnu, value_type = "targets", baseurl = baseurl) %>%
     get_datim_targets(username, password)
+
+  #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex/HIVStatus
+  if(!is.null(df_nonhts_targets))
+    df_nonhts_targets <- dplyr::filter(df_nonhts_targets, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex"))
 
   #pull HTS data (facility) results
   df_hts_fac_results <-
-    gen_url(ou_uid, ou_fac, type_hts = "results", baseurl = baseurl) %>%
-    get_datim_targets(username, password)
-
-  #pull HTS data (facility) targets
-  df_hts_fac_targets <-
-    gen_url(ou_uid, ou_fac, type_hts = "targets", baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_fac, is_hts = TRUE, baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #pull HTS data (community) results
   df_hts_comm_results <-
-    gen_url(ou_uid, ou_comm, org_type = "community", type_hts = "results", baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_comm, is_hts = TRUE, baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #add community level if same as psnu, otherwise will be missing
   if(!is.null(df_hts_comm_results) && ou_psnu == ou_comm)
     df_hts_comm_results <- dplyr::mutate(df_hts_comm_results, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
 
-  #pull HTS data (community) targets
-  df_hts_comm_targets <-
-    gen_url(ou_uid, ou_comm, org_type = "community", type_hts = "targets", baseurl = baseurl) %>%
+  #pull HTS data targets
+  df_hts_targets <-
+    gen_url(ou_uid, ou_psnu, type_hts = "targets", is_hts = TRUE, baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
-  #add community level if same as psnu, otherwise will be missing
-  if(!is.null(df_hts_comm_targets) && ou_psnu == ou_comm)
-    df_hts_comm_targets <- dplyr::mutate(df_hts_comm_targets, !!paste0("orglvl_", ou_psnu) := `Organisation unit`)
-
   #ensure data exists before continuing
-  data_exists <- (max(nrow(df_hts_comm_results), nrow(df_hts_comm_targets),
-                      nrow(df_hts_fac_results), nrow(df_hts_fac_targets),
-                      nrow(df_nonhts), nrow(df_prep_comm_targets), 1, na.rm = TRUE) - 1) > 0
+  data_exists <- (max(nrow(df_nonhts_results), nrow(df_nonhts_targets),
+                      nrow(df_hts_fac_results), nrow(df_hts_comm_results),
+                      nrow(df_hts_targets), 1, na.rm = TRUE) - 1) > 0
 
-  data_exists_hts <- (max(nrow(df_hts_comm_results), nrow(df_hts_comm_targets),
-                          nrow(df_hts_fac_results), nrow(df_hts_fac_targets), 1, na.rm = TRUE) - 1) > 0
+  data_exists_hts <- (max(nrow(df_hts_fac_results), nrow(df_hts_comm_results),
+                          nrow(df_hts_targets), 1, na.rm = TRUE) - 1) > 0
 
   if(data_exists){
 
     #combine all HTS data
-    df_combo_hts <- dplyr::bind_rows(df_hts_fac_results, df_hts_fac_targets,
-                                     df_hts_comm_results, df_hts_comm_targets)
+    df_combo_hts <- dplyr::bind_rows(df_hts_fac_results, df_hts_comm_results, df_hts_targets)
 
     #remove extra status (known pos, recent negatives, unknown status) & unify technical area
       df_combo_hts <- df_combo_hts %>%

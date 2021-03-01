@@ -200,7 +200,7 @@ gen_url <- function(ou_uid, org_lvl, org_type = "facility",
     tech_url <-
       paste0(core_url,
              "dimension=LxhLO68FcXm:f5IPTM7mieH;wdoUps1qb3V;BTIqHnjeG7l;rI3JlpiuwEK;CUblPgOMGaT&", #technical area
-             "dimension=", ifelse(type_hts == "results", "ra9ZqrTtSQn", "Jm6OwL9IqEa"), "&", #HTS Modality (USE ONLY for FY20 Results/FY21 Targets) or HTS Modality (USE ONLY for FY19 Results/FY20 Targets)
+             "dimension=ra9ZqrTtSQn&", #HTS Modality (USE ONLY for FY20,21 Results/FY21,22 Targets)
              "dimension=bDWsPYyXgWP:awSDzziN3Dn;EvyNJHbQ7ZE;mSBg9AZx1lV;viYXyEy7wKi&") #HIV Test Status (Specific)) - Pos/Neg + New Pos/Neg
   } else {
     tech_url <-

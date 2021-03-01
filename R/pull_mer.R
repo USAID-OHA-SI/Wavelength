@@ -327,8 +327,7 @@ pull_mer <- function(ou_name = NULL,
 
     #bind and aggregate HTS and HTS_POS
       grp_keep <- names(df_combo_hts) %>%
-        dplyr::setdiff(c("HTS Modality (USE ONLY for FY19 Results/FY20 Targets)",
-                         "HTS Modality (USE ONLY for FY20 Results/FY21 Targets)",
+        dplyr::setdiff(c("HTS Modality (USE ONLY for FY20,21 Results/FY21,22 Targets)",
                          "HIV Test Status (Specific)",
                          "Type of organisational unit",
                          "Value"))

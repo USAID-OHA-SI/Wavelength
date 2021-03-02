@@ -308,6 +308,7 @@ pull_mer <- function(ou_name = NULL,
 
   if(data_exists){
 
+    if(data_exists_hts){
     #combine all HTS data
     df_combo_hts <- dplyr::bind_rows(df_hts_fac_results, df_hts_comm_results, df_hts_targets)
 
@@ -331,7 +332,7 @@ pull_mer <- function(ou_name = NULL,
                          "HIV Test Status (Specific)",
                          "Type of organisational unit",
                          "Value"))
-    if(data_exists_hts){
+
       df_combo_hts <- df_combo_hts %>%
         dplyr::bind_rows(df_hts_pos) %>%
         dplyr::group_by_at(grp_keep) %>%
@@ -340,7 +341,6 @@ pull_mer <- function(ou_name = NULL,
     } else {
       df_combo_hts <- NULL
     }
-
 
     #combine non HTS and HTS dfs
       df_combo <- dplyr::bind_rows(df_nonhts_results, df_nonhts_targets, df_combo_hts)

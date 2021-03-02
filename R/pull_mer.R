@@ -259,6 +259,8 @@ pull_mer <- function(ou_name = NULL,
   ou_fac <- ou_info$facility
   ou_comm <- ou_info$community
   ou_psnu <- ou_info$prioritization
+  if(ou_name %in% c("Burkina Faso", "Jamaica", "Liberia", "Mali", "Senegal"))
+    ou_psnu <- 4
   ou_uid <- ou_info$id
 
   #pull non-HTS data results (vars only facility)

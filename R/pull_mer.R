@@ -322,7 +322,7 @@ pull_mer <- function(ou_name = NULL,
     #create HTS_TST_POS
       df_hts_pos <- df_combo_hts %>%
         dplyr::filter(`HIV Test Status (Specific)` %in% c("HIV Positive (Specific)",
-                                                          "Newly Identified Positive (Specific)")) %>%
+                                                          "Newly Tested Positives (Specific)")) %>%
         dplyr::mutate(`Technical Area` = "HTS_TST_POS")
 
     #bind and aggregate HTS and HTS_POS

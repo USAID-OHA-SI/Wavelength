@@ -210,10 +210,10 @@ gen_url <- function(ou_uid, org_lvl, org_type = "facility",
              "dimension=HWPJnUTMjEq:Qbz6SrpmJ1y;h0pvSVe1TYf;pxz2gGSIQhG&") #Disaggregation Type -> Age/Sex, Age/Sex/HIVStatus, Age Aggregated/Sex/HIVStatus
   }
 
-  # if(org_type == "community")
-  #   tech_url <-
-  #   paste0(tech_url,
-  #          "dimension=mINJi7rR1a6:PvuaP6YALSA;AookYR4ECPH&") #Type of organisational unit -> Community & Other organisation unit type
+  if(org_type == "community")
+    tech_url <-
+    paste0(tech_url,
+           "dimension=mINJi7rR1a6:PvuaP6YALSA;AookYR4ECPH&") #Type of organisational unit -> Community & Other organisation unit type
 
   final_url <-
     paste0(tech_url,
@@ -286,7 +286,7 @@ pull_mer <- function(ou_name = NULL,
 
   #pull HTS data (community) results
   df_hts_comm_results <-
-    gen_url(ou_uid, ou_comm, is_hts = TRUE, baseurl = baseurl) %>%
+    gen_url(ou_uid, ou_comm, org_type = "community", is_hts = TRUE, baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
   #add community level if same as psnu, otherwise will be missing

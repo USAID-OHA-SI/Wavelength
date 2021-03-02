@@ -2,7 +2,7 @@
 ## AUTHOR:  A.Chafetz, B.Kagniniwa, T.Essam | USAID
 ## PURPOSE: Update DATIM Tables and Upload to S3 Buckets
 ## LICENSE: MIT
-## UPDATED: 2021-01-27
+## UPDATED: 2021-03-01
 
 # LIBRARIES ---------------------------------------------------------------
 
@@ -39,18 +39,59 @@ library(fs)
     dplyr::pull(country_name)
 
   #pull & export MER site result/targets
-    purrr::walk(ous, ~pull_mer(ou_name = .x,
-                               username = myuser,
-                               password = glamr::datim_pwd(),
-                               quarters_complete = qtr,
-                               folderpath_output = savefolder))
+    # purrr::walk(ous, ~pull_mer(ou_name = .x,
+    #                            username = myuser,
+    #                            password = glamr::datim_pwd(),
+    #                            quarters_complete = qtr,
+    #                            folderpath_output = savefolder))
 
+    df_mer <- purrr::map_dfr(ous, ~pull_mer(ou_name = .x,
+                                            username = myuser,
+                                            password = glamr::datim_pwd()))
+
+    hfr_export(df_mer, "out/DATIM", type = "DATIM", quarters_complete = qtr)
+
+
+# API VS MSD COMPARISON ---------------------------------------------------
+
+    # df_msd_agg <- si_path() %>%
+    #   return_latest("OU_IM") %>%
+    #   read_rds()
+    #
+    # df_msd_agg <- df_msd_agg %>%
+    #   dplyr::filter(fiscal_year == 2021,
+    #                 fundingagency == "USAID",
+    #                 indicator %in% c("HTS_TST", "HTS_TST_POS", "TX_NEW", "TX_CURR", "PrEP_NEW", "VMMC_CIRC"),
+    #                 standardizeddisaggregate == "Total Numerator") %>%
+    #   dplyr::group_by(countryname, indicator) %>%
+    #   dplyr::summarise(mer_results = sum(cumulative, na.rm = TRUE),
+    #                    mer_targets = sum(targets, na.rm = TRUE)) %>%
+    #   dplyr::ungroup() %>%
+    #   tidyr::pivot_longer(starts_with("mer"), names_to = "type", values_to = "value_msd")
+    #
+    # df_api_agg <- df_mer %>%
+    #   dplyr::filter(indicator %in% c("HTS_TST", "HTS_TST_POS", "TX_NEW", "TX_CURR", "PrEP_NEW", "VMMC_CIRC")) %>%
+    #   dplyr::group_by(countryname, indicator) %>%
+    #   dplyr::summarise(mer_results = sum(mer_results, na.rm = TRUE),
+    #                    mer_targets = sum(mer_targets, na.rm = TRUE)) %>%
+    #   dplyr::ungroup() %>%
+    #   tidyr::pivot_longer(starts_with("mer"), names_to = "type", values_to = "value_api")
+    #
+    # df_combo <- full_join(df_msd_agg, df_api_agg)
+    #
+    # df_combo %>%
+    #   dplyr::mutate(value_api = ifelse(is.na(value_api), 0, value_api),
+    #                 variance = value_api/value_msd,
+    #                 variance = ifelse(is.nan(variance), 1, variance)) %>%
+    #   dplyr::arrange(variance) %>%
+    #   glamr::prinf()
 
 # STORE FY21 MER TARGETS (PSNU LEVEL) -------------------------------------
 
   #latest PSNU MSD (from Panorama)
-    df_msd <- list.files("~/Data", "PSNU_IM", full.names = TRUE) %>%
-      readr::read_rds()
+    df_msd <- si_path() %>%
+      return_latest("OU_IM") %>%
+      read_rds()
 
   #aggregate FY21 targets for USAID
     df_msd_agg <- df_msd %>%

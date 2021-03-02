@@ -277,6 +277,10 @@ pull_mer <- function(ou_name = NULL,
     gen_url(ou_uid, ou_psnu, value_type = "targets", baseurl = baseurl) %>%
     get_datim_targets(username, password)
 
+  #add in country name for select countries with wrong DATIM target hierarchy
+  if(!is.null(df_nonhts_targets) && ou_name %in% c("Burkina Faso", "Jamaica", "Liberia", "Mali", "Senegal"))
+    df_nonhts_targets <- tibble::add_column(df_nonhts_targets, orglvl_4 := {ou_name}, .after = "orglvl_3")
+
   #remove VMMC_CIRC Age/Sex results since targets and results reported under Age/Sex/HIVStatus in FY21
   if(!is.null(df_nonhts_targets))
     df_nonhts_targets <- dplyr::filter(df_nonhts_targets, !(`Technical Area` == "VMMC_CIRC" & `Disaggregation Type` == "Age/Sex"))
@@ -299,6 +303,10 @@ pull_mer <- function(ou_name = NULL,
   df_hts_targets <-
     gen_url(ou_uid, ou_psnu, value_type = "targets", is_hts = TRUE, baseurl = baseurl) %>%
     get_datim_targets(username, password)
+
+  #add in country name for select countries with wrong DATIM target hierarchy
+  if(!is.null(df_hts_targets) && ou_name %in% c("Burkina Faso", "Jamaica", "Liberia", "Mali", "Senegal"))
+    df_hts_targets <- tibble::add_column(df_hts_targets, orglvl_4 := {ou_name}, .after = "orglvl_3")
 
   #ensure data exists before continuing
   data_exists <- (max(nrow(df_nonhts_results), nrow(df_nonhts_targets),

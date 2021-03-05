@@ -2,14 +2,15 @@
 ## AUTHOR:   A.CHAFETZ | USAID
 ## PURPOSE:  combine submitted FY21 reporting sites
 ## LICENSE:  MIT
-## DATE:     2002-11-03
-## UPDATED:  2020-11-19
+## DATE:     2020-11-03
+## UPDATED:  2021-03-05
 
 
 
 # IMPORT ------------------------------------------------------------------
 
   #local folder containing submission from HFR Google Drive
+    # googledrive::drive_browse(googledrive::as_id("1taML0yih_ZcDL4Jr8Bus3mCFD2S92BK7"))
     fldr_submissions <- "../../../Downloads/3.4 FY21 Site Lists"
 
   #file names of submission to read in
@@ -60,5 +61,32 @@
 
   date <- format(Sys.Date(), "%Y%m%d")
 
+  file <- paste0("HFR_FY21_GLOBAL_sitelist_", date, ".csv")
+
   readr::write_csv(df_sitelist,
-                   paste0("out/HFR_FY21_GLOBAL_sitelist_", date, ".csv"), na = "")
+                   file.path("out", file), na = "")
+
+
+
+# UPLOAD REFERENCE TABLES TO S3 AND GDRIVE --------------------------------
+
+  #load creds for google and s3
+  glamr::load_secrets()
+
+  #upload to google drive
+  googledrive::drive_upload(file.path("out", file),
+                            googledrive::as_id("12bah06bx71-EPa0mdPiwOGCROOliJX85"),
+                            name = file)
+
+  # upload to s3 bucket
+  list.files(
+    path = "out",
+    pattern = file,
+    full.names = TRUE
+  ) %>%
+    sort() %>%
+    dplyr::last() %>%
+    glamr::s3_upload(
+      bucket = "gov-usaid",
+      prefix = "ddc/uat/raw/hfr/receiving"
+    )

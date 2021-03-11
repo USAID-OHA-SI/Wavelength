@@ -2,7 +2,7 @@
 ## AUTHOR:  A.Chafetz, B.Kagniniwa, T.Essam | USAID
 ## PURPOSE: Update DATIM Tables and Upload to S3 Buckets
 ## LICENSE: MIT
-## UPDATED: 2021-03-01
+## UPDATED: 2021-03-11
 
 # LIBRARIES ---------------------------------------------------------------
 
@@ -274,9 +274,9 @@ library(fs)
     # proc_dates <- "2021-02-01" %>% as.Date()
 
   #FY21 HFR Outputs
-    files_twbx <- s3_objects(
+    (files_twbx <- s3_objects(
         bucket = hfr_bucket,
-        prefix = "ddc/uat/processed/hfr/outgoing/hfr"
+        prefix = "ddc/uat/processed/hfr/outgoing/HFR_Tableau"
       ) %>%
       s3_unpack_keys() %>%
       # filter(
@@ -286,14 +286,15 @@ library(fs)
       #   last_modified %in% proc_dates
       # ) %>%
       filter(last_modified == max(last_modified)) %>%
-      pull(key)
+      pull(key))
 
     files_twbx %>%
       map(.x, .f = ~ s3_download(
         bucket = hfr_bucket,
         object = .x,
-        filepath = file.path("./out/DDC", basename(.x))
+        filepath = file.path("./out/joint", "HFR_Tableau_SQLview.csv")
       ))
+
 
 # DOWNLOAD ERROR REPORTS
 
@@ -368,29 +369,6 @@ library(fs)
         filepath = file.path("./out/DDC", basename(.x))
       ))
 
-
-# APPEND TABLEAU FILE -----------------------------------------------------
-
-  #FY21 HFR DDC files (outputs from Trifecta)
-    # ddc_path <- list.files("C:/Users/achafetz/Downloads",
-    #                        glue::glue("hfr_2021.*{Sys.Date()}"), full.names = TRUE)
-
-    ddc_path <- file.path("out", "DDC", basename(files_twbx))
-
-  #historic FY20 HFR data path
-    fy20_path <- "out/fy20_archive/HFR_Tableau_SQLview_FY20.zip"
-
-  #read in DDC files (append together)
-    df_ddc <- vroom::vroom(ddc_path, col_types = c(.default = "c"))
-
-  #read in FY20 HFR
-    df_fy20 <- vroom::vroom(fy20_path, col_types = c(.default = "c"))
-
-  #append FY20 + FY21
-    twbx <- dplyr::bind_rows(df_fy20, df_ddc)
-
-  #write output to file need for Tableau
-    readr::write_csv(twbx, "out/joint/HFR_Tableau_SQLview.csv", na = "")
 
 
 # RETIRED - PROCESS HFR SUBMISSIONS (WAVELENGTH) --------------------------
